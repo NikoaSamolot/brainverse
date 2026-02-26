@@ -115,7 +115,6 @@ button:hover{
 <body>
 
 <div class="card" id="loginBox">
-    <img src="carrot_logo.png" class="profile">
     <h1>BrainVerse</h1>
     <input type="text" id="username" placeholder="Login">
     <input type="password" id="password" placeholder="Hasło">
@@ -183,7 +182,6 @@ function loadPanel(){
     document.getElementById("panel").style.display = "block";
 
     document.getElementById("accountInfo").innerText = users[user].label;
-
     document.getElementById("profileImage").src = users[user].image;
 
     const fileDiv = document.getElementById("files");
