@@ -6,26 +6,31 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <img src="carrot_logo.png" alt="Brainverse Logo" id="logo">
-    <h1>Brainverse</h1>
-  </header>
+  <div class="container">
 
-  <!-- Formularz logowania -->
-  <div id="loginForm">
-    <input type="text" id="user" placeholder="Login">
-    <input type="password" id="pass" placeholder="Hasło">
-    <button onclick="login()">Zaloguj</button>
-  </div>
+    <header>
+      <img src="carrot_logo.png" alt="Brainverse Logo" id="logo">
+      <h1>Brainverse</h1>
+    </header>
 
-  <!-- Sekcja plików -->
-  <div id="files" class="hidden">
-    <h2>Twoje pliki</h2>
-    <ul>
-      <li><a href="https://drive.google.com/file/d/...">Plik 1</a></li>
-      <li><a href="https://drive.google.com/file/d/...">Plik 2</a></li>
-    </ul>
-    <button onclick="logout()">Wyloguj</button>
+    <!-- Formularz logowania -->
+    <div id="loginForm">
+      <h2>Logowanie</h2>
+      <input type="text" id="user" placeholder="Login">
+      <input type="password" id="pass" placeholder="Hasło">
+      <button onclick="login()">Zaloguj</button>
+    </div>
+
+    <!-- Sekcja plików -->
+    <div id="files" class="hidden">
+      <h2>Twoje pliki</h2>
+      <ul>
+        <li><a href="https://drive.google.com/file/d/...">Plik 1</a></li>
+        <li><a href="https://drive.google.com/file/d/...">Plik 2</a></li>
+      </ul>
+      <button onclick="logout()">Wyloguj</button>
+    </div>
+
   </div>
 
   <script src="script.js"></script>

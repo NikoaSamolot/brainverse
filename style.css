@@ -1,54 +1,74 @@
+/* body i tło */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(to right, #ffecb3, #ffe0b2);
+  background: linear-gradient(135deg, #ffe0b2, #fff8e1);
   color: #333;
-  text-align: center;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
 }
 
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+}
+
+/* nagłówek */
 header {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
+  gap: 20px;
   margin-bottom: 30px;
 }
 
 #logo {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
 }
 
 h1 {
-  font-size: 3em;
-  color: #ff7043; /* marchewkowy kolor */
+  font-size: 3.2em;
+  color: #ff7043;
   margin: 0;
 }
 
+/* formularz i sekcja plików */
 #loginForm, #files {
   background: #fff8e1;
-  display: inline-block;
-  padding: 20px 40px;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  padding: 30px 50px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
 }
 
+#loginForm h2, #files h2 {
+  margin-bottom: 20px;
+  color: #ff5722;
+}
+
+/* inputy i przyciski */
 input {
-  margin: 5px;
-  padding: 10px;
-  border-radius: 10px;
+  margin: 10px 0;
+  padding: 12px;
+  width: 80%;
+  border-radius: 12px;
   border: 1px solid #ffcc80;
+  font-size: 1em;
 }
 
 button {
-  padding: 10px 20px;
-  margin-top: 10px;
+  margin-top: 15px;
+  padding: 12px 25px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background-color: #ff7043;
   color: white;
-  cursor: pointer;
   font-weight: bold;
+  cursor: pointer;
   transition: 0.2s;
 }
 
@@ -56,19 +76,25 @@ button:hover {
   background-color: #ff5722;
 }
 
-.hidden { display: none; }
-
+/* lista plików */
 ul {
   list-style: none;
   padding: 0;
 }
 
+ul li {
+  margin: 10px 0;
+}
+
 ul li a {
   color: #ff7043;
-  text-decoration: none;
   font-weight: bold;
+  text-decoration: none;
 }
 
 ul li a:hover {
   text-decoration: underline;
 }
+
+/* ukrywanie sekcji */
+.hidden { display: none; }
