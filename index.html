@@ -1,38 +1,142 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <title>Brainverse</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrainVerse</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    background: rgba(0,0,0,0.6);
+    padding:40px;
+    border-radius:15px;
+    width:350px;
+    text-align:center;
+    box-shadow:0 0 30px rgba(0,0,0,0.6);
+}
+
+input{
+    width:90%;
+    padding:10px;
+    margin:10px 0;
+    border:none;
+    border-radius:8px;
+}
+
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#00c6ff;
+    color:black;
+    font-weight:bold;
+}
+
+.file{
+    background:rgba(255,255,255,0.1);
+    margin:10px 0;
+    padding:10px;
+    border-radius:8px;
+}
+</style>
 </head>
+
 <body>
-  <div class="container">
 
-    <header>
-      <img src="carrot_logo.png" alt="Brainverse Logo" id="logo">
-      <h1>Brainverse</h1>
-    </header>
+<div class="container" id="loginBox">
+    <h2>Logowanie</h2>
+    <input type="text" id="username" placeholder="Login">
+    <input type="password" id="password" placeholder="Hasło">
+    <button onclick="login()">Zaloguj</button>
+    <p id="error" style="color:red;"></p>
+</div>
 
-    <!-- Formularz logowania -->
-    <div id="loginForm">
-      <h2>Logowanie</h2>
-      <input type="text" id="user" placeholder="Login">
-      <input type="password" id="pass" placeholder="Hasło">
-      <button onclick="login()">Zaloguj</button>
-    </div>
+<div class="container" id="panel" style="display:none;">
+    <h2>Panel użytkownika</h2>
+    <div id="files"></div>
+    <button onclick="logout()">Wyloguj</button>
+</div>
 
-    <!-- Sekcja plików -->
-    <div id="files" class="hidden">
-      <h2>Twoje pliki</h2>
-      <ul>
-        <li><a href="https://drive.google.com/file/d/...">Plik 1</a></li>
-        <li><a href="https://drive.google.com/file/d/...">Plik 2</a></li>
-      </ul>
-      <button onclick="logout()">Wyloguj</button>
-    </div>
+<script>
 
-  </div>
+const users = {
+    user1: {
+        password: "haslo1",
+        files: [
+            {name: "Plik A1", link: "https://example.com/a1"},
+            {name: "Plik A2", link: "https://example.com/a2"}
+        ]
+    },
+    user2: {
+        password: "haslo2",
+        files: [
+            {name: "Plik B1", link: "https://example.com/b1"}
+        ]
+    },
+    user3: {
+        password: "haslo3",
+        files: [
+            {name: "Plik C1", link: "https://example.com/c1"},
+            {name: "Plik C2", link: "https://example.com/c2"},
+            {name: "Plik C3", link: "https://example.com/c3"}
+        ]
+    }
+};
 
-  <script src="script.js"></script>
+function login(){
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if(users[username] && users[username].password === password){
+        localStorage.setItem("loggedUser", username);
+        loadPanel();
+    } else {
+        document.getElementById("error").innerText = "Nieprawidłowe dane.";
+    }
+}
+
+function loadPanel(){
+    const user = localStorage.getItem("loggedUser");
+    if(!user){
+        return;
+    }
+
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("panel").style.display = "block";
+
+    const fileDiv = document.getElementById("files");
+    fileDiv.innerHTML = "";
+
+    users[user].files.forEach(file => {
+        fileDiv.innerHTML += `
+            <div class="file">
+                <p>${file.name}</p>
+                <a href="${file.link}" target="_blank" style="color:#00c6ff;">Otwórz</a>
+            </div>
+        `;
+    });
+}
+
+function logout(){
+    localStorage.removeItem("loggedUser");
+    location.reload();
+}
+
+window.onload = loadPanel;
+
+</script>
+
 </body>
 </html>
