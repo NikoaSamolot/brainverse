@@ -12,7 +12,7 @@
 
 body{
     margin:0;
-    font-family: 'Segoe UI', sans-serif;
+    font-family:'Segoe UI', sans-serif;
     background: linear-gradient(135deg,#ff9a3c,#ff6a00);
     min-height:100vh;
     display:flex;
@@ -20,15 +20,15 @@ body{
     align-items:center;
 }
 
-/* Tło marchewkowe */
+/* Marchewkowe tło */
 body::before{
     content:"";
     position:fixed;
-    width:300px;
-    height:300px;
+    width:350px;
+    height:350px;
     background:url("carrot_logo.png") no-repeat center;
     background-size:contain;
-    opacity:0.08;
+    opacity:0.07;
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
@@ -44,12 +44,13 @@ body::before{
     text-align:center;
 }
 
-.logo{
-    width:90px;
-    height:90px;
+.profile{
+    width:110px;
+    height:110px;
+    border-radius:50%;
     object-fit:cover;
-    border-radius:15px;
     margin-bottom:15px;
+    border:4px solid #ff6a00;
 }
 
 h1{
@@ -114,7 +115,7 @@ button:hover{
 <body>
 
 <div class="card" id="loginBox">
-    <img src="carrot.png" class="logo">
+    <img src="carrot_logo.png" class="profile">
     <h1>BrainVerse</h1>
     <input type="text" id="username" placeholder="Login">
     <input type="password" id="password" placeholder="Hasło">
@@ -123,7 +124,7 @@ button:hover{
 </div>
 
 <div class="card" id="panel" style="display:none;">
-    <img src="carrot.png" class="logo">
+    <img id="profileImage" class="profile">
     <div class="accountLabel" id="accountInfo"></div>
     <h1>Twoje pliki</h1>
     <div id="files"></div>
@@ -136,6 +137,7 @@ const users = {
     user1: {
         label: "KONTO NR 1",
         password: "haslo1",
+        image: "user1.png",
         files: [
             {name: "Plik A1", link: "https://example.com/a1"},
             {name: "Plik A2", link: "https://example.com/a2"}
@@ -144,6 +146,7 @@ const users = {
     user2: {
         label: "KONTO NR 2",
         password: "haslo2",
+        image: "user2.png",
         files: [
             {name: "Plik B1", link: "https://example.com/b1"}
         ]
@@ -151,6 +154,7 @@ const users = {
     user3: {
         label: "KONTO NR 3",
         password: "haslo3",
+        image: "user3.png",
         files: [
             {name: "Plik C1", link: "https://example.com/c1"},
             {name: "Plik C2", link: "https://example.com/c2"},
@@ -179,6 +183,8 @@ function loadPanel(){
     document.getElementById("panel").style.display = "block";
 
     document.getElementById("accountInfo").innerText = users[user].label;
+
+    document.getElementById("profileImage").src = users[user].image;
 
     const fileDiv = document.getElementById("files");
     fileDiv.innerHTML = "";
