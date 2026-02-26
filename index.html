@@ -13,32 +13,56 @@
 body{
     margin:0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg,#667eea,#764ba2);
+    background: linear-gradient(135deg,#ff9a3c,#ff6a00);
     min-height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
 }
 
+/* Tło marchewkowe */
+body::before{
+    content:"";
+    position:fixed;
+    width:300px;
+    height:300px;
+    background:url("carrot_logo.png") no-repeat center;
+    background-size:contain;
+    opacity:0.08;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+}
+
 .card{
     background:white;
-    width:400px;
+    width:420px;
     padding:40px;
-    border-radius:20px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.2);
+    border-radius:25px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.25);
     text-align:center;
+}
+
+.logo{
+    width:90px;
+    height:90px;
+    object-fit:cover;
+    border-radius:15px;
+    margin-bottom:15px;
 }
 
 h1{
     margin-top:0;
+    color:#ff6a00;
 }
 
 input{
     width:100%;
     padding:12px;
     margin:10px 0;
-    border-radius:10px;
-    border:1px solid #ddd;
+    border-radius:12px;
+    border:1px solid #eee;
     font-size:16px;
 }
 
@@ -47,8 +71,8 @@ button{
     padding:12px;
     margin-top:10px;
     border:none;
-    border-radius:10px;
-    background:#667eea;
+    border-radius:12px;
+    background:#ff6a00;
     color:white;
     font-size:16px;
     cursor:pointer;
@@ -56,27 +80,27 @@ button{
 }
 
 button:hover{
-    background:#5a67d8;
+    background:#e85d00;
 }
 
 .file{
-    background:#f4f6ff;
+    background:#fff3e6;
     padding:12px;
     margin:10px 0;
-    border-radius:10px;
+    border-radius:12px;
 }
 
 .file a{
     text-decoration:none;
-    color:#5a67d8;
+    color:#ff6a00;
     font-weight:bold;
 }
 
 .accountLabel{
-    background:#667eea;
+    background:#ff6a00;
     color:white;
-    padding:8px;
-    border-radius:10px;
+    padding:10px;
+    border-radius:12px;
     margin-bottom:20px;
     font-weight:bold;
 }
@@ -90,7 +114,8 @@ button:hover{
 <body>
 
 <div class="card" id="loginBox">
-    <h1>Logowanie</h1>
+    <img src="carrot.png" class="logo">
+    <h1>BrainVerse</h1>
     <input type="text" id="username" placeholder="Login">
     <input type="password" id="password" placeholder="Hasło">
     <button onclick="login()">Zaloguj</button>
@@ -98,6 +123,7 @@ button:hover{
 </div>
 
 <div class="card" id="panel" style="display:none;">
+    <img src="carrot.png" class="logo">
     <div class="accountLabel" id="accountInfo"></div>
     <h1>Twoje pliki</h1>
     <div id="files"></div>
