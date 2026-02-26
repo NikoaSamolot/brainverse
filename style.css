@@ -1,10 +1,74 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #ffecb3, #ffe0b2);
+  color: #333;
+  text-align: center;
   padding: 20px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+#logo {
+  width: 60px;
+  height: 60px;
+}
+
+h1 {
+  font-size: 3em;
+  color: #ff7043; /* marchewkowy kolor */
+  margin: 0;
+}
+
+#loginForm, #files {
+  background: #fff8e1;
+  display: inline-block;
+  padding: 20px 40px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+input {
+  margin: 5px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ffcc80;
+}
+
+button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  background-color: #ff7043;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: #ff5722;
 }
 
 .hidden { display: none; }
 
-input { margin: 5px; padding: 5px; }
-button { padding: 5px 10px; margin-top: 5px; }
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li a {
+  color: #ff7043;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+ul li a:hover {
+  text-decoration: underline;
+}
