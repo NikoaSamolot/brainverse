@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Brainverse</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Brainverse</h1>
+
+  <!-- Formularz logowania -->
+  <div id="loginForm">
+    <input type="text" id="user" placeholder="Login">
+    <input type="password" id="pass" placeholder="Hasło">
+    <button onclick="login()">Zaloguj</button>
+  </div>
+
+  <!-- Sekcja plików -->
+  <div id="files" class="hidden">
+    <h2>Twoje pliki</h2>
+    <ul>
+      <li><a href="https://github.com/NikoaSamolot/brainverse">Plik 1</a></li>
+      <li><a href="https://www.roblox.com/home...">Plik 2</a></li>
+    </ul>
+    <button onclick="logout()">Wyloguj</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
