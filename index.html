@@ -6,65 +6,100 @@
 <title>BrainVerse</title>
 
 <style>
+*{
+    box-sizing:border-box;
+}
+
 body{
     margin:0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color:white;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    min-height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    height:100vh;
 }
 
-.container{
-    background: rgba(0,0,0,0.6);
+.card{
+    background:white;
+    width:400px;
     padding:40px;
-    border-radius:15px;
-    width:350px;
+    border-radius:20px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.2);
     text-align:center;
-    box-shadow:0 0 30px rgba(0,0,0,0.6);
+}
+
+h1{
+    margin-top:0;
 }
 
 input{
-    width:90%;
-    padding:10px;
+    width:100%;
+    padding:12px;
     margin:10px 0;
-    border:none;
-    border-radius:8px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    font-size:16px;
 }
 
 button{
-    padding:10px 20px;
+    width:100%;
+    padding:12px;
+    margin-top:10px;
     border:none;
-    border-radius:8px;
+    border-radius:10px;
+    background:#667eea;
+    color:white;
+    font-size:16px;
     cursor:pointer;
-    background:#00c6ff;
-    color:black;
-    font-weight:bold;
+    transition:0.2s;
+}
+
+button:hover{
+    background:#5a67d8;
 }
 
 .file{
-    background:rgba(255,255,255,0.1);
+    background:#f4f6ff;
+    padding:12px;
     margin:10px 0;
-    padding:10px;
-    border-radius:8px;
+    border-radius:10px;
+}
+
+.file a{
+    text-decoration:none;
+    color:#5a67d8;
+    font-weight:bold;
+}
+
+.accountLabel{
+    background:#667eea;
+    color:white;
+    padding:8px;
+    border-radius:10px;
+    margin-bottom:20px;
+    font-weight:bold;
+}
+
+#error{
+    color:red;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container" id="loginBox">
-    <h2>Logowanie</h2>
+<div class="card" id="loginBox">
+    <h1>Logowanie</h1>
     <input type="text" id="username" placeholder="Login">
     <input type="password" id="password" placeholder="Hasło">
     <button onclick="login()">Zaloguj</button>
-    <p id="error" style="color:red;"></p>
+    <p id="error"></p>
 </div>
 
-<div class="container" id="panel" style="display:none;">
-    <h2>Panel użytkownika</h2>
+<div class="card" id="panel" style="display:none;">
+    <div class="accountLabel" id="accountInfo"></div>
+    <h1>Twoje pliki</h1>
     <div id="files"></div>
     <button onclick="logout()">Wyloguj</button>
 </div>
@@ -73,6 +108,7 @@ button{
 
 const users = {
     user1: {
+        label: "KONTO NR 1",
         password: "haslo1",
         files: [
             {name: "Plik A1", link: "https://example.com/a1"},
@@ -80,12 +116,14 @@ const users = {
         ]
     },
     user2: {
+        label: "KONTO NR 2",
         password: "haslo2",
         files: [
             {name: "Plik B1", link: "https://example.com/b1"}
         ]
     },
     user3: {
+        label: "KONTO NR 3",
         password: "haslo3",
         files: [
             {name: "Plik C1", link: "https://example.com/c1"},
@@ -103,18 +141,18 @@ function login(){
         localStorage.setItem("loggedUser", username);
         loadPanel();
     } else {
-        document.getElementById("error").innerText = "Nieprawidłowe dane.";
+        document.getElementById("error").innerText = "Nieprawidłowe dane logowania.";
     }
 }
 
 function loadPanel(){
     const user = localStorage.getItem("loggedUser");
-    if(!user){
-        return;
-    }
+    if(!user) return;
 
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("panel").style.display = "block";
+
+    document.getElementById("accountInfo").innerText = users[user].label;
 
     const fileDiv = document.getElementById("files");
     fileDiv.innerHTML = "";
@@ -122,8 +160,8 @@ function loadPanel(){
     users[user].files.forEach(file => {
         fileDiv.innerHTML += `
             <div class="file">
-                <p>${file.name}</p>
-                <a href="${file.link}" target="_blank" style="color:#00c6ff;">Otwórz</a>
+                ${file.name}<br>
+                <a href="${file.link}" target="_blank">Otwórz</a>
             </div>
         `;
     });
