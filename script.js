@@ -1,86 +1,40 @@
-// ==========================
-// KONTA
-// ==========================
-const accounts = {
-  "nikodem": "1234",
-  "test": "abcd",
-  "admin": "brain"
-};
+// konta użytkowników
+const accounts = { "nikodem":"1234", "test":"abcd" };
 
-// ==========================
-// LOGOWANIE
-// ==========================
+// logowanie
 function login() {
   const user = document.getElementById('user').value;
   const pass = document.getElementById('pass').value;
-
-  if (accounts[user] && accounts[user] === pass) {
-    localStorage.setItem('loggedInUser', user);
+  
+  if(accounts[user] && accounts[user] === pass) {
+    localStorage.setItem('loggedIn', 'true');
     showFiles();
   } else {
     alert("Nieprawidłowy login lub hasło");
   }
 }
 
-// ==========================
-// WYLOGOWANIE
-// ==========================
+// wylogowanie
 function logout() {
-  localStorage.removeItem('loggedInUser');
+  localStorage.removeItem('loggedIn');
   showLogin();
 }
 
-// ==========================
-// POKAZYWANIE SEKCJI
-// ==========================
+// pokazuje sekcję plików
 function showFiles() {
   document.getElementById('loginForm').classList.add('hidden');
   document.getElementById('files').classList.remove('hidden');
-
-  const currentUser = localStorage.getItem('loggedInUser');
-  document.getElementById('accountName').innerText =
-    "Zalogowano jako konto: " + currentUser;
-
-  loadScore();
 }
 
+// pokazuje formularz logowania
 function showLogin() {
   document.getElementById('files').classList.add('hidden');
   document.getElementById('loginForm').classList.remove('hidden');
 }
 
-// ==========================
-// SPRAWDZANIE PRZY WEJŚCIU
-// ==========================
-if (localStorage.getItem('loggedInUser')) {
+// sprawdzanie przy wejściu
+if(localStorage.getItem('loggedIn') === 'true') {
   showFiles();
 } else {
   showLogin();
-}
-
-
-// ==========================
-// 🎮 MINIGRA – Kliknij mózg
-// ==========================
-
-let score = 0;
-
-function toggleGame() {
-  document.getElementById('miniGame').classList.toggle('hidden');
-}
-
-function clickBrain() {
-  score++;
-  document.getElementById('score').innerText = score;
-
-  const user = localStorage.getItem('loggedInUser');
-  localStorage.setItem("score_" + user, score);
-}
-
-function loadScore() {
-  const user = localStorage.getItem('loggedInUser');
-  const saved = localStorage.getItem("score_" + user);
-
-  score = saved ? parseInt(saved) : 0;
-  document.getElementById('score').innerText = score;
 }
