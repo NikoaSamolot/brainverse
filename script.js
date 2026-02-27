@@ -39,9 +39,3 @@ if(localStorage.getItem('loggedIn') === 'true') {
   showLogin();
 }
 
-document.querySelectorAll('.faqQuestion').forEach(question => {
-  question.addEventListener('click', () => {
-    const answer = question.nextElementSibling;
-    answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
-  });
-});
