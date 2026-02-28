@@ -226,25 +226,20 @@ window.onload = loadPanel;
 Aby stworzyć konto oraz uzyskać pomoc napisz na: brainversehelp@gmail.com
 </footer>
 
-<footer id="rightBar" style="
-  position: fixed;
-  top: 80px; /* zaczyna się pod neonowym napisem */
-  right: 0;
-  width: 200px;
-  height: calc(100% - 80px); /* reszta ekranu pod napisem */
-  text-align: center;
-  padding: 10px;
-  background: rgba(0,0,0,0.6);
-  color: white;
-  font-size: 14px;
-  overflow-y: auto; /* jeśli tekst jest długi, pojawi się scroll */
-  z-index: 999;
-">
+
+<!-- Neonowy napis na górze -->
+<div id="brainverseTopFixed">
+  Brainverse – przechowywanie plików
+</div>
+
+<!-- Pasek po prawej stronie (tylko na komputerze) -->
+<footer id="rightBar">
   <div id="randomText" style="margin-bottom: 10px; font-weight: bold;"></div>
   <div>Jeśli chcesz skorzystać z trybu gościa: login: gosc, hasło: gosc</div>
 </footer>
 
 <script>
+  // Losowy tekst w pasku
   const texts = [
     "Internet jest starszy niż myślisz – pierwsze sieci komputerowe powstały już w latach 60. XX wieku w ramach projektu ARPANET w USA, który był zalążkiem internetu.",
     "Pierwsza wiadomość e-mail została wysłana w 1971 roku przez Raya Tomlinsona, który użył znak @ do oddzielenia użytkownika od komputera.",
@@ -263,32 +258,16 @@ Aby stworzyć konto oraz uzyskać pomoc napisz na: brainversehelp@gmail.com
 </script>
 
 <style>
-  /* Responsywność na telefony */
-  @media screen and (max-width: 600px) {
-    #rightBar {
-      width: 120px;          /* węższy pasek */
-      font-size: 12px;       /* mniejszy tekst */
-      height: calc(100% - 80px);
-      top: 80px;
-    }
-  }
-</style>
-
-<div id="brainverseTopFixed">
-  Brainverse – przechowywanie plików
-</div>
-
-<style>
-  /* Styl podstawowy (desktop) */
+  /* Neonowy napis */
   #brainverseTopFixed {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     text-align: center;
-    font-size: 60px;       /* większy font dla komputera */
+    font-size: 60px; /* duży na komputerze */
     font-weight: 700;
-    font-family: 'Orbitron', sans-serif; /* futurystyczny font */
+    font-family: 'Orbitron', sans-serif;
     color: #ffffff;
     text-shadow:
       0 0 5px #ffffff,
@@ -301,7 +280,6 @@ Aby stworzyć konto oraz uzyskać pomoc napisz na: brainversehelp@gmail.com
     z-index: 1000;
   }
 
-  /* Animacja neon glow */
   @keyframes neonGlow {
     0% {
       text-shadow:
@@ -329,11 +307,27 @@ Aby stworzyć konto oraz uzyskać pomoc napisz na: brainversehelp@gmail.com
     }
   }
 
-  /* Responsywność dla telefonów */
+  /* Pasek po prawej (tylko na desktopie) */
+  #rightBar {
+    position: fixed;
+    top: 100px; /* poniżej napisu */
+    right: 0;
+    width: 200px;
+    height: calc(100% - 100px);
+    text-align: center;
+    padding: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 14px;
+    overflow-y: auto;
+    z-index: 999;
+  }
+
+  /* RESPONSYWNOŚĆ – na telefonie ukrywamy pasek i napis */
   @media screen and (max-width: 600px) {
-    #brainverseTopFixed {
-      font-size: 35px;   /* mniejszy font na telefonie */
-      padding: 15px 5px;
+    #brainverseTopFixed,
+    #rightBar {
+      display: none;
     }
   }
 </style>
