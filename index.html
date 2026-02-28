@@ -226,7 +226,20 @@ window.onload = loadPanel;
 Aby stworzyć konto oraz uzyskać pomoc napisz na: brainversehelp@gmail.com
 </footer>
 
-<footer id="rightBar" style="position: fixed; top: 0; right: 0; width: 200px; height: 100%; text-align: center; padding: 10px; background: rgba(0,0,0,0.6); color: white; font-size: 14px;">
+<footer id="rightBar" style="
+  position: fixed;
+  top: 80px; /* zaczyna się pod neonowym napisem */
+  right: 0;
+  width: 200px;
+  height: calc(100% - 80px); /* reszta ekranu pod napisem */
+  text-align: center;
+  padding: 10px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  font-size: 14px;
+  overflow-y: auto; /* jeśli tekst jest długi, pojawi się scroll */
+  z-index: 999;
+">
   <div id="randomText" style="margin-bottom: 10px; font-weight: bold;"></div>
   <div>Jeśli chcesz skorzystać z trybu gościa: login: gosc, hasło: gosc</div>
 </footer>
@@ -238,41 +251,57 @@ Aby stworzyć konto oraz uzyskać pomoc napisz na: brainversehelp@gmail.com
     "Internet nie ma jednego właściciela – składa się z milionów sieci połączonych protokołem TCP/IP, zarządzanych przez różne organizacje, firmy i instytucje.",
     "Codziennie powstają miliardy danych – w 2023 roku codziennie na całym świecie tworzyło się około 2,5 kwintyliona bajtów danych (2,5×10¹⁸ bajtów).",
     "Większość ruchu w internecie to boty – szacuje się, że nawet 50–60% całego ruchu internetowego pochodzi od botów, a nie od ludzi.",
-	"Pierwsza strona internetowa nadal istnieje – strona CERN z 1991 roku jest dostępna i pokazuje, jak wyglądał internet w początkach WWW.",
-	"Google przetwarza miliardy zapytań dziennie – codziennie w wyszukiwarce Google pojawia się około 8,5 miliarda wyszukiwań.",
-	"Internet ma ogromny wpływ na język – skróty takie jak „LOL”, „BRB” czy emotikony powstały i rozpowszechniły się głównie dzięki komunikatorom internetowym.",
-	"Pierwsza strona WWW w historii była tekstowa – nie zawierała grafik ani multimediów, a jedynie instrukcje, jak korzystać z internetu.",
-	"Większość ludzi na świecie ma teraz dostęp do internetu – w 2025 roku około 65% światowej populacji korzystało z internetu."
+    "Pierwsza strona internetowa nadal istnieje – strona CERN z 1991 roku jest dostępna i pokazuje, jak wyglądał internet w początkach WWW.",
+    "Google przetwarza miliardy zapytań dziennie – codziennie w wyszukiwarce Google pojawia się około 8,5 miliarda wyszukiwań.",
+    "Internet ma ogromny wpływ na język – skróty takie jak „LOL”, „BRB” czy emotikony powstały i rozpowszechniły się głównie dzięki komunikatorom internetowym.",
+    "Pierwsza strona WWW w historii była tekstowa – nie zawierała grafik ani multimediów, a jedynie instrukcje, jak korzystać z internetu.",
+    "Większość ludzi na świecie ma teraz dostęp do internetu – w 2025 roku około 65% światowej populacji korzystało z internetu."
   ];
 
   const randomText = texts[Math.floor(Math.random() * texts.length)];
   document.getElementById("randomText").innerText = randomText;
 </script>
 
-<div style="
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 50px;
-  font-weight: bold;
-  color: #ffffff;
-  text-shadow:
-    0 0 5px #ffffff,
-    0 0 10px #00ffff,
-    0 0 20px #00ffff,
-    0 0 40px #00ffff,
-    0 0 80px #00ffff;
-  animation: neonGlow 1.5s ease-in-out infinite alternate;
-  padding: 20px 10px;
-  font-family: 'Orbitron', sans-serif;
-  z-index: 1000;
-">
+<style>
+  /* Responsywność na telefony */
+  @media screen and (max-width: 600px) {
+    #rightBar {
+      width: 120px;          /* węższy pasek */
+      font-size: 12px;       /* mniejszy tekst */
+      height: calc(100% - 80px);
+      top: 80px;
+    }
+  }
+</style>
+
+<div id="brainverseTopFixed">
   Brainverse – przechowywanie plików
 </div>
 
 <style>
+  /* Styl podstawowy (desktop) */
+  #brainverseTopFixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 60px;       /* większy font dla komputera */
+    font-weight: 700;
+    font-family: 'Orbitron', sans-serif; /* futurystyczny font */
+    color: #ffffff;
+    text-shadow:
+      0 0 5px #ffffff,
+      0 0 10px #00ffff,
+      0 0 20px #00ffff,
+      0 0 40px #00ffff,
+      0 0 80px #00ffff;
+    animation: neonGlow 1.5s ease-in-out infinite alternate;
+    padding: 20px 10px;
+    z-index: 1000;
+  }
+
+  /* Animacja neon glow */
   @keyframes neonGlow {
     0% {
       text-shadow:
@@ -297,6 +326,14 @@ Aby stworzyć konto oraz uzyskać pomoc napisz na: brainversehelp@gmail.com
         0 0 20px #00ffff,
         0 0 40px #00ffff,
         0 0 80px #00ffff;
+    }
+  }
+
+  /* Responsywność dla telefonów */
+  @media screen and (max-width: 600px) {
+    #brainverseTopFixed {
+      font-size: 35px;   /* mniejszy font na telefonie */
+      padding: 15px 5px;
     }
   }
 </style>
