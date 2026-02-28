@@ -9,6 +9,8 @@
 <link rel="shortcut icon" type="image/png" href="brainverse_icon.png">
 <link rel="apple-touch-icon" href="brainverse_icon.png">
 
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+
 <style>
 *{
     box-sizing:border-box;
@@ -163,6 +165,16 @@ const users = {
             {name: "Plik C2", link: "https://example.com/c2"},
             {name: "Plik C3", link: "https://example.com/c3"}
         ]
+    },
+    gosc: {
+        label: "Gość",
+        password: "gosc",
+        image: "user3.png",
+        files: [
+            {name: "Plik C1", link: "https://example.com/c1"},
+            {name: "Plik C2", link: "https://example.com/c2"},
+            {name: "Plik C3", link: "https://example.com/c3"}
+        ]
     }
 };
 
@@ -214,6 +226,80 @@ window.onload = loadPanel;
 Aby stworzyć konto oraz uzyskać pomoc napisz na: brainversehelp@gmail.com
 </footer>
 
+<footer id="rightBar" style="position: fixed; top: 0; right: 0; width: 200px; height: 100%; text-align: center; padding: 10px; background: rgba(0,0,0,0.6); color: white; font-size: 14px;">
+  <div id="randomText" style="margin-bottom: 10px; font-weight: bold;"></div>
+  <div>Jeśli chcesz skorzystać z trybu gościa: login: gosc, hasło: gosc</div>
+</footer>
+
+<script>
+  const texts = [
+    "Internet jest starszy niż myślisz – pierwsze sieci komputerowe powstały już w latach 60. XX wieku w ramach projektu ARPANET w USA, który był zalążkiem internetu.",
+    "Pierwsza wiadomość e-mail została wysłana w 1971 roku przez Raya Tomlinsona, który użył znak @ do oddzielenia użytkownika od komputera.",
+    "Internet nie ma jednego właściciela – składa się z milionów sieci połączonych protokołem TCP/IP, zarządzanych przez różne organizacje, firmy i instytucje.",
+    "Codziennie powstają miliardy danych – w 2023 roku codziennie na całym świecie tworzyło się około 2,5 kwintyliona bajtów danych (2,5×10¹⁸ bajtów).",
+    "Większość ruchu w internecie to boty – szacuje się, że nawet 50–60% całego ruchu internetowego pochodzi od botów, a nie od ludzi.",
+	"Pierwsza strona internetowa nadal istnieje – strona CERN z 1991 roku jest dostępna i pokazuje, jak wyglądał internet w początkach WWW.",
+	"Google przetwarza miliardy zapytań dziennie – codziennie w wyszukiwarce Google pojawia się około 8,5 miliarda wyszukiwań.",
+	"Internet ma ogromny wpływ na język – skróty takie jak „LOL”, „BRB” czy emotikony powstały i rozpowszechniły się głównie dzięki komunikatorom internetowym.",
+	"Pierwsza strona WWW w historii była tekstowa – nie zawierała grafik ani multimediów, a jedynie instrukcje, jak korzystać z internetu.",
+	"Większość ludzi na świecie ma teraz dostęp do internetu – w 2025 roku około 65% światowej populacji korzystało z internetu."
+  ];
+
+  const randomText = texts[Math.floor(Math.random() * texts.length)];
+  document.getElementById("randomText").innerText = randomText;
+</script>
+
+<div style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 50px;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow:
+    0 0 5px #ffffff,
+    0 0 10px #00ffff,
+    0 0 20px #00ffff,
+    0 0 40px #00ffff,
+    0 0 80px #00ffff;
+  animation: neonGlow 1.5s ease-in-out infinite alternate;
+  padding: 20px 10px;
+  font-family: 'Orbitron', sans-serif;
+  z-index: 1000;
+">
+  Brainverse – przechowywanie plików
+</div>
+
+<style>
+  @keyframes neonGlow {
+    0% {
+      text-shadow:
+        0 0 5px #ffffff,
+        0 0 10px #00ffff,
+        0 0 20px #00ffff,
+        0 0 40px #00ffff,
+        0 0 80px #00ffff;
+    }
+    50% {
+      text-shadow:
+        0 0 10px #ffffff,
+        0 0 20px #00ffff,
+        0 0 30px #00ffff,
+        0 0 50px #00ffff,
+        0 0 100px #00ffff;
+    }
+    100% {
+      text-shadow:
+        0 0 5px #ffffff,
+        0 0 10px #00ffff,
+        0 0 20px #00ffff,
+        0 0 40px #00ffff,
+        0 0 80px #00ffff;
+    }
+  }
+</style>
 
 </body>
 </html>
