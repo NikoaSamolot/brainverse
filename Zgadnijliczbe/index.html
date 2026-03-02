@@ -4,22 +4,26 @@
     <meta charset="UTF-8">
     <title>Zgadnij liczbę</title>
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; display:flex; justify-content:center; align-items:center; height:100vh;">
+<body style="font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; margin:0; height:100vh; display:flex; justify-content:center; align-items:center;">
 
-    <div style="background-color:#2c1a00; border: 2px solid #ff9900; border-radius:10px; padding:20px; width:300px; text-align:center;">
-        <h2 style="color:#ff9900; margin-bottom:10px;">Zgadnij liczbę (1-100)</h2>
-        <p style="font-size:12px; color:#ffc966;">Masz 10 prób. Po każdej otrzymasz wskazówkę, czy liczba jest większa czy mniejsza.</p>
+    <div style="background-color:#2c1a00; border: 3px solid #ff9900; border-radius:15px; padding:40px; width:90%; max-width:800px; text-align:center; height:90%; display:flex; flex-direction:column; justify-content:center; box-sizing:border-box;">
+        <h1 style="color:#ff9900; margin-bottom:20px; font-size:3em;">Zgadnij liczbę (1-100)</h1>
+        <p style="font-size:18px; color:#ffc966; margin-bottom:30px;">
+            Masz 10 prób. Po każdej otrzymasz wskazówkę, czy liczba jest większa czy mniejsza.
+        </p>
 
-        <input type="number" id="inputLiczba" placeholder="1-100" 
-               style="padding:5px; border-radius:5px; border:none; width:80px; text-align:center; margin-top:10px;">
-        <button id="zgadnijBtn" style="padding:5px 10px; border-radius:5px; border:none; background-color:#ff9900; color:#121212; cursor:pointer; margin-left:5px;">
-            Zgadnij
-        </button>
+        <div style="margin-bottom:20px;">
+            <input type="number" id="inputLiczba" placeholder="1-100"
+                   style="padding:15px; border-radius:8px; border:none; width:120px; text-align:center; font-size:18px;">
+            <button id="zgadnijBtn" style="padding:15px 25px; border-radius:8px; border:none; background-color:#ff9900; color:#121212; cursor:pointer; font-size:18px; margin-left:10px;">
+                Zgadnij
+            </button>
+        </div>
 
-        <p id="wiadomosc" style="font-weight:bold; font-size:14px; margin-top:10px;"></p>
-        <p>Pozostało prób: <span id="proby">10</span></p>
+        <p id="wiadomosc" style="font-weight:bold; font-size:20px; margin-bottom:20px;"></p>
+        <p style="font-size:18px;">Pozostało prób: <span id="proby" style="font-weight:bold;">10</span></p>
 
-        <div style="margin-top:10px; background-color:#1a0d00; padding:5px; border-radius:5px; border:1px solid #ff9900; font-size:12px;">
+        <div style="margin-top:auto; background-color:#1a0d00; padding:15px; border-radius:8px; border:2px solid #ff9900; font-size:18px;">
             Twój rekord (najmniej prób): <span id="rekord">0</span>
         </div>
     </div>
