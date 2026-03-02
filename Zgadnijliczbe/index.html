@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Zgadnij liczbę - Brainverse</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #121212; color: #f0f0f0; text-align: center; padding: 20px;">
+
+    <h1 style="color:#00ffff; text-shadow: 0 0 10px #00ffff;">Zgadnij liczbę (1-100)</h1>
+
+    <p style="background-color:#1a1a1a; padding:10px; border-radius:8px; display:inline-block;">
+        Masz 10 prób, aby zgadnąć liczbę wylosowaną przez komputer. 
+        Po każdej próbie otrzymasz wskazówkę, czy Twoja liczba jest większa czy mniejsza.
+    </p>
+
+    <div style="margin:20px 0;">
+        <p><strong>Twój rekord:</strong> <span id="rekord">0</span></p>
+
+        <input type="number" id="inputLiczba" placeholder="Wpisz liczbę 1-100" 
+               style="padding:8px; border-radius:5px; border:none; width:100px; text-align:center;">
+        <button id="zgadnijBtn" style="padding:8px 15px; border-radius:5px; border:none; background-color:#00ffff; color:#121212; cursor:pointer;">
+            Zgadnij
+        </button>
+    </div>
+
+    <p id="wiadomosc" style="font-weight:bold;"></p>
+    <p>Pozostało prób: <span id="proby">10</span></p>
+
+    <script>
+        let losowa = Math.floor(Math.random() * 100) + 1;
+        let proby = 10;
+        let rekord = localStorage.getItem('rekordZgadnijLiczbe') || 0;
+        document.getElementById('rekord').textContent = rekord;
+
+        document.getElementById('zgadnijBtn').addEventListener('click', function() {
+            let input = parseInt(document.getElementById('inputLiczba').value);
+            if (isNaN(input) || input < 1 || input > 100) {
+                document.getElementById('wiadomosc').textContent = "Wpisz liczbę od 1 do 100!";
+                return;
+            }
+
+            proby--;
+            document.getElementById('proby').textContent = proby;
+
+            if (input === losowa) {
+                document.getElementById('wiadomosc').textContent = "Brawo! Zgadłeś liczbę!";
+                if (proby + 1 > rekord) {
+                    rekord = proby + 1;
+                    localStorage.setItem('rekordZgadnijLiczbe', rekord);
+                    document.getElementById('rekord').textContent = rekord;
+                    document.getElementById('wiadomosc').textContent += " Nowy rekord!";
+                }
+                losowa = Math.floor(Math.random() * 100) + 1;
+                proby = 10;
+                document.getElementById('proby').textContent = proby;
+                document.getElementById('inputLiczba').value = '';
+            } else if (proby <= 0) {
+                document.getElementById('wiadomosc').textContent = `Koniec prób! Liczba to ${losowa}.`;
+                losowa = Math.floor(Math.random() * 100) + 1;
+                proby = 10;
+                document.getElementById('proby').textContent = proby;
+                document.getElementById('inputLiczba').value = '';
+            } else {
+                document.getElementById('wiadomosc').textContent = input < losowa ? "Za mało!" : "Za dużo!";
+                document.getElementById('inputLiczba').value = '';
+            }
+        });
+    </script>
+
+</body>
+</html>
