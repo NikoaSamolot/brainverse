@@ -249,6 +249,11 @@ Aby stworzyć konto oraz uzyskać pomoc napisz na: brainversehelp@gmail.com
   <div>Jeśli chcesz skorzystać z trybu gościa: login: gosc, hasło: gosc. Jeśli chcesz skorzystać z trybu grania: login: gry, hasło: gry.</div>
 </footer>
 
+<footer id="leftBar">
+  <div id="randomText" style="margin-bottom: 10px; font-weight: bold;"></div>
+  <div>Nowości: Dodano 3 gry na stronę.</div>
+</footer>
+
 <script>
   // Losowy tekst w pasku
   const texts = [
@@ -335,6 +340,21 @@ Aby stworzyć konto oraz uzyskać pomoc napisz na: brainversehelp@gmail.com
     z-index: 999;
   }
 
+      #leftBar {
+    position: fixed;
+    top: 100px; /* poniżej napisu */
+    left: 0;
+    width: 200px;
+    height: calc(100% - 100px);
+    text-align: center;
+    padding: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 14px;
+    overflow-y: auto;
+    z-index: 999;
+  }
+
   /* RESPONSYWNOŚĆ – na telefonie ukrywamy pasek i napis */
   @media screen and (max-width: 600px) {
     #brainverseTopFixed,
@@ -347,5 +367,6 @@ Aby stworzyć konto oraz uzyskać pomoc napisz na: brainversehelp@gmail.com
 </body>
 
 </html>
+
 
 
