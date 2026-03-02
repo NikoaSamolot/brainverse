@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            display: flex;
+        }
+        .main-content {
+            flex: 3;
+        }
+        .achievements {
+            flex: 1;
+            margin-left: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .quiz-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            display: none;
+        }
+        .quiz-container.active {
+            display: block;
+        }
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        .answers button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .categories {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .categories button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .categories.hidden {
+            display: none;
+        }
+        .back-button {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-button button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .achievements table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .achievements th, .achievements td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .achievements th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="categories" id="categories"></div>
+
+        <div class="back-button">
+            <button onclick="goBack()">Wróć do kategorii</button>
+        </div>
+
+        <div id="quiz-containers"></div>
+    </div>
+
+    <div class="achievements">
+        <h3>Osiągnięcia</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Osiągnięcie</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="achievements-list"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const quizzes = [
+            {
+                id: 'geografia',
+                name: 'Geografia',
+                question: 'Które z poniższych jest stolicą Polski?',
+                answers: [
+                    { text: 'Warszawa', correct: true },
+                    { text: 'Kraków', correct: false },
+                    { text: 'Gdańsk', correct: false },
+                    { text: 'Wrocław', correct: false }
+                ]
+            },
+            {
+                id: 'historia',
+                name: 'Historia',
+                question: 'W którym roku Polska odzyskała niepodległość?',
+                answers: [
+                    { text: '1772', correct: false },
+                    { text: '1918', correct: true },
+                    { text: '1939', correct: false },
+                    { text: '1989', correct: false }
+                ]
+            },
+            {
+                id: 'matematyka',
+                name: 'Matematyka',
+                question: 'Ile wynosi pierwiastek kwadratowy z 16?',
+                answers: [
+                    { text: '2', correct: false },
+                    { text: '6', correct: false },
+                    { text: '4', correct: true },
+                    { text: '8', correct: false }
+                ]
+            },
+            {
+                id: 'Biologia',
+                name: 'Biologia',
+                question: 'Które z poniższych zwierząt jest ssakiem?',
+                answers: [
+                    { text: 'Rekin', correct: false },
+                    { text: 'Pingwin', correct: false },
+                    { text: 'Delfin', correct: true },
+                    { text: 'Krokodyl', correct: false }
+                 ]
+            },
+            {
+                id: 'Sztuka',
+                name: 'Sztuka',
+                question: 'Kto namalował "Mona Lisę"?',
+                answers: [
+                    { text: 'Vincent van Gogh', correct: false },
+                    { text: 'Pablo Picasso', correct: false },
+                    { text: 'Leonardo da Vinci', correct: true },
+                    { text: 'Claude Monet', correct: false }
+                 ]
+            },
+            {
+                id: 'Literatura',
+                name: 'Literatura',
+                question: 'Kto jest autorem książki "Zbrodnia i kara"?',
+                answers: [
+                    { text: 'Anton Czechow', correct: false },
+                    { text: 'Fiodor Dostojewski', correct: true },
+                    { text: 'Lew Tołstoj', correct: false },
+                    { text: 'Aleksander Puszkin', correct: false }
+                 ]
+            },
+            {
+                id: 'Sport',
+                name: 'Sport',
+                question: 'Kto zdobył Złotą Piłkę w 2023 roku?',
+                answers: [
+                    { text: 'Lionel Messi', correct: true },
+                    { text: 'Robert Lewandowski', correct: false },
+                    { text: 'Kylian Mbappé', correct: false },
+                    { text: 'Erling Haaland', correct: false }
+                 ]
+            },
+            {
+                id: 'Muzyka',
+                name: 'Muzyka',
+                question: 'Kto jest twórcą utworu "Imagine"?',
+                answers: [
+                    { text: 'Bob Dylan', correct: false },
+                    { text: 'John Lennon', correct: true },
+                    { text: 'Paul McCartney', correct: false },
+                    { text: 'Freddie Mercury', correct: false }
+                 ]
+            },
+            {
+                id: 'Technologia',
+                name: 'Technologia',
+                question: 'Kto jest założycielem firmy Microsoft?',
+                answers: [
+                    { text: 'Steve Jobs', correct: false },
+                    { text: 'Bill Gates', correct: true },
+                    { text: 'Mark Zuckerberg', correct: false },
+                    { text: 'Elon Musk', correct: false }
+                 ]
+            },
+            {
+                id: 'Kultura',
+                name: 'Kultura',
+                question: 'W którym kraju obchodzona jest fiesta de la Tomatina?',
+                answers: [
+                    { text: 'Hiszpania', correct: true },
+                    { text: 'Meksyk', correct: false },
+                    { text: 'Włochy', correct: false },
+                    { text: 'Francja', correct: false }
+                ]
+            },
+            {
+                id: 'Film',
+                name: 'Film',
+                question: 'Kto reżyserował film "Incepcja"?',
+                answers: [
+                    { text: 'Steven Spielberg', correct: false },
+                    { text: 'Quentin Tarantino', correct: false },
+                    { text: 'Christopher Nolan', correct: true },
+                    { text: 'Martin Scorsese', correct: false }
+                ]
+            },
+            {
+                id: 'Psychologia',
+                name: 'Psychologia',
+                question: 'Kto jest autorem teorii rozwoju psychospołecznego?',
+                answers: [
+                    { text: 'Sigmund Freud', correct: false },
+                    { text: 'Carl Rogers', correct: false },
+                    { text: 'Erik Erikson', correct: true },
+                    { text: 'Jean Piaget', correct: false }
+                ]
+            },
+            {
+                id: 'Ekonomia',
+                name: 'Ekonomia',
+                question: 'Co oznacza skrót GDP w ekonomii?',
+                answers: [
+                    { text: 'Gross Domestic Product', correct: true },
+                    { text: 'Global Debt Plan', correct: false },
+                    { text: 'General Development Policy', correct: false },
+                    { text: 'Governmental Debt Payment', correct: false }
+                ]
+            },
+            {
+                id: 'Astronomia',
+                name: 'Astronomia',
+                question: 'Jak nazywa się największa planeta w Układzie Słonecznym?',
+                answers: [
+                    { text: 'Mars', correct: false },
+                    { text: 'Ziemia', correct: false },
+                    { text: 'Jowisz', correct: true },
+                    { text: 'Słońce', correct: false }
+                ]
+            },
+            {
+                id: 'Zwierzęta',
+                name: 'Zwierzęta',
+                question: 'Które z poniższych zwierząt jest owadem?',
+                answers: [
+                    { text: 'Motyl', correct: true },
+                    { text: 'Żaba', correct: false },
+                    { text: 'Delfin', correct: false },
+                    { text: 'Krokodyl', correct: false }
+                ]
+            },
+            {
+                id: 'Medycyna',
+                name: 'Medycyna',
+                question: 'Która z poniższych chorób jest wywoływana przez wirusa?',
+                answers: [
+                    { text: 'Gruźlica', correct: false },
+                    { text: 'Malaria', correct: false },
+                    { text: 'Ospa wietrzna', correct: true },
+                    { text: 'Cukrzyca', correct: false },					
+                ]
+            }
+        ];
+
+        const categoriesDiv = document.getElementById('categories');
+        const quizContainersDiv = document.getElementById('quiz-containers');
+        const achievementsList = document.getElementById('achievements-list');
+
+        quizzes.forEach(quiz => {
+            // Create category button
+            const categoryButton = document.createElement('button');
+            categoryButton.textContent = quiz.name;
+            categoryButton.onclick = () => showCategory(quiz.id);
+            categoriesDiv.appendChild(categoryButton);
+
+            // Create quiz container
+            const quizContainer = document.createElement('div');
+            quizContainer.id = quiz.id;
+            quizContainer.classList.add('quiz-container');
+
+            const questionElement = document.createElement('div');
+            questionElement.className = 'question';
+            questionElement.textContent = quiz.question;
+            quizContainer.appendChild(questionElement);
+
+            const answersDiv = document.createElement('div');
+            answersDiv.className = 'answers';
+            quiz.answers.forEach(answer => {
+                const answerButton = document.createElement('button');
+                answerButton.textContent = answer.text;
+                answerButton.onclick = () => checkAnswer(answerButton, answer.correct, quiz.id);
+                answersDiv.appendChild(answerButton);
+            });
+            quizContainer.appendChild(answersDiv);
+
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'result';
+            quizContainer.appendChild(resultDiv);
+
+            quizContainersDiv.appendChild(quizContainer);
+
+            // Add achievement row
+            const achievementRow = document.createElement('tr');
+            const achievementName = document.createElement('td');
+            achievementName.textContent = `Zakończony quiz z ${quiz.name.toLowerCase()}`;
+            const achievementStatus = document.createElement('td');
+            achievementStatus.id = `${quiz.id}-achievement`;
+            achievementStatus.textContent = 'Nie';
+            achievementRow.appendChild(achievementName);
+            achievementRow.appendChild(achievementStatus);
+            achievementsList.appendChild(achievementRow);
+        });
+
+        function showCategory(categoryId) {
+            document.querySelectorAll('.quiz-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            document.getElementById(categoryId).classList.add('active');
+            categoriesDiv.classList.add('hidden');
+            document.querySelector('.back-button').style.display = 'block';
+        }
+
+        function goBack() {
+            document.querySelectorAll('.quiz-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            categoriesDiv.classList.remove('hidden');
+            document.querySelector('.back-button').style.display = 'none';
+        }
+
+        function checkAnswer(button, isCorrect, categoryId) {
+            const resultDiv = button.parentElement.nextElementSibling;
+            if (isCorrect) {
+                resultDiv.textContent = 'Brawo! Poprawna odpowiedź!';
+                resultDiv.style.color = 'green';
+                document.getElementById(`${categoryId}-achievement`).textContent = 'Tak';
+            } else {
+                resultDiv.textContent = 'Niestety, to nie jest poprawna odpowiedź.';
+                resultDiv.style.color = 'red';
+            }
+        }
+    </script>
+</body>
+</html>
