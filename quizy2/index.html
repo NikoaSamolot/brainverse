@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizy 2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            display: flex;
+        }
+        .main-content {
+            flex: 3;
+        }
+        .achievements {
+            flex: 1;
+            margin-left: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .quiz-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            display: none;
+        }
+        .quiz-container.active {
+            display: block;
+        }
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        .answers button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .categories {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .categories button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .categories.hidden {
+            display: none;
+        }
+        .back-button {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-button button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .achievements table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .achievements th, .achievements td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .achievements th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="categories" id="categories"></div>
+
+        <div class="back-button">
+            <button onclick="goBack()">Wróć do kategorii</button>
+        </div>
+
+        <div id="quiz-containers"></div>
+    </div>
+
+    <div class="achievements">
+        <h3>Osiągnięcia</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Osiągnięcie</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="achievements-list"></tbody>
+        </table>
+	<div class="reset-instruction">
+    <p>Żeby zresetować osiągnięcia kliknij prawym przyciskiem myszy, wybierz "Zbadaj", potem przejdź do zakładki "Konsola", a na końcu wpisz <code>localStorage.removeItem('achievements');</code></p>
+</div>
+
+    </div>
+
+    <script>
+        const quizzes = [
+            { id: 'geografia', name: 'Geografia', questions: [
+                { question: 'Które z poniższych jest stolicą Polski?', answers: [
+                    { text: 'Warszawa', correct: true },
+                    { text: 'Kraków', correct: false },
+                    { text: 'Gdańsk', correct: false },
+                    { text: 'Wrocław', correct: false }
+                ] },
+                { question: 'Który kontynent jest największy?', answers: [
+                    { text: 'Azja', correct: true },
+                    { text: 'Afryka', correct: false },
+                    { text: 'Europa', correct: false },
+                    { text: 'Ameryka Południowa', correct: false }
+                ] },
+                { question: 'Jak nazywa się najwyższy szczyt na Ziemi?', answers: [
+                    { text: 'Mount Everest', correct: true },
+                    { text: 'K2', correct: false },
+                    { text: 'Kilimandżaro', correct: false },
+                    { text: 'Aconcagua', correct: false }
+                ] },
+                { question: 'Który ocean jest największy?', answers: [
+                    { text: 'Spokojny', correct: true },
+                    { text: 'Atlantycki', correct: false },
+                    { text: 'Arktyczny', correct: false },
+                    { text: 'Indyjski', correct: false }
+                ] },
+                { question: 'Które państwo ma najwięcej ludności?', answers: [
+                    { text: 'Chiny', correct: true },
+                    { text: 'Indie', correct: false },
+                    { text: 'USA', correct: false },
+                    { text: 'Rosja', correct: false }
+                ] }
+            ] },
+            { id: 'matematyka', name: 'Matematyka', questions: [
+                { question: 'Ile wynosi 5 + 3?', answers: [
+                    { text: '8', correct: true },
+                    { text: '9', correct: false },
+                    { text: '7', correct: false },
+                    { text: '10', correct: false }
+                ] },
+                { question: 'Ile wynosi 9 * 6?', answers: [
+                    { text: '54', correct: true },
+                    { text: '53', correct: false },
+                    { text: '52', correct: false },
+                    { text: '50', correct: false }
+                ] },
+                { question: 'Ile wynosi 81 / 9?', answers: [
+                    { text: '9', correct: true },
+                    { text: '8', correct: false },
+                    { text: '7', correct: false },
+                    { text: '10', correct: false }
+                ] },
+                { question: 'Ile wynosi 12 * 12?', answers: [
+                    { text: '144', correct: true },
+                    { text: '143', correct: false },
+                    { text: '145', correct: false },
+                    { text: '142', correct: false }
+                ] },
+                { question: 'Ile wynosi pierwiastek kwadratowy z 49?', answers: [
+                    { text: '7', correct: true },
+                    { text: '6', correct: false },
+                    { text: '8', correct: false },
+                    { text: '9', correct: false }
+                ] }
+            ] },
+            { id: 'historia', name: 'Historia', questions: [
+                { question: 'Kiedy rozpoczęła się II wojna światowa?', answers: [
+                    { text: '1939', correct: true },
+                    { text: '1941', correct: false },
+                    { text: '1938', correct: false },
+                    { text: '1940', correct: false }
+                ] },
+                { question: 'Kto był pierwszym prezydentem USA?', answers: [
+                    { text: 'George Washington', correct: true },
+                    { text: 'Thomas Jefferson', correct: false },
+                    { text: 'Abraham Lincoln', correct: false },
+                    { text: 'John Adams', correct: false }
+                ] },
+                { question: 'Kiedy odbyła się bitwa pod Grunwaldem?', answers: [
+                    { text: '1410', correct: true },
+                    { text: '1420', correct: false },
+                    { text: '1400', correct: false },
+                    { text: '1390', correct: false }
+                ] },
+                { question: 'Kto był twórcą teorii ewolucji?', answers: [
+                    { text: 'Charles Darwin', correct: true },
+                    { text: 'Albert Einstein', correct: false },
+                    { text: 'Isaac Newton', correct: false },
+                    { text: 'Galileo Galilei', correct: false }
+                ] },
+                { question: 'Kiedy Polska odzyskała niepodległość?', answers: [
+                    { text: '1918', correct: true },
+                    { text: '1920', correct: false },
+                    { text: '1939', correct: false },
+                    { text: '1905', correct: false }
+                ] }
+            ] },
+            { id: 'literatura', name: 'Literatura', questions: [
+                { question: 'Kto napisał "Pana Tadeusza"?', answers: [
+                    { text: 'Adam Mickiewicz', correct: true },
+                    { text: 'Juliusz Słowacki', correct: false },
+                    { text: 'Henryk Sienkiewicz', correct: false },
+                    { text: 'Maria Konopnicka', correct: false }
+                ] },
+                { question: 'Jak nazywa się główny bohater "Zbrodni i kary"?', answers: [
+                    { text: 'Rodion Raskolnikow', correct: true },
+                    { text: 'Wojciech Korfanty', correct: false },
+                    { text: 'Maksym Gorki', correct: false },
+                    { text: 'Albert Einstein', correct: false }
+                ] },
+                { question: 'Kiedy wydano "Władcę Pierścieni"?', answers: [
+                    { text: '1954', correct: true },
+                    { text: '1945', correct: false },
+                    { text: '1939', correct: false },
+                    { text: '1960', correct: false }
+                ] },
+                { question: 'Jakie nazwisko nosi główny bohater "Mistrza i Małgorzaty"?', answers: [
+                    { text: 'Berlioz', correct: false },
+                    { text: 'Bulgakov', correct: true },
+                    { text: 'Tołstoj', correct: false },
+                    { text: 'Sienkiewicz', correct: false }
+                ] },
+                { question: 'Kto napisał "Dziady"?', answers: [
+                    { text: 'Adam Mickiewicz', correct: true },
+                    { text: 'Juliusz Słowacki', correct: false },
+                    { text: 'Czesław Miłosz', correct: false },
+                    { text: 'Bolesław Prus', correct: false }
+                ] }
+            ] },
+            { id: 'sztuka', name: 'Sztuka', questions: [
+                { question: 'Kto namalował "Mona Lisę"?', answers: [
+                    { text: 'Leonardo da Vinci', correct: true },
+                    { text: 'Pablo Picasso', correct: false },
+                    { text: 'Vincent van Gogh', correct: false },
+                    { text: 'Claude Monet', correct: false }
+                ] },
+                { question: 'Kiedy powstał obraz "Guernica"?', answers: [
+                    { text: '1937', correct: true },
+                    { text: '1920', correct: false },
+                    { text: '1914', correct: false },
+                    { text: '1945', correct: false }
+                ] },
+                { question: 'Który artysta jest uznawany za twórcę kubizmu?', answers: [
+                    { text: 'Pablo Picasso', correct: true },
+                    { text: 'Michelangelo', correct: false },
+                    { text: 'Rembrandt', correct: false },
+                    { text: 'Caravaggio', correct: false }
+                ] },
+                { question: 'W jakim kraju znajduje się obraz "Stworzenie Adama"?', answers: [
+                    { text: 'Włoszech', correct: true },
+                    { text: 'Hiszpanii', correct: false },
+                    { text: 'Francji', correct: false },
+                    { text: 'Niemczech', correct: false }
+                ] },
+                { question: 'Kto namalował "Pocałunek"?', answers: [
+                    { text: 'Gustav Klimt', correct: true },
+                    { text: 'Eugène Delacroix', correct: false },
+                    { text: 'Edvard Munch', correct: false },
+                    { text: 'Henri Matisse', correct: false }
+                ] }
+            ] },
+            { id: 'muzyka', name: 'Muzyka', questions: [
+                { question: 'Kto skomponował "Oda do radości"?', answers: [
+                    { text: 'Ludwig van Beethoven', correct: true },
+                    { text: 'Johann Sebastian Bach', correct: false },
+                    { text: 'Wolfgang Amadeus Mozart', correct: false },
+                    { text: 'Frédéric Chopin', correct: false }
+                ] },
+                { question: 'Kiedy powstała symfonia "Eroica"?', answers: [
+                    { text: '1803', correct: true },
+                    { text: '1789', correct: false },
+                    { text: '1812', correct: false },
+                    { text: '1750', correct: false }
+                ] },
+                { question: 'Kto jest autorem "Symfonii fantastycznej"?', answers: [
+                    { text: 'Hector Berlioz', correct: true },
+                    { text: 'Claude Debussy', correct: false },
+                    { text: 'Gustav Mahler', correct: false },
+                    { text: 'Johannes Brahms', correct: false }
+                ] },
+                { question: 'Jakie nazwisko nosił autor "Czterech pór roku"?', answers: [
+                    { text: 'Antonio Vivaldi', correct: true },
+                    { text: 'Johann Sebastian Bach', correct: false },
+                    { text: 'Wolfgang Amadeus Mozart', correct: false },
+                    { text: 'Ludwig van Beethoven', correct: false }
+                ] },
+                { question: 'Kto skomponował operę "Carmen"?', answers: [
+                    { text: 'Georges Bizet', correct: true },
+                    { text: 'Giuseppe Verdi', correct: false },
+                    { text: 'Richard Wagner', correct: false },
+                    { text: 'Wolfgang Amadeus Mozart', correct: false }
+                ] }
+            ] }
+        ];
+
+        const categoriesDiv = document.getElementById('categories');
+        const quizContainersDiv = document.getElementById('quiz-containers');
+        const achievementsList = document.getElementById('achievements-list');
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        const savedAchievements = JSON.parse(localStorage.getItem('achievements')) || {};
+
+        quizzes.forEach(quiz => {
+            const categoryButton = document.createElement('button');
+            categoryButton.textContent = quiz.name;
+            categoryButton.onclick = () => showCategory(quiz.id);
+            categoriesDiv.appendChild(categoryButton);
+
+            const quizContainer = document.createElement('div');
+            quizContainer.id = quiz.id;
+            quizContainer.classList.add('quiz-container');
+
+            quiz.questions.forEach((q, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question';
+                questionElement.textContent = q.question;
+                quizContainer.appendChild(questionElement);
+
+                const answersDiv = document.createElement('div');
+                answersDiv.className = 'answers';
+                const shuffledAnswers = [...q.answers];
+                shuffle(shuffledAnswers);
+
+                shuffledAnswers.forEach(answer => {
+                    const answerButton = document.createElement('button');
+                    answerButton.textContent = answer.text;
+                    answerButton.onclick = () => checkAnswer(answerButton, answer.correct, quiz.id);
+                    answersDiv.appendChild(answerButton);
+                });
+                quizContainer.appendChild(answersDiv);
+
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result';
+                quizContainer.appendChild(resultDiv);
+            });
+
+            quizContainersDiv.appendChild(quizContainer);
+
+            const achievementRow = document.createElement('tr');
+            const achievementName = document.createElement('td');
+            achievementName.textContent = `Zakończony quiz z ${quiz.name.toLowerCase()}`;
+            const achievementStatus = document.createElement('td');
+            achievementStatus.id = `${quiz.id}-achievement`;
+            achievementStatus.textContent = savedAchievements[quiz.id] ? 'Tak' : 'Nie';
+            achievementRow.appendChild(achievementName);
+            achievementRow.appendChild(achievementStatus);
+            achievementsList.appendChild(achievementRow);
+        });
+
+        function showCategory(categoryId) {
+            document.querySelectorAll('.quiz-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            const category = document.getElementById(categoryId);
+            if (category) {
+                category.classList.add('active');
+                categoriesDiv.classList.add('hidden');
+                document.querySelector('.back-button').style.display = 'block';
+            } else {
+                console.error(`Category with ID ${categoryId} not found.`);
+            }
+        }
+
+        function goBack() {
+            document.querySelectorAll('.quiz-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            categoriesDiv.classList.remove('hidden');
+            document.querySelector('.back-button').style.display = 'none';
+        }
+
+        function checkAnswer(button, isCorrect, categoryId) {
+            const resultDiv = button.parentElement.nextElementSibling;
+            const quiz = quizzes.find(q => q.id === categoryId);
+            if (!quiz) return;
+
+            const questionIndex = Array.from(resultDiv.parentElement.children).indexOf(resultDiv) / 3;
+            const correctAnswers = JSON.parse(localStorage.getItem(categoryId)) || [];
+
+            if (isCorrect && !correctAnswers.includes(questionIndex)) {
+                correctAnswers.push(questionIndex);
+                localStorage.setItem(categoryId, JSON.stringify(correctAnswers));
+            }
+
+            if (correctAnswers.length === quiz.questions.length) {
+                savedAchievements[categoryId] = true;
+                localStorage.setItem('achievements', JSON.stringify(savedAchievements));
+                const achievementStatus = document.getElementById(`${categoryId}-achievement`);
+                if (achievementStatus) {
+                    achievementStatus.textContent = 'Tak';
+                }
+            }
+
+            resultDiv.textContent = isCorrect ? 'Poprawna odpowiedź!' : 'Zła odpowiedź!';
+        }
+    </script>
+</body>
+</html>
