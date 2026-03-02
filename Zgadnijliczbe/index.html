@@ -2,29 +2,27 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Zgadnij liczbę - Brainverse</title>
+    <title>Zgadnij liczbę</title>
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #121212; color: #f0f0f0; text-align: center; padding: 20px;">
+<body style="font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; display:flex; justify-content:center; align-items:center; height:100vh;">
 
-    <h1 style="color:#00ffff; text-shadow: 0 0 10px #00ffff;">Zgadnij liczbę (1-100)</h1>
+    <div style="background-color:#2c1a00; border: 2px solid #ff9900; border-radius:10px; padding:20px; width:300px; text-align:center;">
+        <h2 style="color:#ff9900; margin-bottom:10px;">Zgadnij liczbę (1-100)</h2>
+        <p style="font-size:12px; color:#ffc966;">Masz 10 prób. Po każdej otrzymasz wskazówkę, czy liczba jest większa czy mniejsza.</p>
 
-    <p style="background-color:#1a1a1a; padding:10px; border-radius:8px; display:inline-block;">
-        Masz 10 prób, aby zgadnąć liczbę wylosowaną przez komputer. 
-        Po każdej próbie otrzymasz wskazówkę, czy Twoja liczba jest większa czy mniejsza.
-    </p>
-
-    <div style="margin:20px 0;">
-        <p><strong>Twój rekord:</strong> <span id="rekord">0</span></p>
-
-        <input type="number" id="inputLiczba" placeholder="Wpisz liczbę 1-100" 
-               style="padding:8px; border-radius:5px; border:none; width:100px; text-align:center;">
-        <button id="zgadnijBtn" style="padding:8px 15px; border-radius:5px; border:none; background-color:#00ffff; color:#121212; cursor:pointer;">
+        <input type="number" id="inputLiczba" placeholder="1-100" 
+               style="padding:5px; border-radius:5px; border:none; width:80px; text-align:center; margin-top:10px;">
+        <button id="zgadnijBtn" style="padding:5px 10px; border-radius:5px; border:none; background-color:#ff9900; color:#121212; cursor:pointer; margin-left:5px;">
             Zgadnij
         </button>
-    </div>
 
-    <p id="wiadomosc" style="font-weight:bold;"></p>
-    <p>Pozostało prób: <span id="proby">10</span></p>
+        <p id="wiadomosc" style="font-weight:bold; font-size:14px; margin-top:10px;"></p>
+        <p>Pozostało prób: <span id="proby">10</span></p>
+
+        <div style="margin-top:10px; background-color:#1a0d00; padding:5px; border-radius:5px; border:1px solid #ff9900; font-size:12px;">
+            Twój rekord (najmniej prób): <span id="rekord">0</span>
+        </div>
+    </div>
 
     <script>
         let losowa = Math.floor(Math.random() * 100) + 1;
@@ -44,8 +42,8 @@
 
             if (input === losowa) {
                 document.getElementById('wiadomosc').textContent = "Brawo! Zgadłeś liczbę!";
-                if (proby + 1 > rekord) {
-                    rekord = proby + 1;
+                if ((10 - proby) < rekord || rekord == 0) {
+                    rekord = 10 - proby;
                     localStorage.setItem('rekordZgadnijLiczbe', rekord);
                     document.getElementById('rekord').textContent = rekord;
                     document.getElementById('wiadomosc').textContent += " Nowy rekord!";
