@@ -107,7 +107,7 @@
         <!-- Nowe elementy pojawią się tutaj -->
     </div>
     <div id="counter">
-        Odkryto elementy: <span id="discovered">0</span>/<span id="total">16</span>
+        Odkryto elementy: <span id="discovered">4</span>/<span id="total">17</span>
     </div>
     <div id="achievement">
         Osiągnięcie: Odkryto wszystkie elementy!
@@ -126,26 +126,29 @@
         const craftingRecipes = {
             'woda+ziemia': 'Błoto',
             'ogień+powietrze': 'Dym',
-            'woda+ogień': 'Para',
+            'woda+ogień': 'Energia',
             'ziemia+powietrze': 'Pył',
             'błoto+ogień': 'Glina',
-            'para+powietrze': 'Chmura',
+            'woda+powietrze': 'Chmura',
             'dym+ziemia': 'Węgiel',
             'pył+powietrze': 'Piasek',
             'woda+glina': 'Ceramika',
             'para+glina': 'Boczek',
             'ogień+piasek': 'Szkło',
             'chmura+powietrze': 'Burza',
-            'glina+woda': 'Glinka',
+            'życie+glina': 'Człowiek',
             'ceramika+ogień': 'Piec',
             'dym+powietrze': 'Pustynia',
-            'błoto+woda': 'Ziemia',
-        };
+            'błoto+woda': 'Bagno',
+			'ogień+ziemia': 'Lawa',
+			'woda+lawa': 'Para',
+			'bagno+energia': 'Życie',
+    };
 
         // Wszystkie elementy do odkrycia
         const allElements = new Set([
             'woda', 'ziemia', 'ogień', 'powietrze', 'błoto', 'dym', 'para', 'pył', 'glina', 'ceramika',
-            'chmura', 'węgiel', 'piasek', 'pustynia', 'kamień', 'burza',
+            'chmura', 'węgiel', 'piasek', 'pustynia', 'kamień', 'burza', 'bagno', 'energia', 'człowiek', 'lawa'
         ]);
 
         // Zapisane odkrycia
