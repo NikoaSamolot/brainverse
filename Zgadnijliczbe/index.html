@@ -1,311 +1,222 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Zgadnij liczbę</title>
   <style>
-    :root{
-      --bg:#0f1724; --card:#0b1220; --accent:#6ee7b7; --muted:#94a3b8; --danger:#fb7185; --glass: rgba(255,255,255,0.03);
+    /* --- Reset & font --- */
+    * {
+      box-sizing: border-box;
     }
-    [data-theme="light"]{ --bg:#f8fafc; --card:#ffffff; --accent:#059669; --muted:#475569; --danger:#dc2626; --glass: rgba(0,0,0,0.03);} 
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:var(--accent);background:linear-gradient(180deg,var(--bg) 0%, #071029 60%);}
-    .wrap{max-width:980px;margin:32px auto;padding:20px}
-    header{display:flex;gap:12px;align-items:center;justify-content:space-between}
-    h1{margin:.2rem 0;font-size:1.4rem;color:var(--accent)}
-    .card{background:var(--card);padding:18px;border-radius:14px;box-shadow:0 6px 30px rgba(2,6,23,0.6);}
-    .grid{display:grid;grid-template-columns:1fr 340px;gap:16px}
-    .controls label{display:block;color:var(--muted);font-size:0.85rem;margin-bottom:6px}
-    input[type=number],select,input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:var(--accent)}
-    button{background:linear-gradient(90deg,var(--accent),#34d399);border:none;padding:10px 14px;border-radius:10px;color:#021018;font-weight:700;cursor:pointer}
-    .muted{color:var(--muted);font-size:0.9rem}
-    .history{max-height:220px;overflow:auto;padding:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-radius:8px}
-    .hint{font-size:1.05rem;margin:8px 0;padding:10px;border-radius:8px;background:rgba(0,0,0,0.12);color:var(--accent)}
-    .stat{display:flex;gap:8px;flex-wrap:wrap}
-    .stat > div{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;color:var(--muted)}
-    footer{margin-top:12px;color:var(--muted);font-size:0.85rem}
-    .small{font-size:0.85rem}
-    .kbd{display:inline-block;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.02);font-weight:700}
-    /* responsive */
-    @media(max-width:900px){.grid{grid-template-columns:1fr} .controls{order:2}}
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #283048);
+      color: #eee;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    /* --- Kontener całej gry --- */
+    #app {
+      background: #2b2b3f;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #00ffff88;
+      width: 350px;
+      max-width: 90vw;
+      padding: 25px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      user-select: none;
+    }
+
+    /* --- Główna gra --- */
+    #game-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: 15px;
+    }
+    #game-screen h1 {
+      margin: 0;
+      color: #00ffff;
+      text-align: center;
+      letter-spacing: 1.2px;
+    }
+    #version-light {
+      font-size: 0.9rem;
+      color: #66ffffcc;
+      font-style: italic;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    #message {
+      min-height: 45px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-align: center;
+      color: #00ffff;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { text-shadow: 0 0 10px #00ffffaa; }
+      50% { text-shadow: 0 0 25px #00ffffee; }
+    }
+
+    /* --- Pole input --- */
+    #input-guess {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1.2rem;
+      outline: none;
+      color: #222;
+      font-weight: 600;
+    }
+    /* --- Przycisk zgadnij --- */
+    #btn-guess {
+      background: #00ffff;
+      color: #222;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: background 0.3s;
+      width: 100%;
+    }
+    #btn-guess:hover {
+      background: #00cccc;
+    }
+    /* --- Reset gry --- */
+    #btn-reset {
+      background: #ff4d4d;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+      width: 100%;
+    }
+    #btn-reset:hover {
+      background: #cc0000;
+    }
+
+    /* --- Informacje o trybie --- */
+    #mode-info {
+      font-size: 0.9rem;
+      color: #888;
+      text-align: center;
+      margin-top: -10px;
+      margin-bottom: 10px;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>Zgadnij liczbę<h1>
-        <div class="muted">Spróbuj odgadnąć wygenerowaną liczbę. Masz podpowiedzi, historię i statystyki.</div>
-      </div>
-      <div style="display:flex;gap:10px;align-items:center">
-        <button id="newGameBtn">Nowa gra</button>
-        <select id="themeToggle" title="Motyw" aria-label="Motyw">
-          <option value="dark">Ciemny</option>
-          <option value="light">Jasny</option>
-        </select>
-      </div>
-    </header>
-
-    <main class="grid" aria-live="polite">
-      <section class="card" id="mainCard">
-        <div class="controls">
-          <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
-            <label class="small">Zakres: </label>
-            <input type="number" id="minInput" value="1" aria-label="Min" style="width:80px"> -
-            <input type="number" id="maxInput" value="100" aria-label="Max" style="width:100px">
-            <select id="difficulty" aria-label="Poziom trudności" style="margin-left:8px">
-              <option value="free">Dowolny (bez limitu prób)</option>
-              <option value="easy">Łatwy (20 prób)</option>
-              <option value="normal" selected>Normalny (10 prób)</option>
-              <option value="hard">Trudny (6 prób)</option>
-            </select>
-          </div>
-
-          <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
-            <label class="small" for="guessInput">Podaj liczbę</label>
-            <input type="number" id="guessInput" placeholder="Twoja odpowiedź" aria-label="Twoja odpowiedź">
-            <button id="guessBtn">Zgaduj</button>
-            <button id="hintBtn" title="Płatna podpowiedź (zużywa jedną próbę)" aria-label="Podpowiedź">Podpowiedź</button>
-          </div>
-
-          <div class="hint" id="message" role="status">Kliknij "Nowa gra" by rozpocząć.</div>
-
-          <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
-            <div class="muted">Pozostałe próby: <span id="attemptsLeft">—</span></div>
-            <div class="muted">Ostatni ruch: <span id="lastGuess">—</span></div>
-            <div class="muted">Najbliżej: <span id="closest">—</span></div>
-          </div>
-
-          <h3 style="margin-top:12px;color:var(--accent)">Historia zgadnięć</h3>
-          <div class="history" id="history" aria-live="polite"></div>
-
-          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-            <button id="revealBtn">Pokaż odpowiedź</button>
-            <button id="giveUpBtn">Poddaj się</button>
-            <button id="copyLinkBtn">Kopiuj link z ustawieniami</button>
-            <button id="shareBtn">Udostępnij wynik</button>
-          </div>
-        </div>
-      </section>
-
-      <aside class="card">
-        <h3>Statystyki</h3>
-        <div class="stat" style="margin:8px 0">
-          <div>Gier rozegranych: <strong id="played">0</strong></div>
-          <div>Wygranych: <strong id="wins">0</strong></div>
-          <div>Śr. prób (wygrane): <strong id="avgAttempts">—</strong></div>
-          <div>Najlepszy wynik: <strong id="best">—</strong></div>
-        </div>
-
-
-        <hr>
-        <p class="muted small">Skróty: Enter = Zgaduj, N = Nowa gra, H = Podpowiedź, R = Pokaż odpowiedź</p>
-      </aside>
-    </main>
+  <div id="app">
+    <!-- Ekran gry -->
+    <div id="game-screen">
+      <h1>Zgadnij liczbę od 1 do 100</h1>
+      <input type="number" id="input-guess" placeholder="Twoja liczba..." min="1" max="100" autocomplete="off" />
+      <button id="btn-guess">Zgadnij!</button>
+      <button id="btn-reset">Resetuj grę</button>
+      <div id="message"></div>
+    </div>
   </div>
 
   <script>
-    // --- Stan gry i ustawienia ---
-    const state = {
-      min: 1, max: 100, target: null, attemptsLeft: Infinity, guesses: [], gameActive: false, seedTime: null
-    };
+    (function() {
+      'use strict';
 
-    // --- elementy ---
-    const $ = id => document.getElementById(id);
-    const message = $('message');
-    const historyEl = $('history');
-    const attemptsLeftEl = $('attemptsLeft');
-    const lastGuessEl = $('lastGuess');
-    const closestEl = $('closest');
+      const MIN_NUMBER = 1;
+      const MAX_NUMBER = 100;
 
-    // Load stats from localStorage
-    const statsKey = 'zgadnij_stats_v1';
-    const stats = JSON.parse(localStorage.getItem(statsKey) || JSON.stringify({played:0,wins:0,totalAttempts:0,best:null}));
-    $('played').textContent = stats.played;
-    $('wins').textContent = stats.wins;
-    $('best').textContent = stats.best===null? '—' : stats.best;
-    $('avgAttempts').textContent = stats.wins? (stats.totalAttempts / stats.wins).toFixed(2) : '—';
+      // Elementy
+      const inputGuess = document.getElementById('input-guess');
+      const btnGuess = document.getElementById('btn-guess');
+      const btnReset = document.getElementById('btn-reset');
+      const message = document.getElementById('message');
+      const modeInfo = document.getElementById('mode-info');
 
-    // Utility: rand int inclusive
-    function randInt(a,b){a=Math.ceil(a);b=Math.floor(b);return Math.floor(Math.random()*(b-a+1))+a}
+      let targetNumber = null;
+      let attempts = 0;
+      let mode = 'offline';
 
-    // Start a new game
-    function newGame(fromUrl=false){
-      // read inputs
-      const min = parseInt($('minInput').value) || 1;
-      const max = parseInt($('maxInput').value) || 100;
-      if(max<=min){alert('Maksimum musi być większe od minimum');return}
-      state.min = min; state.max = max;
-      const diff = $('difficulty').value;
-      if(diff==='easy') state.attemptsLeft = 20;
-      else if(diff==='normal') state.attemptsLeft = 10;
-      else if(diff==='hard') state.attemptsLeft = 6;
-      else state.attemptsLeft = Infinity;
-
-      state.target = randInt(min,max);
-      state.guesses = [];
-      state.gameActive = true;
-      state.seedTime = Date.now();
-
-      updateUI(`Nowa gra! Zakres: ${min}–${max}. Powodzenia!`);
-      renderHistory(); updateAttemptsUI(); lastGuessEl.textContent='—'; closestEl.textContent='—';
-
-      // if started from URL, optionally reveal target for debugging
-      if(fromUrl){message.textContent += ' (uruchomione z ustawieniami z linku)'}
-    }
-
-    // Update message / status
-    function updateUI(text){message.textContent = text}
-
-    // Handle guess
-    function handleGuess(){
-      if(!state.gameActive){updateUI('Kliknij "Nowa gra" aby rozpocząć.');return}
-      const val = parseInt($('guessInput').value);
-      if(Number.isNaN(val)){updateUI('Wprowadź poprawną liczbę.');return}
-      if(val < state.min || val > state.max){updateUI(`Liczba poza zakresem ${state.min}–${state.max}`);return}
-
-      // consume attempt
-      if(isFinite(state.attemptsLeft)) state.attemptsLeft = Math.max(0, state.attemptsLeft - 1);
-
-      const diff = Math.abs(val - state.target);
-      state.guesses.push({value:val,time:Date.now(),diff});
-      renderHistory(); updateAttemptsUI(); lastGuessEl.textContent = val;
-
-      // Closest
-      const closest = state.guesses.reduce((a,b)=> a.diff < b.diff ? a : b);
-      closestEl.textContent = closest ? closest.value : '—';
-
-      // Hint level
-      let hint = '';
-      if(val === state.target){
-        winGame(); return;
-      } else if(val < state.target){
-        hint = 'Za mało.';
-      } else { hint = 'Za dużo.'; }
-
-      // advanced proximity hints
-      if($('proHints').checked){
-        if(diff <= Math.max(1, Math.floor((state.max-state.min)*0.02))) hint += ' Jesteś bardzo blisko!';
-        else if(diff <= Math.max(2, Math.floor((state.max-state.min)*0.05))) hint += ' Blisko.';
-        else if(diff <= Math.max(5, Math.floor((state.max-state.min)*0.12))) hint += ' Trochę daleko.';
-        else hint += ' Bardzo daleko.';
+      function generateRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
       }
 
-      updateUI(hint + (isFinite(state.attemptsLeft) ? ` Próby pozostałe: ${state.attemptsLeft}` : ''));
-      playClick(); maybeVibrate();
-
-      if(isFinite(state.attemptsLeft) && state.attemptsLeft <= 0){
-        loseGame();
+      function startGame() {
+        targetNumber = generateRandomNumber(MIN_NUMBER, MAX_NUMBER);
+        attempts = 0;
+        message.textContent = 'Podaj liczbę i kliknij "Zgadnij!"';
+        inputGuess.value = '';
+        inputGuess.disabled = false;
+        btnGuess.disabled = false;
+        btnReset.disabled = false;
+        updateModeInfo();
+        inputGuess.focus();
       }
-    }
 
-    function renderHistory(){
-      historyEl.innerHTML = '';
-      state.guesses.slice().reverse().forEach(g=>{
-        const el = document.createElement('div');
-        el.className='muted small';
-        el.textContent = `${new Date(g.time).toLocaleTimeString()} — ${g.value} (odległość ${g.diff})`;
-        historyEl.appendChild(el);
+      function updateModeInfo() {
+        modeInfo.textContent = mode === 'offline' ? 'Tryb offline' : 'Tryb online (symulacja)';
+      }
+
+      function guessNumber() {
+        const guessStr = inputGuess.value.trim();
+        const guess = Number(guessStr);
+
+        if (!guessStr || isNaN(guess)) {
+          message.textContent = 'Wpisz poprawną liczbę!';
+          return;
+        }
+        if (guess < MIN_NUMBER || guess > MAX_NUMBER) {
+          message.textContent = `Liczba musi być od ${MIN_NUMBER} do ${MAX_NUMBER}.`;
+          return;
+        }
+        attempts++;
+
+        if (guess === targetNumber) {
+          message.textContent = `Brawo! Trafiłeś w ${attempts} próbach.`;
+          inputGuess.disabled = true;
+          btnGuess.disabled = true;
+        } else if (guess < targetNumber) {
+          message.textContent = 'Za mało! Spróbuj wyżej.';
+        } else {
+          message.textContent = 'Za dużo! Spróbuj niżej.';
+        }
+
+        inputGuess.value = '';
+        inputGuess.focus();
+      }
+
+      function resetGame() {
+        startGame();
+      }
+
+      btnGuess.addEventListener('click', guessNumber);
+      inputGuess.addEventListener('keypress', e => {
+        if (e.key === 'Enter') guessNumber();
       });
-    }
 
-    function updateAttemptsUI(){ attemptsLeftEl.textContent = isFinite(state.attemptsLeft)? state.attemptsLeft : '∞' }
+      btnReset.addEventListener('click', resetGame);
 
-    function winGame(){
-      state.gameActive = false;
-      const attempts = state.guesses.length;
-      updateUI(`Gratulacje! Odgadłeś liczbę ${state.target} w ${attempts} próbach.`);
-      // update stats
-      stats.played += 1; stats.wins += 1; stats.totalAttempts += attempts; if(stats.best===null || attempts < stats.best) stats.best = attempts;
-      saveStats(); refreshStatsUI(); playWin(); maybeVibrate(200);
-    }
-    function loseGame(){
-      state.gameActive = false;
-      updateUI(`Koniec prób. Prawidłowa liczba to ${state.target}.`);
-      stats.played += 1; saveStats(); refreshStatsUI(); playLose(); maybeVibrate(300);
-    }
-
-    function saveStats(){ localStorage.setItem(statsKey, JSON.stringify(stats)); }
-    function refreshStatsUI(){ $('played').textContent = stats.played; $('wins').textContent = stats.wins; $('best').textContent = stats.best===null ? '—' : stats.best; $('avgAttempts').textContent = stats.wins? (stats.totalAttempts / stats.wins).toFixed(2) : '—'; }
-
-    // Reveal answer
-    function reveal(){ if(!state.gameActive){updateUI('Brak aktywnej gry.');return} updateUI(`Odpowiedź: ${state.target}`); state.gameActive=false; }
-
-    // Hint (consumes one attempt) — gives range
-    function giveHint(){ if(!state.gameActive){updateUI('Brak aktywnej gry.');return}
-      if(isFinite(state.attemptsLeft) && state.attemptsLeft<=0){updateUI('Brak prób.');return}
-      if(isFinite(state.attemptsLeft)) state.attemptsLeft--;
-      const rangeSize = Math.max(1, Math.floor((state.max-state.min)/6));
-      const lo = Math.max(state.min, state.target - rangeSize);
-      const hi = Math.min(state.max, state.target + rangeSize);
-      updateUI(`Podpowiedź: liczba jest między ${lo} a ${hi}. (zużyto 1 próbę)`);
-      updateAttemptsUI(); renderHistory(); playClick(); maybeVibrate();
-      if(isFinite(state.attemptsLeft) && state.attemptsLeft<=0) loseGame();
-    }
-
-    // Give up
-    function giveUp(){ if(!state.gameActive){updateUI('Brak aktywnej gry.');return} state.gameActive=false; updateUI(`Poddajesz się. Prawidłowa liczba: ${state.target}`); stats.played++; saveStats(); refreshStatsUI(); }
-
-    // share/copy utilities
-    function copyLink(){
-      // build link with params
-      const params = new URLSearchParams({min:state.min,max:state.max,diff:$('difficulty').value});
-      const url = `${location.origin}${location.pathname}?${params.toString()}`;
-      navigator.clipboard && navigator.clipboard.writeText(url).then(()=>{updateUI('Skopiowano link do schowka.');}).catch(()=>updateUI('Kopiowanie nie powiodło się.'));
-    }
-    function shareResult(){
-      const text = `Zgadłem? ${state.gameActive? 'Gra w toku' : 'Gra zakończona'}. Zakres ${state.min}-${state.max}. Próby: ${state.guesses.length}.`;
-      if(navigator.share){navigator.share({title:'Zgadnij liczbę',text}); updateUI('Wywołano okno udostępniania.')} else {navigator.clipboard && navigator.clipboard.writeText(text).then(()=>updateUI('Wynik skopiowany do schowka.'))}
-    }
-
-    // Sounds using WebAudio
-    const audioCtx = window.AudioContext ? new AudioContext() : null;
-    function playTone(freq,duration=120){ if(!audioCtx || !$('sounds').checked) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value=freq; o.type='sine'; g.gain.setValueAtTime(0.0001,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.08,audioCtx.currentTime+0.01); o.start(); g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime + duration/1000); o.stop(audioCtx.currentTime + duration/1000 + 0.02); }
-    function playClick(){ playTone(800,80); }
-    function playWin(){ playTone(1200,180); setTimeout(()=>playTone(900,160),160); }
-    function playLose(){ playTone(200,240); }
-
-    // Vibration wrapper
-    function maybeVibrate(ms=50){ if($('vibrate').checked && navigator.vibrate) navigator.vibrate(ms); }
-
-    // Keyboard shortcuts
-    document.addEventListener('keydown', e=>{
-      if(e.key==='Enter') handleGuess();
-      if(e.key.toLowerCase()==='n') newGame();
-      if(e.key.toLowerCase()==='h') giveHint();
-      if(e.key.toLowerCase()==='r') reveal();
-    });
-
-    // Event listeners
-    $('newGameBtn').addEventListener('click', ()=>newGame());
-    $('guessBtn').addEventListener('click', handleGuess);
-    $('hintBtn').addEventListener('click', giveHint);
-    $('revealBtn').addEventListener('click', reveal);
-    $('giveUpBtn').addEventListener('click', giveUp);
-    $('copyLinkBtn').addEventListener('click', copyLink);
-    $('shareBtn').addEventListener('click', shareResult);
-    $('themeToggle').addEventListener('change', (ev)=> document.documentElement.setAttribute('data-theme', ev.target.value));
-
-    // Parse URL params to prefill settings / auto-start
-    (function parseUrl(){
-      const params = new URLSearchParams(location.search);
-      const min = parseInt(params.get('min')); const max = parseInt(params.get('max'));
-      if(min) $('minInput').value = min; if(max) $('maxInput').value = max;
-      const diff = params.get('diff'); if(diff) $('difficulty').value = diff;
-      if(params.get('autostart')==='1') newGame(true);
+      // Start gry po załadowaniu
+      startGame();
     })();
-
-    // Convenience: start a default game to show features
-    newGame();
-
-    // Accessibility: focus management
-    $('guessInput').addEventListener('focus', ()=>$('guessInput').select());
-
-    // Expose some functions for console debugging
-    window.zgadnij = {state, newGame, handleGuess, giveHint, reveal, giveUp, stats};
-
-    // End of script
   </script>
 </body>
 </html>
