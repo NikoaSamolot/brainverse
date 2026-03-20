@@ -23,12 +23,12 @@
       "is192x192": false
     },
     {
-      "src": "/192brainverse_logo.png",
+      "src": "/192brainverse_icon.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/512brainverse_logo.png",
+      "src": "/512brainverse_icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
