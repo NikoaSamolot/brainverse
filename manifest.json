@@ -2,7 +2,7 @@
   "background_color": "#ff9800",
   "description": "BrainVerse - darmowa strona do przechowywania plików i grania w gry",
   "dir": "ltr",
-  "display": "fullscreen",
+  "display": "standalone",
   "name": "BrainVerse",
   "orientation": "natural",
   "scope": "/",
