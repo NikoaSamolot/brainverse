@@ -1,0 +1,27 @@
+{
+  "background_color": "#ff9800",
+  "description": "BrainVerse - darmowa strona do przechowywania plików i grania w gry",
+  "dir": "ltr",
+  "display": "fullscreen",
+  "name": "BrainVerse",
+  "orientation": "natural",
+  "scope": "/",
+  "short_name": "brainverse",
+  "start_url": "/brainverse.pl",
+  "theme_color": "#ff9800",
+  "icons": [
+    {
+      "src": "https://brainverse.pl/brainverse_icon.png",
+      "type": "image/png",
+      "isSquare": false,
+      "isPng": true,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 0,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
+    }
+  ],
+  "lang": "pl"
+}
