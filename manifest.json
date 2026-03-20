@@ -7,7 +7,7 @@
   "orientation": "natural",
   "scope": "/",
   "short_name": "brainverse",
-  "start_url": "/brainverse.pl",
+  "start_url": "https://brainverse.pl/",
   "theme_color": "#ff9800",
   "icons": [
     {
