@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Zaawansowany symulator kryptowalut</title>
+  <!-- Tailwind CDN for quick styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* small custom tweaks */
+    html,body,#app{height:100%}
+    .glass{background:rgba(255,255,255,0.06);backdrop-filter:blur(6px)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100">
+  <div id="app" class="min-h-screen p-6">
+    <div class="max-w-7xl mx-auto grid grid-cols-12 gap-6">
+      <!-- Sidebar -->
+      <aside class="col-span-3 glass p-4 rounded-2xl border border-white/6">
+        <h2 class="text-2xl font-semibold mb-2">Zaawansowany symulator kryptowalut</h2>
+        <p class="text-sm text-slate-300 mb-4">Zaawansowany symulator — lokalnie zapisywane konto i portfel</p>
+
+        <div class="mb-4">
+          <label class="text-xs text-slate-400">Szybkość symulacji</label>
+          <input id="speed" type="range" min="200" max="2000" value="1000" class="w-full" />
+          <div class="text-xs text-slate-400 flex justify-between">
+            <span>Fast</span><span>Realtime</span><span>Slow</span>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="text-xs text-slate-400">Zmienność (vol)</label>
+          <input id="volatility" type="range" min="0" max="5" step="0.1" value="1" class="w-full" />
+        </div>
+
+        <div class="mb-4">
+          <label class="text-xs text-slate-400">Wybierz walutę wyświetlania</label>
+          <select id="fiatSelect" class="w-full bg-transparent border border-white/6 rounded p-2">
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <h3 class="text-sm text-slate-300">Stan konta</h3>
+          <div id="balances" class="mt-2 text-sm space-y-2"></div>
+        </div>
+
+        <div class="mb-2">
+          <button id="resetBtn" class="w-full bg-red-600/80 hover:bg-red-500 p-2 rounded">Resetuj dane</button>
+        </div>
+        <div>
+          <button id="exportBtn" class="w-full bg-emerald-600/80 hover:bg-emerald-500 p-2 rounded mb-2">Eksportuj portfel (JSON)</button>
+          <button id="importBtn" class="w-full bg-yellow-600/80 hover:bg-yellow-500 p-2 rounded">Importuj (wklej JSON)</button>
+        </div>
+
+        <div class="text-xs text-slate-400 mt-4">Tip: możesz zmieniać szybkość i zmienność, żeby przetestować strategie.</div>
+      </aside>
+
+      <!-- Main -->
+      <main class="col-span-9 glass p-4 rounded-2xl border border-white/6 flex flex-col">
+        <header class="flex items-center justify-between mb-4">
+          <div>
+            <h1 class="text-2xl font-bold">Symulator rynku kryptowalut</h1>
+            <div class="text-sm text-slate-300">Saldo całkowite: <span id="netWorth" class="font-mono">0</span> <span id="netCurrency">USD</span></div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <label class="text-sm text-slate-300">Wybierz kryptowalutę</label>
+            <select id="cryptoSelect" class="bg-transparent border border-white/6 rounded p-2"></select>
+          </div>
+        </header>
+
+        <section class="grid grid-cols-12 gap-4 flex-1">
+          <div class="col-span-8 p-3 bg-transparent rounded-lg">
+            <canvas id="priceChart" height="220"></canvas>
+            <div class="mt-3 flex gap-3">
+              <div class="p-3 bg-white/3 rounded w-1/3">
+                <div class="text-xs text-slate-300">Aktualna cena</div>
+                <div id="currentPrice" class="text-xl font-mono">—</div>
+              </div>
+              <div class="p-3 bg-white/3 rounded w-1/3">
+                <div class="text-xs text-slate-300">Posiadana ilość</div>
+                <div id="holdingAmount" class="text-xl font-mono">0</div>
+              </div>
+              <div class="p-3 bg-white/3 rounded w-1/3">
+                <div class="text-xs text-slate-300">Wartość (w wybranej walucie)</div>
+                <div id="holdingValue" class="text-xl font-mono">0</div>
+              </div>
+            </div>
+
+            <div class="mt-4 bg-white/3 p-3 rounded">
+              <div class="flex gap-3">
+                <input id="tradeAmount" class="bg-transparent border border-white/6 rounded p-2 w-1/3" placeholder="Ilość krypto" />
+                <input id="tradeFiatAmount" class="bg-transparent border border-white/6 rounded p-2 w-1/3" placeholder="Ilość fiat" />
+                <button id="buyBtn" class="bg-emerald-500 p-2 rounded">Kup</button>
+                <button id="sellBtn" class="bg-red-500 p-2 rounded">Sprzedaj</button>
+              </div>
+              <div class="text-xs text-slate-300 mt-2">Możesz wpisywać ilość krypto lub wartość w fiat — system uzupełni drugie pole.</div>
+            </div>
+
+          </div>
+
+          <aside class="col-span-4 p-3 bg-transparent rounded-lg">
+            <div class="mb-4">
+              <h3 class="text-sm font-semibold">Portfolio</h3>
+              <div id="portfolioList" class="mt-2 text-sm"></div>
+            </div>
+
+            <div class="mb-4">
+              <h3 class="text-sm font-semibold">Historia transakcji</h3>
+              <div id="txHistory" class="mt-2 text-sm max-h-40 overflow-auto"></div>
+            </div>
+
+            <div>
+              <h3 class="text-sm font-semibold">Ustawienia kursów walut</h3>
+              <div id="fiatRates" class="mt-2 text-sm"></div>
+            </div>
+          </aside>
+        </section>
+
+        <footer class="mt-4 text-xs text-slate-400">Dane zapisywane lokalnie (localStorage).</footer>
+      </main>
+    </div>
+  </div>
+
+  <script>
+  /* ======= Model danych i ustawienia ======= */
+  const DEFAULT = {
+    fiats: ['USD','EUR','PLN','JPY'],
+    fiatRates: { USD:1, EUR:0.92, PLN:4.2, JPY:156 }, // baza USD
+    cryptos: {
+      BTC: {name:'Bitcoin', base:60000, vol:1.2},
+      ETH: {name:'Ethereum', base:3500, vol:1.8},
+      SOL: {name:'Solana', base:120, vol:2.5},
+      ADA: {name:'Cardano', base:0.8, vol:3.0},
+      DOGE: {name:'Dogecoin', base:0.18, vol:4.0}
+    },
+    account: {
+      balances: { USD:100000 }, // starting fiat
+      holdings: {} // {BTC:0.1}
+    }
+  }
+
+  /* ======= Storage helpers ======= */
+  function loadState(){
+    try{
+      const raw = localStorage.getItem('cryptosim_v1');
+      if(raw) return JSON.parse(raw);
+    }catch(e){console.error(e)}
+    return JSON.parse(JSON.stringify(DEFAULT));
+  }
+  function saveState(){
+    localStorage.setItem('cryptosim_v1', JSON.stringify(STATE));
+  }
+
+  let STATE = loadState();
+
+  /* ======= Utility ======= */
+  function fmt(n,dec=2){
+    if(Math.abs(n)>=1000) return n.toLocaleString(undefined,{maximumFractionDigits:dec});
+    return Number(n.toFixed(dec)).toString();
+  }
+
+  /* ======= Price Engine (stochastic, correlated) ======= */
+  const PRICE = {};
+  const historyLength = 300; // points in chart
+  function initPrices(){
+    const t = Date.now();
+    Object.keys(STATE.cryptos).forEach(k=>{
+      const c = STATE.cryptos[k];
+      const p = c.base * (0.85 + Math.random()*0.3);
+      PRICE[k] = {price:p, series:Array(historyLength).fill(p)};
+    })
+  }
+  initPrices();
+
+  function stepPrices(deltaMs, volatilityScale=1){
+    // correlated random walk using Gaussian increments
+    const keys = Object.keys(PRICE);
+    // base market shock
+    const marketShock = gaussian(0,0.001*volatilityScale);
+    keys.forEach(k=>{
+      const vol = STATE.cryptos[k].vol || 1;
+      const last = PRICE[k].price;
+      const shock = gaussian(0,0.002*vol*volatilityScale) + marketShock*0.5;
+      // mean reversion to base price
+      const base = STATE.cryptos[k].base;
+      const meanRevert = (base - last) * 0.0001;
+      let next = last*(1+shock) + meanRevert* (deltaMs/1000);
+      if(next<=0) next = Math.abs(next) + 0.0001;
+      PRICE[k].price = next;
+      PRICE[k].series.push(next);
+      if(PRICE[k].series.length>historyLength) PRICE[k].series.shift();
+    })
+  }
+
+  // simple Gaussian generator
+  function gaussian(mean=0,stdev=1){
+    let u=0,v=0; while(u===0) u=Math.random(); while(v===0) v=Math.random();
+    const num = Math.sqrt(-2.0*Math.log(u))*Math.cos(2.0*Math.PI*v);
+    return num*stdev + mean;
+  }
+
+  /* ======= Chart setup ======= */
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  let chart;
+  function createChart(symbol){
+    const data = PRICE[symbol].series.slice();
+    const labels = data.map((_,i)=>i);
+    if(chart) chart.destroy();
+    chart = new Chart(ctx,{
+      type:'line',
+      data:{labels, datasets:[{label:symbol, data, fill:true, tension:0.18, pointRadius:0}]},
+      options:{
+        animation:false,
+        responsive:true,
+        scales:{x:{display:false}, y:{ticks:{callback: v=>fmt(v,2)}}},
+        plugins:{legend:{display:false}}
+      }
+    })
+  }
+
+  /* ======= UI wiring ======= */
+  const cryptoSelect = document.getElementById('cryptoSelect');
+  const fiatSelect = document.getElementById('fiatSelect');
+  const balancesEl = document.getElementById('balances');
+  const portfolioList = document.getElementById('portfolioList');
+  const txHistory = document.getElementById('txHistory');
+  const fiatRatesEl = document.getElementById('fiatRates');
+  const currentPriceEl = document.getElementById('currentPrice');
+  const holdingAmountEl = document.getElementById('holdingAmount');
+  const holdingValueEl = document.getElementById('holdingValue');
+  const netWorthEl = document.getElementById('netWorth');
+  const netCurrencyEl = document.getElementById('netCurrency');
+
+  function populateSelectors(){
+    cryptoSelect.innerHTML = '';
+    Object.keys(STATE.cryptos).forEach(k=>{
+      const opt = document.createElement('option'); opt.value=k; opt.textContent = k + ' — ' + STATE.cryptos[k].name; cryptoSelect.appendChild(opt);
+    })
+    fiatSelect.innerHTML = '';
+    STATE.fiats.forEach(f=>{ const o = document.createElement('option'); o.value=f; o.textContent=f; fiatSelect.appendChild(o)})
+  }
+  populateSelectors();
+
+  function renderBalances(){
+    balancesEl.innerHTML = '';
+    for(const f of STATE.fiats){
+      const v = STATE.account.balances[f] || 0;
+      const row = document.createElement('div'); row.className='flex justify-between items-center';
+      row.innerHTML = `<div class="text-slate-300">${f}</div><div class="font-mono">${fmt(v,2)}</div>`;
+      balancesEl.appendChild(row);
+    }
+  }
+
+  function renderPortfolio(){
+    portfolioList.innerHTML = '';
+    for(const k of Object.keys(STATE.cryptos)){
+      const amt = STATE.account.holdings[k] || 0;
+      if(amt<=0) continue;
+      const p = PRICE[k].price;
+      const valUSD = p*amt;
+      const el = document.createElement('div'); el.className='flex justify-between';
+      el.innerHTML = `<div>${k} <span class="text-slate-400 text-xs">(${STATE.cryptos[k].name})</span></div><div class="font-mono">${fmt(amt,6)} — ${fmt(valUSD,2)} USD</div>`;
+      portfolioList.appendChild(el);
+    }
+  }
+
+  function renderTx(){
+    txHistory.innerHTML = '';
+    const txs = STATE.txHistory || [];
+    txs.slice().reverse().forEach(t=>{
+      const el = document.createElement('div'); el.className='p-2 border-b border-white/4';
+      el.innerHTML = `<div class="text-xs text-slate-300">${new Date(t.ts).toLocaleString()}</div><div>${t.side} ${t.symbol} ${fmt(t.amount,6)} @ ${fmt(t.price,2)} USD (${fmt(t.fiat,2)} ${t.fiatCurrency})</div>`;
+      txHistory.appendChild(el);
+    })
+  }
+
+  function renderFiatRates(){
+    fiatRatesEl.innerHTML = '';
+    for(const f of STATE.fiats){
+      const el = document.createElement('div'); el.className='flex justify-between items-center';
+      el.innerHTML = `<div class="text-slate-300">1 USD → ${f}</div><div class="font-mono">${fmt(STATE.fiatRates[f],4)}</div>`;
+      fiatRatesEl.appendChild(el);
+    }
+  }
+
+  function updateInfoForSelected(){
+    const sym = cryptoSelect.value;
+    const priceUSD = PRICE[sym].price;
+    const fiat = fiatSelect.value;
+    const rate = STATE.fiatRates[fiat] || 1;
+    currentPriceEl.textContent = fmt(priceUSD*rate,4) + ' ' + fiat;
+    const amt = STATE.account.holdings[sym] || 0;
+    holdingAmountEl.textContent = fmt(amt,6);
+    holdingValueEl.textContent = fmt(amt*priceUSD*rate,2) + ' ' + fiat;
+    netCurrencyEl.textContent = fiat;
+    // net worth
+    let netUSD = 0;
+    for(const f of STATE.fiats){ netUSD += (STATE.account.balances[f]||0) / (STATE.fiatRates[f]||1); }
+    for(const k of Object.keys(STATE.cryptos)){ netUSD += (STATE.account.holdings[k]||0) * PRICE[k].price; }
+    netWorthEl.textContent = fmt(netUSD * (STATE.fiatRates[fiat] || 1),2);
+  }
+
+  /* ======= Trading ======= */
+  function ensureHistory(){ if(!STATE.txHistory) STATE.txHistory = []; }
+  function buy(symbol, amountCrypto, fiatCurrency, fiatAmount){
+    ensureHistory();
+    const priceUSD = PRICE[symbol].price;
+    const rate = STATE.fiatRates[fiatCurrency] || 1;
+    const costUSD = (fiatAmount !== undefined) ? (fiatAmount / rate) : amountCrypto * priceUSD;
+    const balanceUSD = (STATE.account.balances[fiatCurrency]||0) / (STATE.fiatRates[fiatCurrency]||1);
+    if(costUSD > ((STATE.account.balances[fiatCurrency]||0)/rate) + 0.0001){ alert('Brak wystarczających środków'); return false; }
+    // subtract
+    STATE.account.balances[fiatCurrency] = (STATE.account.balances[fiatCurrency]||0) - costUSD*rate;
+    STATE.account.holdings[symbol] = (STATE.account.holdings[symbol]||0) + (amountCrypto || (costUSD/priceUSD));
+    STATE.txHistory.push({ts:Date.now(), side:'BUY', symbol, amount: amountCrypto || (costUSD/priceUSD), price:priceUSD, fiat: costUSD*rate, fiatCurrency});
+    saveState(); renderAll(); return true;
+  }
+  function sell(symbol, amountCrypto, fiatCurrency){
+    ensureHistory();
+    const holding = STATE.account.holdings[symbol] || 0;
+    if(amountCrypto > holding+0.0000001){ alert('Nie masz tyle tego krypto'); return false; }
+    const priceUSD = PRICE[symbol].price;
+    const rate = STATE.fiatRates[fiatCurrency] || 1;
+    const proceedUSD = amountCrypto * priceUSD;
+    STATE.account.holdings[symbol] = holding - amountCrypto;
+    STATE.account.balances[fiatCurrency] = (STATE.account.balances[fiatCurrency]||0) + proceedUSD*rate;
+    STATE.txHistory.push({ts:Date.now(), side:'SELL', symbol, amount: amountCrypto, price:priceUSD, fiat: proceedUSD*rate, fiatCurrency});
+    saveState(); renderAll(); return true;
+  }
+
+  /* ======= Wire buttons and inputs ======= */
+  document.getElementById('buyBtn').addEventListener('click', ()=>{
+    const sym = cryptoSelect.value;
+    const fiat = fiatSelect.value;
+    const amtCrypto = parseFloat(document.getElementById('tradeAmount').value) || 0;
+    const amtFiat = parseFloat(document.getElementById('tradeFiatAmount').value) || 0;
+    if(amtCrypto>0) buy(sym, amtCrypto, fiat, undefined);
+    else if(amtFiat>0) buy(sym, undefined, fiat, amtFiat);
+    else alert('Wprowadź ilość lub wartość transakcji.');
+  });
+  document.getElementById('sellBtn').addEventListener('click', ()=>{
+    const sym = cryptoSelect.value; const fiat = fiatSelect.value;
+    const amtCrypto = parseFloat(document.getElementById('tradeAmount').value) || 0;
+    if(amtCrypto>0) sell(sym, amtCrypto, fiat); else alert('Wprowadź ilość krypto do sprzedaży');
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    if(confirm('Na pewno zresetować dane?')){ localStorage.removeItem('cryptosim_v1'); STATE = JSON.parse(JSON.stringify(DEFAULT)); initPrices(); saveState(); renderAll(); }
+  });
+
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    const data = JSON.stringify(STATE,null,2);
+    navigator.clipboard.writeText(data).then(()=>alert('Dane skopiowane do schowka (JSON).'))
+  });
+
+  document.getElementById('importBtn').addEventListener('click', ()=>{
+    const txt = prompt('Wklej JSON z portfelem');
+    try{ const obj = JSON.parse(txt); STATE = obj; saveState(); initPrices(); renderAll(); alert('Zaimportowano.'); }catch(e){alert('Błąd parsowania JSON');}
+  });
+
+  cryptoSelect.addEventListener('change', ()=>{ createChart(cryptoSelect.value); updateInfoForSelected(); })
+  fiatSelect.addEventListener('change', ()=>{ updateInfoForSelected(); saveState(); })
+
+  document.getElementById('speed').addEventListener('input', ()=>{});
+  document.getElementById('volatility').addEventListener('input', ()=>{});
+
+  /* ======= Main render ======= */
+  function renderAll(){
+    populateSelectors();
+    renderBalances();
+    renderPortfolio();
+    renderTx();
+    renderFiatRates();
+    updateInfoForSelected();
+    if(!chart) createChart(cryptoSelect.value);
+  }
+  renderAll();
+
+  /* ======= Simulation loop ======= */
+  let last = Date.now();
+  function tick(){
+    const now = Date.now();
+    const delta = now-last; last = now;
+    const speed = parseInt(document.getElementById('speed').value,10);
+    const vol = parseFloat(document.getElementById('volatility').value);
+    // step multiple times if needed to simulate faster
+    stepPrices(delta, vol);
+    // update chart with latest value of selected symbol
+    const sym = cryptoSelect.value;
+    const series = PRICE[sym].series;
+    if(chart){ chart.data.datasets[0].data = series.slice(); chart.update('none'); }
+    updateInfoForSelected();
+    saveState();
+    setTimeout(tick, speed);
+  }
+  tick();
+
+  // small initialization detail: if balances don't include all fiats, copy zeros
+  for(const f of STATE.fiats) if(STATE.account.balances[f]===undefined) STATE.account.balances[f]=0;
+  saveState();
+
+  </script>
+</body>
+</html>
