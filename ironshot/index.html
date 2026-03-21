@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IronShot</title>
+<style>
+  body { margin:0; overflow:hidden; background:#111; }
+  canvas { display:block; }
+
+  #topText {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 28px;
+    font-weight: bold;
+    z-index: 100;
+    padding: 10px;
+    text-align: center;
+    text-shadow: 2px 2px 4px #000;
+  }
+
+  #instructions {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    z-index: 100;
+    text-align: center;
+    text-shadow: 1px 1px 2px #000;
+  }
+
+  #ui {
+    position:absolute; top:80px; left:10px; color:white; font-family:Arial;
+    font-size:18px; z-index:100;
+  }
+</style>
+</head>
+<body>
+<div id="topText">IronShot</div>
+<div id="instructions">W/A/S/D – ruch | Mysz – obrót | E – strzał</div>
+<div id="ui">Poziom: 1 | Rekord: 0</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<script>
+
+// --- SCENA, KAMERA, RENDERER ---
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0a0a);
+
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 100);
+camera.position.y = 1.8;
+
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// --- PODŁOGA I ŚCIANY ---
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(50,50),
+  new THREE.MeshStandardMaterial({color:0x444444})
+);
+floor.rotation.x = -Math.PI/2;
+scene.add(floor);
+
+const wallMaterial = new THREE.MeshStandardMaterial({color:0x222222});
+const walls = [
+  new THREE.Mesh(new THREE.BoxGeometry(50,5,1), wallMaterial),
+  new THREE.Mesh(new THREE.BoxGeometry(50,5,1), wallMaterial),
+  new THREE.Mesh(new THREE.BoxGeometry(1,5,50), wallMaterial),
+  new THREE.Mesh(new THREE.BoxGeometry(1,5,50), wallMaterial)
+];
+walls[0].position.set(0,2.5,-25);
+walls[1].position.set(0,2.5,25);
+walls[2].position.set(-25,2.5,0);
+walls[3].position.set(25,2.5,0);
+walls.forEach(w=>scene.add(w));
+
+// --- ŚWIATŁO ---
+const light = new THREE.DirectionalLight(0xffffff,1);
+light.position.set(10,20,10);
+scene.add(light);
+scene.add(new THREE.AmbientLight(0x404040));
+
+// --- GRACZ I PISTOLET ---
+const player = new THREE.Object3D();
+scene.add(player);
+player.add(camera);
+
+const gun = new THREE.Object3D();
+const gunBody = new THREE.Mesh(
+  new THREE.BoxGeometry(0.15,0.05,0.5),
+  new THREE.MeshStandardMaterial({color:0x00aaff})
+);
+gunBody.position.set(0,0,0);
+gun.add(gunBody);
+
+const gunTip = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.03,0.03,0.15,8),
+  new THREE.MeshStandardMaterial({color:0x005577})
+);
+gunTip.rotation.x = Math.PI/2;
+gunTip.position.set(0,0,-0.325);
+gun.add(gunTip);
+
+gun.position.set(0,-0.15,-0.5);
+camera.add(gun);
+
+// --- STEROWANIE ---
+let move = {forward:false, backward:false, left:false, right:false};
+document.addEventListener('keydown', e=>{
+  if(e.code==='KeyW') move.forward=true;
+  if(e.code==='KeyS') move.backward=true;
+  if(e.code==='KeyA') move.left=true;
+  if(e.code==='KeyD') move.right=true;
+});
+document.addEventListener('keyup', e=>{
+  if(e.code==='KeyW') move.forward=false;
+  if(e.code==='KeyS') move.backward=false;
+  if(e.code==='KeyA') move.left=false;
+  if(e.code==='KeyD') move.right=false;
+});
+let isDragging=false, prevX=0, yaw=0;
+const sensitivity=0.002;
+document.addEventListener('mousedown', e=>{ isDragging=true; prevX=e.clientX; });
+document.addEventListener('mouseup', e=>{ isDragging=false; });
+document.addEventListener('mousemove', e=>{
+  if(isDragging){
+    const dx = e.clientX-prevX;
+    yaw -= dx*sensitivity;
+    player.rotation.y = yaw;
+    prevX = e.clientX;
+  }
+});
+
+// --- POZIOMY I REKORD ---
+let level = 1;
+let record = parseInt(localStorage.getItem('dungeon_record')) || 1;
+const ui = document.getElementById('ui');
+function updateUI(){ ui.innerText = `Poziom: ${level} | Rekord: ${record}`; }
+
+// --- PRZECIWNICY ---
+let enemies = [];
+function spawnEnemies(count){
+  enemies.forEach(e=>scene.remove(e.mesh));
+  enemies = [];
+  for(let i=0;i<count;i++){
+    const enemy = new THREE.Object3D();
+    const body = new THREE.Mesh(
+      new THREE.BoxGeometry(0.7,1.5,0.5),
+      new THREE.MeshStandardMaterial({color:0xff4444})
+    );
+    body.position.y = 0.75;
+    enemy.add(body);
+    const head = new THREE.Mesh(
+      new THREE.SphereGeometry(0.35,16,16),
+      new THREE.MeshStandardMaterial({color:0xff9999})
+    );
+    head.position.y = 2.1;
+    enemy.add(head);
+    enemy.position.set(Math.random()*40-20,0,Math.random()*40-20);
+    scene.add(enemy);
+    enemies.push({mesh:enemy, alive:true, state:'patrol', target:enemy.position.clone(), speed:0.02});
+  }
+}
+
+// --- POCISKI ---
+let bullets = [];
+const bulletSpeed = 1;
+document.addEventListener('keydown', e=>{
+  if(e.code==='KeyE'){
+    const bullet = new THREE.Mesh(
+      new THREE.SphereGeometry(0.1,8,8),
+      new THREE.MeshStandardMaterial({color:0xffff00})
+    );
+    bullet.position.copy(camera.getWorldPosition(new THREE.Vector3()));
+    bullet.dir = new THREE.Vector3(0,0,-1).applyQuaternion(camera.getWorldQuaternion(new THREE.Quaternion())).normalize();
+    bullet.alive = true;
+    scene.add(bullet);
+    bullets.push(bullet);
+  }
+});
+
+// --- REKORD ---
+function updateRecord(){
+  if(level > record){
+    record = level;
+    localStorage.setItem('dungeon_record', record);
+  }
+}
+
+// --- RESET POZIOMU ---
+function resetLevel(){
+  level = 1;
+  player.position.set(0,0,0);
+  yaw = 0;
+  bullets.forEach(b=>scene.remove(b));
+  bullets = [];
+  spawnEnemies(level*10);
+  updateRecord();
+  updateUI();
+}
+
+// --- ANIMACJA ---
+function animate(){
+  requestAnimationFrame(animate);
+
+  const forward = new THREE.Vector3(0,0,-1).applyEuler(player.rotation);
+  const right = new THREE.Vector3(1,0,0).applyEuler(player.rotation);
+  const dir = new THREE.Vector3();
+  if(move.forward) dir.add(forward);
+  if(move.backward) dir.add(forward.clone().negate());
+  if(move.left) dir.add(right.clone().negate());
+  if(move.right) dir.add(right);
+  if(dir.length()>0) dir.normalize().multiplyScalar(0.1);
+  player.position.add(dir);
+
+  enemies.forEach(e=>{
+    if(!e.alive) return;
+    const dx = player.position.x - e.mesh.position.x;
+    const dz = player.position.z - e.mesh.position.z;
+    const distXZ = Math.sqrt(dx*dx + dz*dz);
+
+    let moveDir = new THREE.Vector3();
+    if(distXZ < 5){
+      moveDir.subVectors(player.position, e.mesh.position).normalize();
+    } else {
+      if(e.mesh.position.distanceTo(e.target)<0.1) e.target.set(Math.random()*40-20,0,Math.random()*40-20);
+      moveDir.subVectors(e.target, e.mesh.position).normalize();
+    }
+    e.mesh.position.addScaledVector(moveDir,e.speed);
+    e.mesh.position.y = 0;
+
+    if(distXZ < 1){
+      alert("PRZEGRAŁEŚ!");
+      resetLevel();
+    }
+  });
+
+  bullets.forEach(b=>{
+    if(!b.alive) return;
+    b.position.addScaledVector(b.dir, bulletSpeed);
+    enemies.forEach(e=>{
+      if(!e.alive) return;
+      const box = new THREE.Box3().setFromObject(e.mesh);
+      if(box.containsPoint(b.position)){
+        e.alive=false;
+        scene.remove(e.mesh);
+        b.alive=false;
+        scene.remove(b);
+      }
+    });
+    if(b.position.distanceTo(player.position)>50 && b.alive){
+      b.alive=false;
+      scene.remove(b);
+    }
+  });
+  bullets = bullets.filter(b=>b.alive);
+
+  if(enemies.every(e=>!e.alive)){
+    level++;
+    updateRecord();
+    updateUI();
+    spawnEnemies(level*10);
+  }
+
+  renderer.render(scene,camera);
+}
+
+// --- START ---
+updateUI();
+spawnEnemies(level*10);
+animate();
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+</script>
+</body>
+</html>
