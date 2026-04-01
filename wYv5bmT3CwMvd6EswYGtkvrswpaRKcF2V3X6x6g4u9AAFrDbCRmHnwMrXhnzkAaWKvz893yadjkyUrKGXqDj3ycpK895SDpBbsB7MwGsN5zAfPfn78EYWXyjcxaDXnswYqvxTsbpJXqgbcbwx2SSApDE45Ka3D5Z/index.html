@@ -69,6 +69,9 @@ h2 { margin-top:30px; color:#1e90ff; }
   <h2>Horror</h2>
   <div class="grid" id="horrorGrid"></div>
 
+  <h2>Fantasy</h2>
+  <div class="grid" id="fantasyGrid"></div>
+
   <!-- KOMEDIA -->
   <h2>Komedia</h2>
   <div class="grid" id="KomediaGrid"></div>
@@ -103,6 +106,7 @@ const films = [
   { title:"Dostępne wkrótce", img:"soon.jpg", desc:"OPIS", link:"LINK_DO_DRIVE", category:"series" },
   { title:"Super Mario Bros. film", img:"mario.jpg", desc:"Super Mario Bros. Film to najnowsza animacja studia Illumination, które stworzyło uwielbiane przez wszystkich Minionki oraz Sing. Minionki pokochali widzowie w każdym wieku na całym świecie. Są jednymi z najpopularniejszych animowanych postaci. Teraz studio Illumination stworzyło animację o bohaterze gry komputerowej i z pewnością dostarczą widzom wielu wspaniałych emocji. Produkcja jest oparta na kultowej grze komputerowej z lat osiemdziesiątych Super Mario Bros. Gra ma wielu fanów do dziś i jest jedną najpopularniejszych w historii.", link:"https://drive.google.com/file/d/1GpuS1_jyIkIzy44yd2JSeD85crJsX6l8/view?usp=drivesdk", category:"kids"},
   { title:"Nietykalni", img:"nietykalni.jpg", desc:"Ta historia zdarzyła się naprawdę. Sparaliżowany na skutek wypadku milioner zatrudnia do pomocy i opieki młodego chłopaka z przedmieścia, który właśnie wyszedł z więzienia. Zderzenie dwóch skrajnie różnych światów daje początek szeregowi niewiarygodnych przygód i przyjaźni, która czyni ich... nietykalnymi.", link:"https://drive.google.com/file/d/1LIw1OsqvW63uca4sI-xxJzw7JL_T5kZK/view?usp=drivesdk", category:"Komedia" },
+  { title:"Harry Potter i kamień filozoficzny", img:"hp1.jpg", desc:"Harry jest jedyną osobą, której udaje się przeżyć spotkanie ze złym czarnoksiężnikiem - Lordem Voldemortem. W zdarzeniu jednak giną jego rodzice. Osierocony trafia pod opiekę ciotki Petunii i wuja Vernona. Podczas swoich 11 urodzin dowiaduje się, że odziedziczył po rodzicach magiczne zdolności. Wkrótce trafia do szkoły dla czarodziejów - Hogwart. Na miejscu zapozna się z tajnikami quidditcha - dość nietypowego sportu, nauczy się latać na miotle, spotka jednorożce i centaury. Przede wszystkim zaś zmierzy się z siłami zła.", link:"https://drive.google.com/file/d/1shh6scLW9oSAdCRc4R9w983JZObe94d6/view?usp=sharing", category:"fantasy" },
   { title:"Opowieści z Narnii: Lew, czarownica i stara szafa", img:"narnia.jpg", desc:"Film powstał na podstawie popularnej serii książek dla dzieci autorstwa C.S.Lewisa, mówiących o walce dobra ze złem. Podczas wakacji rodzeństwo - Łucja, Zuzanna, Edmund i Piotr (Lucy, Susan, Edmund, Peter) Pevensie odkrywają magiczną krainę Narnię, do której dostać się można przez drzwi zaczarowanej szafy. W Narnii, pod wpływem uroku rzuconego przez Białą Czarownicę, od 100 lat panuje nieustanna zima. Wszyscy Narnijczycy czekają na powrót lwa Aslana, który jako jedyny pokonać może siły zła. Pomoże mu w tym rodzeństwo Pevensie.", link:"https://drive.google.com/file/d/1MqJka3zR0zZseDLw6sbhTDuEhvBZk3-R/view?usp=sharing", category:"kids" },
   { title:"Minecraft Film", img:"minecraft.jpg", desc:"Witamy w świecie Minecrafta, gdzie kreatywność nie tylko pomaga tworzyć, lecz jest niezbędna do przetrwania! Czworo nieudaczników - Garrett Śmieciarz Garrison (Jason Momoa), Henry (Sebastian Hansen), Natalie (Emma Myers) i Dawn (Danielle Brooks) - zmaga się z codziennymi problemami, kiedy nagle tajemniczy portal wciąga ich do Nadziemia - dziwacznej krainy pełnej sześcianów, w której najważniejsza jest wyobraźnia. Aby wrócić do domu, będą musieli zapanować nad tym światem i ochronić go przed złymi stworzeniami, takimi jak pigliny i zombie. W tym celu wyruszają na magiczną wyprawę z nieoczekiwanym towarzyszem - doświadczonym graczem Stevem (Jack Black). Ta przygoda zmusi całą piątkę do wykazania się odwagą i odkrycia w sobie cech, dzięki którym każde z nich jest na swój sposób kreatywne. Są to te same cechy, które pomagają żyć w prawdziwym świecie.", link:"https://drive.google.com/file/d/1kOBre0DyYqDO08qd9zKRfODY6OrJJJcO/view?usp=sharing", category:"Komedia" }
 ];
@@ -155,8 +159,9 @@ function renderFilms() {
   const kidsGrid = document.getElementById('kidsGrid');
   const seriesGrid = document.getElementById('seriesGrid');
   const horrorGrid = document.getElementById('horrorGrid');
+  const fantasyGrid = document.getElementById('fantasyGrid');
   const KomediaGrid = document.getElementById('KomediaGrid');
-  kidsGrid.innerHTML = seriesGrid.innerHTML = horrorGrid.innerHTML = KomediaGrid.innerHTML = '';
+  kidsGrid.innerHTML = seriesGrid.innerHTML = fantasyGrid.innerHTML = horrorGrid.innerHTML = KomediaGrid.innerHTML = '';
   
   films.forEach((f,i)=>{
     const card = document.createElement('div');
@@ -167,6 +172,7 @@ function renderFilms() {
     if(f.category==='kids') kidsGrid.appendChild(card);
     else if(f.category==='series') seriesGrid.appendChild(card);
     else if(f.category==='horror') horrorGrid.appendChild(card);
+    else if(f.category==='fantasy') fantasyGrid.appendChild(card);
     else KomediaGrid.appendChild(card);
   });
 }
