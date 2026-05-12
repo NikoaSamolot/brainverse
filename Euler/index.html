@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euler Master</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #050505;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .bg {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at top left, #1b0030, transparent 30%),
+                radial-gradient(circle at bottom right, #001133, transparent 30%),
+                #050505;
+            z-index: -1;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 50px;
+            text-shadow: 0 0 20px #8f00ff;
+        }
+
+        .subtitle {
+            text-align: center;
+            opacity: 0.7;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(140, 0, 255, 0.2);
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: #bb86fc;
+        }
+
+        .digits {
+            font-size: 24px;
+            line-height: 1.8;
+            word-wrap: break-word;
+            background: black;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+            border: 1px solid #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 15px;
+            background: #111;
+            color: white;
+            font-size: 20px;
+            outline: none;
+            border: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border: 2px solid #8f00ff;
+            box-shadow: 0 0 20px #8f00ff;
+        }
+
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            background: linear-gradient(45deg, #8f00ff, #4f00ff);
+            color: white;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px #8f00ff;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            background: #111;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .stat h3 {
+            font-size: 16px;
+            opacity: 0.7;
+        }
+
+        .stat p {
+            margin-top: 10px;
+            font-size: 28px;
+            color: #bb86fc;
+        }
+
+        .correct {
+            color: #00ff88;
+        }
+
+        .wrong {
+            color: #ff4444;
+        }
+
+        .timer {
+            font-size: 50px;
+            text-align: center;
+            margin-top: 20px;
+            color: #00e5ff;
+            text-shadow: 0 0 20px #00e5ff;
+        }
+
+        .progressbar {
+            width: 100%;
+            height: 25px;
+            background: #111;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #8f00ff, #00e5ff);
+            transition: 0.2s;
+        }
+
+        .footer {
+            text-align: center;
+            opacity: 0.5;
+            margin-bottom: 30px;
+        }
+
+        @media(max-width:900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg"></div>
+
+    <h1>Euler Master</h1>
+
+    <p class="subtitle">
+        Ultra Advanced e Memory Trainer
+    </p>
+
+    <div class="container">
+
+        <div class="card">
+
+            <h2>Nauka liczby Eulera</h2>
+
+            <button onclick="showMore()">
+                Pokaż więcej cyfr
+            </button>
+
+            <div class="digits" id="digits"></div>
+
+            <div class="stats">
+
+                <div class="stat">
+                    <h3>Pokazane cyfry</h3>
+                    <p id="shown">20</p>
+                </div>
+
+                <div class="stat">
+                    <h3>Rekord</h3>
+                    <p id="record">0</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h2>Test pamięci</h2>
+
+            <p>
+                Wpisz cyfry po "2,"
+            </p>
+
+            <input
+                type="text"
+                id="answer"
+                placeholder="np. 718281828"
+            >
+
+            <button onclick="checkAnswer()">
+                Sprawdź
+            </button>
+
+            <button onclick="startChallenge()">
+                Tryb Challenge
+            </button>
+
+            <div class="timer" id="timer">
+                60
+            </div>
+
+            <div class="progressbar">
+                <div class="progress" id="progress"></div>
+            </div>
+
+            <div class="stats">
+
+                <div class="stat">
+                    <h3>Poprawne</h3>
+                    <p class="correct" id="correct">0</p>
+                </div>
+
+                <div class="stat">
+                    <h3>Błędy</h3>
+                    <p class="wrong" id="wrong">0</p>
+                </div>
+
+            </div>
+
+            <div class="digits" id="result">
+                Gotowy do testu.
+            </div>
+
+        </div>
+
+    </div>
+
+    <p class="footer">
+        Euler Master • localStorage • rekordy • challenge mode
+    </p>
+
+    <script>
+
+        const E =
+            "27182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274";
+
+        let showCount = 20;
+
+        let correct = 0;
+        let wrong = 0;
+
+        let bestRecord =
+            localStorage.getItem("eulerRecord") || 0;
+
+        document.getElementById("record").innerText =
+            bestRecord;
+
+        function renderDigits() {
+
+            document.getElementById("digits").innerText =
+                "2," + E.slice(0, showCount);
+
+            document.getElementById("shown").innerText =
+                showCount;
+        }
+
+        renderDigits();
+
+        function showMore() {
+
+            showCount += 20;
+
+            if (showCount > E.length) {
+                showCount = E.length;
+            }
+
+            renderDigits();
+        }
+
+        function checkAnswer() {
+
+            const input =
+                document.getElementById("answer")
+                    .value
+                    .trim();
+
+            const expected =
+                E.slice(0, input.length);
+
+            if (input === expected) {
+
+                correct++;
+
+                document.getElementById("result").innerHTML =
+                    "✅ Poprawnie!<br><br>Zapamiętane cyfry: "
+                    + input.length;
+
+                if (input.length > bestRecord) {
+
+                    bestRecord = input.length;
+
+                    localStorage.setItem(
+                        "eulerRecord",
+                        bestRecord
+                    );
+
+                    document.getElementById("record").innerText =
+                        bestRecord;
+                }
+
+            } else {
+
+                wrong++;
+
+                let failIndex = 0;
+
+                for (let i = 0; i < input.length; i++) {
+
+                    if (input[i] !== expected[i]) {
+                        failIndex = i;
+                        break;
+                    }
+                }
+
+                document.getElementById("result").innerHTML =
+                    "❌ Błąd na pozycji: "
+                    + (failIndex + 1)
+                    + "<br><br>Powinno być: "
+                    + expected[failIndex];
+            }
+
+            document.getElementById("correct").innerText =
+                correct;
+
+            document.getElementById("wrong").innerText =
+                wrong;
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+
+            let percent =
+                (bestRecord / 100) * 100;
+
+            if (percent > 100) {
+                percent = 100;
+            }
+
+            document.getElementById("progress").style.width =
+                percent + "%";
+        }
+
+        updateProgress();
+
+        let challengeInterval;
+
+        let time = 60;
+
+        function startChallenge() {
+
+            clearInterval(challengeInterval);
+
+            time = 60;
+
+            document.getElementById("timer").innerText =
+                time;
+
+            challengeInterval = setInterval(() => {
+
+                time--;
+
+                document.getElementById("timer").innerText =
+                    time;
+
+                if (time <= 0) {
+
+                    clearInterval(challengeInterval);
+
+                    alert(
+                        "Koniec challenge!\n\nTwój rekord: "
+                        + bestRecord
+                        + " cyfr."
+                    );
+                }
+
+            }, 1000);
+        }
+
+    </script>
+
+</body>
+
+</html>
