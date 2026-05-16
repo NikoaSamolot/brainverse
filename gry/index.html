@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrainVerse Gry</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f111a;
+    color: white;
+}
+
+header {
+    background: #1b1f2a;
+    padding: 16px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#layout {
+    display: flex;
+}
+
+#sidebar {
+    width: 220px;
+    background: #151826;
+    height: calc(100vh - 60px);
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.cat {
+    background: #22263a;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.cat:hover {
+    background: #2f3552;
+}
+
+#main {
+    flex: 1;
+    padding: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.card {
+    background: #1a1f2e;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+
+.card h3 {
+    margin: 10px;
+}
+
+#gameView {
+    display: none;
+}
+
+iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+    border-radius: 12px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #4c6fff;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #3a56d6;
+}
+</style>
+</head>
+
+<body>
+
+<header>🎮 GAME HUB OFFLINE</header>
+
+<div id="layout">
+
+<!-- KATEGORIE -->
+<div id="sidebar">
+    <div class="cat" onclick="setCat('all')">Wszystkie</div>
+    <div class="cat" onclick="setCat('horror')">Horror</div>
+    <div class="cat" onclick="setCat('akcja')">Akcja</div>
+    <div class="cat" onclick="setCat('quiz')">Quizy</div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+<div id="list" class="grid"></div>
+
+<div id="gameView">
+    <h2 id="title"></h2>
+    <p id="desc"></p>
+
+    <iframe id="frame"></iframe>
+
+    <button id="openBtn">Otwórz / Pobierz</button>
+    <button onclick="back()">Powrót</button>
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* =========================
+   GRY (LOKALNE ZDJĘCIA)
+========================= */
+const games = [
+{
+    id: "carrot-apocalypse",
+    title: "Carrot Apocalypse",
+    category: "akcja",
+    image: "carrotap.jpg",
+    description: "You are a Carrot in a farmland, you are sleeping when suddenly something wakes you up, you turn around and there is a zombie apocalypse, escape from the farmland and discover the secrets of the apocalypse.",
+    embed: "https://brainverse.pl/carrotapocalypse/",
+    download: "https://gamejolt.com/games/carrot/1029450"
+},
+{
+    id: "quizy-1",
+    title: "Quizy 1",
+    category: "quiz",
+    image: "quizy1.jpg",
+    description: "Pierwsza część z serii quizy.",
+    embed: "https://brainverse.pl/quizy1/",
+    download: ""
+},
+{
+    id: "quizy-2",
+    title: "Quizy 2",
+    category: "quiz",
+    image: "quizy2.jpg",
+    description: "Druga część z serii quizy.",
+    embed: "https://brainverse.pl/quizy2/",
+    download: ""
+},
+{
+    id: "quiz-protocol",
+    title: "The Quiz Protocol",
+    category: "horror",
+    image: "quizprot.png",
+    description: "Quiz Protocol to krótka, niezależna gra, w której musisz odpowiadać na pytania potworów, aby uciec. Spróbuj odpowiedzieć poprawnie na każde pytanie, a może uda ci się uciec. Gra oferuje wiele różnych zakończeń, więc nawet drobny błąd może odmienić twój los.",
+    embed: "https://brainverse.pl/thequizprotocol/",
+    download: "https://play.google.com/store/apps/details?id=pl.nikoa.quizprotocol"
+},
+{
+    id: "iron-shot",
+    title: "IronShot",
+    category: "akcja",
+    image: "ironshot.jpg",
+    description: "Krótka gra FPS rogue-like.",
+    embed: "https://brainverse.pl/ironshot/",
+    download: ""
+}
+];
+
+let currentCat = "all";
+
+/* RENDER */
+function render() {
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    games.forEach(g => {
+        if (currentCat !== "all" && g.category !== currentCat) return;
+
+        const div = document.createElement("div");
+        div.className = "card";
+
+        div.innerHTML = `
+            <img src="${g.image}">
+            <h3>${g.title}</h3>
+        `;
+
+        div.onclick = () => openGame(g.id);
+        list.appendChild(div);
+    });
+}
+
+/* CATEGORY */
+function setCat(c) {
+    currentCat = c;
+    render();
+}
+
+/* OPEN GAME */
+function openGame(id) {
+    const g = games.find(x => x.id === id);
+
+    document.getElementById("list").style.display = "none";
+    document.getElementById("gameView").style.display = "block";
+
+    document.getElementById("title").innerText = g.title;
+    document.getElementById("desc").innerText = g.description;
+    document.getElementById("frame").src = g.embed;
+
+    document.getElementById("openBtn").onclick = () => {
+        window.open(g.download, "_blank");
+    };
+}
+
+/* BACK */
+function back() {
+    document.getElementById("list").style.display = "grid";
+    document.getElementById("gameView").style.display = "none";
+    document.getElementById("frame").src = "";
+}
+
+/* START */
+render();
+
+</script>
+
+</body>
+</html>
