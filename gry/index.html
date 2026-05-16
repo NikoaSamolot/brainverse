@@ -140,7 +140,7 @@ button:hover {
 <script>
 
 /* =========================
-   GRY (LOKALNE ZDJĘCIA)
+   GRY
 ========================= */
 const games = [
 {
@@ -148,7 +148,7 @@ const games = [
     title: "Carrot Apocalypse",
     category: "akcja",
     image: "carrotap.jpg",
-    description: "You are a Carrot in a farmland, you are sleeping when suddenly something wakes you up, you turn around and there is a zombie apocalypse, escape from the farmland and discover the secrets of the apocalypse.",
+    description: "You are a Carrot in a farmland, you are sleeping when suddenly something wakes you up...",
     embed: "https://brainverse.pl/carrotapocalypse/",
     download: "https://gamejolt.com/games/carrot/1029450"
 },
@@ -175,7 +175,7 @@ const games = [
     title: "The Quiz Protocol",
     category: "horror",
     image: "quizprot.png",
-    description: "Quiz Protocol to krótka, niezależna gra, w której musisz odpowiadać na pytania potworów, aby uciec. Spróbuj odpowiedzieć poprawnie na każde pytanie, a może uda ci się uciec. Gra oferuje wiele różnych zakończeń, więc nawet drobny błąd może odmienić twój los.",
+    description: "Quiz Protocol to krótka gra horror.",
     embed: "https://brainverse.pl/thequizprotocol/",
     download: "https://play.google.com/store/apps/details?id=pl.nikoa.quizprotocol"
 },
@@ -192,7 +192,9 @@ const games = [
 
 let currentCat = "all";
 
-/* RENDER */
+/* =========================
+   RENDER
+========================= */
 function render() {
     const list = document.getElementById("list");
     list.innerHTML = "";
@@ -213,13 +215,17 @@ function render() {
     });
 }
 
-/* CATEGORY */
+/* =========================
+   CATEGORY
+========================= */
 function setCat(c) {
     currentCat = c;
     render();
 }
 
-/* OPEN GAME */
+/* =========================
+   OPEN GAME (NAJWAŻNIEJSZA ZMIANA)
+========================= */
 function openGame(id) {
     const g = games.find(x => x.id === id);
 
@@ -228,14 +234,62 @@ function openGame(id) {
 
     document.getElementById("title").innerText = g.title;
     document.getElementById("desc").innerText = g.description;
-    document.getElementById("frame").src = g.embed;
 
-    document.getElementById("openBtn").onclick = () => {
-        window.open(g.download, "_blank");
-    };
+    const frame = document.getElementById("frame");
+
+    // iframe tylko jeśli istnieje embed
+    if (g.embed && g.embed.trim() !== "") {
+        frame.style.display = "block";
+        frame.src = g.embed;
+    } else {
+        frame.style.display = "none";
+        frame.src = "";
+    }
+
+    const btn = document.getElementById("openBtn");
+    btn.innerHTML = "";
+    btn.style.display = "none";
+
+    // tworzymy dynamiczne przyciski
+    const container = btn;
+    container.replaceWith(container.cloneNode(true));
+
+    const newBtn = document.getElementById("openBtn");
+    newBtn.innerHTML = "";
+
+    // ===== PRZYCISKI =====
+
+    if (g.embed && g.embed.trim() !== "") {
+        const playBtn = document.createElement("button");
+        playBtn.innerText = "🎮 Graj online";
+        playBtn.onclick = () => {
+            frame.style.display = "block";
+            frame.src = g.embed;
+        };
+        newBtn.parentNode.insertBefore(playBtn, newBtn);
+    }
+
+    if (g.download && g.download.trim() !== "") {
+        const dlBtn = document.createElement("button");
+        dlBtn.innerText = "⬇ Pobierz / Otwórz";
+        dlBtn.onclick = () => {
+            window.open(g.download, "_blank");
+        };
+        newBtn.parentNode.insertBefore(dlBtn, newBtn);
+    }
+
+    // jeśli nic nie ma
+    if ((!g.embed || g.embed.trim() === "") &&
+        (!g.download || g.download.trim() === "")) {
+        const none = document.createElement("p");
+        none.innerText = "Brak dostępnej wersji gry.";
+        newBtn.parentNode.insertBefore(none, newBtn);
+    }
 }
 
-/* BACK */
+/* =========================
+   BACK
+========================= */
 function back() {
     document.getElementById("list").style.display = "grid";
     document.getElementById("gameView").style.display = "none";
