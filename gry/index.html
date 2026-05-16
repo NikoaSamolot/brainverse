@@ -87,10 +87,12 @@ iframe {
     height: 500px;
     border: none;
     border-radius: 12px;
+    margin-top: 10px;
 }
 
 button {
     margin-top: 10px;
+    margin-right: 10px;
     padding: 10px;
     border: none;
     border-radius: 8px;
@@ -107,7 +109,7 @@ button:hover {
 
 <body>
 
-<header>🎮 GAME HUB OFFLINE</header>
+<header>🎮 BrainVerse Games</header>
 
 <div id="layout">
 
@@ -130,7 +132,8 @@ button:hover {
 
     <iframe id="frame"></iframe>
 
-    <button id="openBtn">Otwórz / Pobierz</button>
+    <div id="buttons"></div>
+
     <button onclick="back()">Powrót</button>
 </div>
 
@@ -148,7 +151,7 @@ const games = [
     title: "Carrot Apocalypse",
     category: "akcja",
     image: "carrotap.jpg",
-    description: "You are a Carrot in a farmland, you are sleeping when suddenly something wakes you up...",
+    description: "You are a Carrot in a farmland, escape the zombie apocalypse.",
     embed: "https://brainverse.pl/carrotapocalypse/",
     download: "https://gamejolt.com/games/carrot/1029450"
 },
@@ -175,7 +178,7 @@ const games = [
     title: "The Quiz Protocol",
     category: "horror",
     image: "quizprot.png",
-    description: "Quiz Protocol to krótka gra horror.",
+    description: "Horror quiz z wieloma zakończeniami.",
     embed: "https://brainverse.pl/thequizprotocol/",
     download: "https://play.google.com/store/apps/details?id=pl.nikoa.quizprotocol"
 },
@@ -184,7 +187,7 @@ const games = [
     title: "IronShot",
     category: "akcja",
     image: "ironshot.jpg",
-    description: "Krótka gra FPS rogue-like.",
+    description: "FPS rogue-like.",
     embed: "https://brainverse.pl/ironshot/",
     download: ""
 }
@@ -224,7 +227,7 @@ function setCat(c) {
 }
 
 /* =========================
-   OPEN GAME (NAJWAŻNIEJSZA ZMIANA)
+   OPEN GAME (NAPRAWIONE)
 ========================= */
 function openGame(id) {
     const g = games.find(x => x.id === id);
@@ -236,54 +239,40 @@ function openGame(id) {
     document.getElementById("desc").innerText = g.description;
 
     const frame = document.getElementById("frame");
+    const buttons = document.getElementById("buttons");
 
-    // iframe tylko jeśli istnieje embed
-    if (g.embed && g.embed.trim() !== "") {
-        frame.style.display = "block";
-        frame.src = g.embed;
-    } else {
-        frame.style.display = "none";
-        frame.src = "";
-    }
+    buttons.innerHTML = "";
+    frame.src = "";
+    frame.style.display = "none";
 
-    const btn = document.getElementById("openBtn");
-    btn.innerHTML = "";
-    btn.style.display = "none";
-
-    // tworzymy dynamiczne przyciski
-    const container = btn;
-    container.replaceWith(container.cloneNode(true));
-
-    const newBtn = document.getElementById("openBtn");
-    newBtn.innerHTML = "";
-
-    // ===== PRZYCISKI =====
-
+    // GRA ONLINE
     if (g.embed && g.embed.trim() !== "") {
         const playBtn = document.createElement("button");
         playBtn.innerText = "🎮 Graj online";
         playBtn.onclick = () => {
-            frame.style.display = "block";
             frame.src = g.embed;
+            frame.style.display = "block";
         };
-        newBtn.parentNode.insertBefore(playBtn, newBtn);
+        buttons.appendChild(playBtn);
     }
 
+    // POBIERANIE
     if (g.download && g.download.trim() !== "") {
         const dlBtn = document.createElement("button");
         dlBtn.innerText = "⬇ Pobierz / Otwórz";
         dlBtn.onclick = () => {
             window.open(g.download, "_blank");
         };
-        newBtn.parentNode.insertBefore(dlBtn, newBtn);
+        buttons.appendChild(dlBtn);
     }
 
-    // jeśli nic nie ma
+    // brak obu
     if ((!g.embed || g.embed.trim() === "") &&
         (!g.download || g.download.trim() === "")) {
-        const none = document.createElement("p");
-        none.innerText = "Brak dostępnej wersji gry.";
-        newBtn.parentNode.insertBefore(none, newBtn);
+
+        const info = document.createElement("p");
+        info.innerText = "Brak dostępnej wersji gry.";
+        buttons.appendChild(info);
     }
 }
 
