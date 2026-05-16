@@ -13,6 +13,7 @@ body {
     color: white;
 }
 
+/* HEADER */
 header {
     background: #1b1f2a;
     padding: 16px;
@@ -21,6 +22,19 @@ header {
     font-weight: bold;
 }
 
+/* SEARCH */
+#searchBar {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    outline: none;
+    background: #151826;
+    color: white;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+/* LAYOUT */
 #layout {
     display: flex;
 }
@@ -28,7 +42,7 @@ header {
 #sidebar {
     width: 220px;
     background: #151826;
-    height: calc(100vh - 60px);
+    height: calc(100vh - 100px);
     padding: 10px;
     box-sizing: border-box;
 }
@@ -50,12 +64,14 @@ header {
     padding: 20px;
 }
 
+/* GRID */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 15px;
 }
 
+/* CARD */
 .card {
     background: #1a1f2e;
     border-radius: 12px;
@@ -78,8 +94,15 @@ header {
     margin: 10px;
 }
 
+/* GAME VIEW */
 #gameView {
     display: none;
+}
+
+#gameLogo {
+    width: 120px;
+    border-radius: 12px;
+    margin-bottom: 10px;
 }
 
 iframe {
@@ -90,26 +113,31 @@ iframe {
     margin-top: 10px;
 }
 
+/* BUTTONS */
 button {
     margin-top: 10px;
     margin-right: 10px;
-    padding: 10px;
+    padding: 10px 14px;
     border: none;
     border-radius: 8px;
-    background: #4c6fff;
-    color: white;
     cursor: pointer;
+    font-weight: bold;
 }
 
-button:hover {
-    background: #3a56d6;
-}
+.play { background: #2ecc71; color: black; }
+.web { background: #3498db; }
+.dl { background: #f39c12; color: black; }
+
+button:hover { opacity: 0.85; }
+
 </style>
 </head>
 
 <body>
 
 <header>🎮 BrainVerse Games</header>
+
+<input id="searchBar" placeholder="🔍 Szukaj gry..." oninput="render()">
 
 <div id="layout">
 
@@ -128,12 +156,13 @@ button:hover {
 <div id="list" class="grid"></div>
 
 <div id="gameView">
+    <img id="gameLogo">
     <h2 id="title"></h2>
     <p id="desc"></p>
 
-    <iframe id="frame"></iframe>
-
     <div id="buttons"></div>
+
+    <iframe id="frame"></iframe>
 
     <button onclick="back()">Powrót</button>
 </div>
@@ -144,7 +173,7 @@ button:hover {
 <script>
 
 /* =========================
-   GRY
+   TWOJE GRY (ZOSTAŁY 1:1)
 ========================= */
 const games = [
 {
@@ -224,14 +253,17 @@ const games = [
 let currentCat = "all";
 
 /* =========================
-   RENDER
+   RENDER + SEARCH
 ========================= */
 function render() {
     const list = document.getElementById("list");
     list.innerHTML = "";
 
+    const search = document.getElementById("searchBar").value.toLowerCase();
+
     games.forEach(g => {
         if (currentCat !== "all" && g.category !== currentCat) return;
+        if (!g.title.toLowerCase().includes(search)) return;
 
         const div = document.createElement("div");
         div.className = "card";
@@ -255,7 +287,7 @@ function setCat(c) {
 }
 
 /* =========================
-   OPEN GAME (NAPRAWIONE)
+   OPEN GAME
 ========================= */
 function openGame(id) {
     const g = games.find(x => x.id === id);
@@ -266,6 +298,8 @@ function openGame(id) {
     document.getElementById("title").innerText = g.title;
     document.getElementById("desc").innerText = g.description;
 
+    document.getElementById("gameLogo").src = g.image;
+
     const frame = document.getElementById("frame");
     const buttons = document.getElementById("buttons");
 
@@ -273,53 +307,34 @@ function openGame(id) {
     frame.src = "";
     frame.style.display = "none";
 
-    // =========================
-    // 1. ODPAL TU (iframe)
-    // =========================
-    if (g.embed && g.embed.trim() !== "") {
-        const btnPlayHere = document.createElement("button");
-        btnPlayHere.innerText = "🎮 Odpal tu";
-        btnPlayHere.onclick = () => {
+    // PLAY
+    if (g.embed) {
+        const b = document.createElement("button");
+        b.className = "play";
+        b.innerText = "🎮 Odpal tu";
+        b.onclick = () => {
             frame.src = g.embed;
             frame.style.display = "block";
         };
-        buttons.appendChild(btnPlayHere);
+        buttons.appendChild(b);
     }
 
-    // =========================
-    // 2. OTWÓRZ NA STRONIE GRY
-    // =========================
-    if (g.embed && g.embed.trim() !== "") {
-        const btnOpenSite = document.createElement("button");
-        btnOpenSite.innerText = "🌐 Otwórz stronę gry";
-        btnOpenSite.onclick = () => {
-            window.open(g.embed, "_blank");
-        };
-        buttons.appendChild(btnOpenSite);
+    // WEB
+    if (g.embed) {
+        const b = document.createElement("button");
+        b.className = "web";
+        b.innerText = "🌐 Otwórz stronę gry";
+        b.onclick = () => window.open(g.embed, "_blank");
+        buttons.appendChild(b);
     }
 
-    // =========================
-    // 3. INSTALACJA / POBRANIE
-    // =========================
-    if (g.download && g.download.trim() !== "") {
-        const btnDownload = document.createElement("button");
-        btnDownload.innerText = "⬇ Pobierz / Instalacja";
-        btnDownload.onclick = () => {
-            window.open(g.download, "_blank");
-        };
-        buttons.appendChild(btnDownload);
-    }
-
-    // =========================
-    // BRAK OPCJI
-    // =========================
-    if (
-        (!g.embed || g.embed.trim() === "") &&
-        (!g.download || g.download.trim() === "")
-    ) {
-        const info = document.createElement("p");
-        info.innerText = "Brak dostępnych wersji tej gry.";
-        buttons.appendChild(info);
+    // DOWNLOAD
+    if (g.download) {
+        const b = document.createElement("button");
+        b.className = "dl";
+        b.innerText = "⬇ Pobierz";
+        b.onclick = () => window.open(g.download, "_blank");
+        buttons.appendChild(b);
     }
 }
 
