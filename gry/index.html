@@ -273,35 +273,31 @@ function openGame(id) {
     frame.src = "";
     frame.style.display = "none";
 
-    // GRA ONLINE
+    // JEDEN PRZYCISK
+    const btn = document.createElement("button");
+
     if (g.embed && g.embed.trim() !== "") {
-        const playBtn = document.createElement("button");
-        playBtn.innerText = "🎮 Graj online";
-        playBtn.onclick = () => {
+        btn.innerText = "🎮 Wejdź do gry";
+        btn.onclick = () => {
             frame.src = g.embed;
             frame.style.display = "block";
         };
-        buttons.appendChild(playBtn);
+        buttons.appendChild(btn);
+        return;
     }
 
-    // POBIERANIE
     if (g.download && g.download.trim() !== "") {
-        const dlBtn = document.createElement("button");
-        dlBtn.innerText = "⬇ Pobierz / Otwórz";
-        dlBtn.onclick = () => {
+        btn.innerText = "⬇ Pobierz / Otwórz";
+        btn.onclick = () => {
             window.open(g.download, "_blank");
         };
-        buttons.appendChild(dlBtn);
+        buttons.appendChild(btn);
+        return;
     }
 
-    // brak obu
-    if ((!g.embed || g.embed.trim() === "") &&
-        (!g.download || g.download.trim() === "")) {
-
-        const info = document.createElement("p");
-        info.innerText = "Brak dostępnej wersji gry.";
-        buttons.appendChild(info);
-    }
+    const info = document.createElement("p");
+    info.innerText = "Brak dostępnej wersji gry.";
+    buttons.appendChild(info);
 }
 
 /* =========================
