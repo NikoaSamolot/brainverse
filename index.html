@@ -246,20 +246,23 @@ window.onload = loadPanel;
 
 </script>
 
-<footer style="position: fixed; bottom: 0; width: 100%; text-align: center; padding: 20px 0; background: rgba(0,0,0,0.85); color: white; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; z-index: 9999; backdrop-filter: blur(5px); border-top: 2px solid #ff8c00;">
-    
-    <!-- Ultra zajebisty pomarańczowy przycisk -->
-    <div style="margin-bottom: 15px;">
-        <a href="[https://ADRES-DOCELOWEJ-STRONY.pl](https://ADRES-DOCELOWEJ-STRONY.pl)" class="orange-btn">
-            PRZEJDŹ DO GIER
-        </a>
-    </div>
-
-    <!-- Tekst pod przyciskiem -->
-    <div style="font-size: 13px; opacity: 0.9; line-height: 1.5;">
-        Aby stworzyć konto oraz uzyskać pomoc napisz na: <b>brainversehelp@gmail.com</b>. <br>
-        Konta publiczne: <span style="color: #ff8c00;">login gosc hasło gosc</span>, login gry hasło gry. 
-        <a href="https://brainverse.pl/privacy-policy.html" style="color: #ff8c00; text-decoration: none; font-weight: bold; margin-left: 5px;">Polityka Prywatności</a>
+<footer style="position: fixed; bottom: 0; width: 100%; background: rgba(0,0,0,0.85); color: white; font-family: 'Segoe UI', Roboto, sans-serif; z-index: 9999; backdrop-filter: blur(5px); border-top: 2px solid #ff8c00; padding: 10px 0;">
+    <!-- Kontener trzymający zawartość blisko środka i w jednej linii -->
+    <div style="display: flex; align-items: center; justify-content: center; gap: 25px; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        
+        <!-- Tekst po lewej -->
+        <div style="font-size: 13px; opacity: 0.9; line-height: 1.4; text-align: left; max-width: 700px;">
+            Aby stworzyć konto oraz uzyskać pomoc napisz na: <b>brainversehelp@gmail.com</b>.<br>
+            Konta publiczne: <span style="color: #ff8c00;">login gosc hasło gosc</span>, login gry hasło gry. 
+            <a href="https://brainverse.pl/privacy-policy.html" style="color: #ff8c00; text-decoration: none; font-weight: bold; margin-left: 5px;">Polityka Prywatności</a>
+        </div>
+        
+        <!-- Ultra pomarańczowy przycisk po prawej -->
+        <div>
+            <a href="https://brainverse.pl/gry/" class="orange-btn">
+                PRZEJDŹ DO GIER
+            </a>
+        </div>
     </div>
 
     <style>
@@ -267,23 +270,22 @@ window.onload = loadPanel;
             display: inline-block;
             background: linear-gradient(45deg, #ff4500, #ff8c00);
             color: white !important;
-            padding: 12px 30px;
+            padding: 8px 20px;
             text-decoration: none;
-            font-weight: 900;
-            font-size: 16px;
-            border-radius: 50px;
+            font-weight: 800;
+            font-size: 13px;
+            border-radius: 30px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 15px rgba(255, 140, 0, 0.5);
-            transition: all 0.3s ease-in-out;
-            border: none;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 12px rgba(255, 140, 0, 0.4);
+            transition: all 0.2s ease-in-out;
+            white-space: nowrap; /* Zapobiega łamaniu tekstu w przycisku */
         }
 
         .orange-btn:hover {
-            transform: scale(1.1) translateY(-3px);
-            box-shadow: 0 0 25px rgba(```
-
-
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.7);
+            background: linear-gradient(45deg, #ff8c00, #ffae42);
         }
     </style>
 </footer>
