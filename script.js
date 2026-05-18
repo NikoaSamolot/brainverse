@@ -14,6 +14,10 @@ function login() {
   }
 }
 
+function goToGames(){
+    window.location.href = "https://brainverse.pl/gry";
+}
+
 // wylogowanie
 function logout() {
   localStorage.removeItem('loggedIn');
