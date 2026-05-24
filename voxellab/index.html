@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voxel Lab</title>
+
+<link rel="icon" type="image/png" href="vlp.png">
+
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    font-family:sans-serif;
+    background:#000;
+}
+
+#title{
+    position:absolute;
+    top:10px;
+    left:50%;
+    transform:translateX(-50%);
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+    background:rgba(0,0,0,0.5);
+    padding:6px 14px;
+    border-radius:6px;
+    z-index:10;
+}
+
+#hud{
+    position:absolute;
+    top:50px;
+    left:10px;
+    color:white;
+    background:rgba(0,0,0,0.5);
+    padding:8px;
+    border-radius:6px;
+    font-size:12px;
+    z-index:10;
+}
+
+#panel{
+    position:absolute;
+    top:10px;
+    right:10px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    z-index:10;
+}
+
+.btn{
+    padding:8px 10px;
+    background:#222;
+    color:white;
+    border:1px solid #555;
+    cursor:pointer;
+    border-radius:6px;
+    font-size:12px;
+}
+
+.btn:hover{ background:#333; }
+
+#crosshair{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:8px;
+    height:8px;
+    margin:-4px;
+    border:1px solid white;
+}
+
+#hotbar{
+    position:absolute;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:6px;
+}
+
+.slot{
+    width:45px;
+    height:45px;
+    border:2px solid #555;
+    background:#222;
+}
+
+.slot.active{
+    border:2px solid yellow;
+}
+
+canvas{display:block;}
+</style>
+</head>
+
+<body>
+
+<div id="title">Voxel Lab</div>
+
+<div id="hud">
+WASD move | Mouse look | Space jump | 1-5 blocks | Enter build | Backspace remove
+</div>
+
+<div id="panel">
+    <button class="btn" onclick="saveWorld()">Save</button>
+    <button class="btn" onclick="loadWorld()">Load</button>
+    <button class="btn" onclick="exportWorld()">Export</button>
+    <input type="file" id="fileInput" style="display:none" onchange="importWorld(event)">
+    <button class="btn" onclick="fileInput.click()">Import</button>
+</div>
+
+<div id="crosshair"></div>
+<div id="hotbar"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+
+<script>
+
+let scene,camera,renderer,controls;
+let velocity=new THREE.Vector3();
+let blocks={};
+let keys={};
+
+const spawn=new THREE.Vector3(8,3,8);
+const spawnKey="8,1,8";
+
+const SPEED=0.12;
+const GRAVITY=0.015;
+const JUMP=0.22;
+
+let selected=0;
+
+/* ================= SAVE ================= */
+
+function serializeWorld(){
+    const data=[];
+    for(const k in blocks){
+        const b=blocks[k];
+        if(b.userData.unbreakable) continue;
+
+        data.push({
+            x:Math.round(b.position.x),
+            y:Math.round(b.position.y),
+            z:Math.round(b.position.z),
+            type:b.userData.type
+        });
+    }
+    return JSON.stringify({blocks:data});
+}
+
+function saveWorld(){
+    localStorage.setItem("voxelLabWorld",serializeWorld());
+    alert("Saved");
+}
+
+function loadWorld(){
+    const raw=localStorage.getItem("voxelLabWorld");
+    if(!raw) return;
+
+    const data=JSON.parse(raw);
+    clearWorld();
+
+    for(const b of data.blocks){
+        addBlock(b.x,b.y,b.z,b.type);
+    }
+}
+
+function exportWorld(){
+    const blob=new Blob([serializeWorld()],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="voxel_lab.json";
+    a.click();
+}
+
+function importWorld(e){
+    const reader=new FileReader();
+
+    reader.onload=function(){
+        const data=JSON.parse(reader.result);
+        clearWorld();
+
+        for(const b of data.blocks){
+            addBlock(b.x,b.y,b.z,b.type);
+        }
+    };
+
+    reader.readAsText(e.target.files[0]);
+}
+
+function clearWorld(){
+    for(const k in blocks){
+        const b=blocks[k];
+        if(b.userData.unbreakable) continue;
+        scene.remove(b);
+    }
+    blocks={};
+}
+
+/* ================= TEXTURES (TWOJE ORYGINALNE) ================= */
+
+function makeTexture(drawFn){
+    const size=32;
+    const canvas=document.createElement("canvas");
+    canvas.width=size;
+    canvas.height=size;
+    const ctx=canvas.getContext("2d");
+    drawFn(ctx,size);
+
+    const tex=new THREE.CanvasTexture(canvas);
+    tex.magFilter=THREE.NearestFilter;
+    tex.minFilter=THREE.NearestFilter;
+    return tex;
+}
+
+/* GRASS TOP */
+const grassTopTex=makeTexture((ctx,s)=>{
+    ctx.fillStyle="#3cb371";
+    ctx.fillRect(0,0,s,s);
+
+    for(let i=0;i<60;i++){
+        ctx.fillStyle="rgba(0,0,0,0.12)";
+        ctx.fillRect(Math.random()*s,Math.random()*s,1,1);
+    }
+});
+
+/* GRASS SIDE */
+const grassSideTex=makeTexture((ctx,s)=>{
+    ctx.fillStyle="#7a4e2d";
+    ctx.fillRect(0,0,s,s);
+
+    ctx.fillStyle="#3cb371";
+    ctx.fillRect(0,0,s,s/3);
+
+    for(let i=0;i<50;i++){
+        ctx.fillStyle="rgba(0,0,0,0.12)";
+        ctx.fillRect(Math.random()*s,Math.random()*s,1,1);
+    }
+});
+
+/* DIRT */
+const dirtTex=makeTexture((ctx,s)=>{
+    ctx.fillStyle="#7a4e2d";
+    ctx.fillRect(0,0,s,s);
+
+    for(let i=0;i<100;i++){
+        const v=60+Math.random()*60;
+        ctx.fillStyle=`rgb(${v},${v*0.5},${v*0.3})`;
+        ctx.fillRect(Math.random()*s,Math.random()*s,2,2);
+    }
+});
+
+/* STONE */
+const stoneTex=makeTexture((ctx,s)=>{
+    ctx.fillStyle="#7d7d7d";
+    ctx.fillRect(0,0,s,s);
+
+    for(let i=0;i<80;i++){
+        const v=80+Math.random()*50;
+        ctx.fillStyle=`rgb(${v},${v},${v})`;
+        ctx.fillRect(Math.random()*s,Math.random()*s,2,2);
+    }
+});
+
+/* SAND */
+const sandTex=makeTexture((ctx,s)=>{
+    ctx.fillStyle="#e6d3a3";
+    ctx.fillRect(0,0,s,s);
+
+    for(let i=0;i<80;i++){
+        ctx.fillStyle="rgba(0,0,0,0.08)";
+        ctx.fillRect(Math.random()*s,Math.random()*s,1,1);
+    }
+});
+
+/* WOOD */
+const woodTex=makeTexture((ctx,s)=>{
+    ctx.fillStyle="#6b4f2a";
+    ctx.fillRect(0,0,s,s);
+
+    for(let i=0;i<s;i+=4){
+        ctx.fillStyle="rgba(0,0,0,0.15)";
+        ctx.fillRect(i,0,1,s);
+    }
+});
+
+/* MATERIALS */
+
+const grassMaterial=[
+    new THREE.MeshBasicMaterial({map:grassSideTex}),
+    new THREE.MeshBasicMaterial({map:grassSideTex}),
+    new THREE.MeshBasicMaterial({map:grassTopTex}),
+    new THREE.MeshBasicMaterial({map:dirtTex}),
+    new THREE.MeshBasicMaterial({map:grassSideTex}),
+    new THREE.MeshBasicMaterial({map:grassSideTex})
+];
+
+const materials=[
+    grassMaterial,
+    new THREE.MeshBasicMaterial({map:dirtTex}),
+    new THREE.MeshBasicMaterial({map:stoneTex}),
+    new THREE.MeshBasicMaterial({map:sandTex}),
+    new THREE.MeshBasicMaterial({map:woodTex})
+];
+
+/* ================= INIT ================= */
+
+init();
+animate();
+createHotbar();
+
+function init(){
+
+    scene=new THREE.Scene();
+    scene.background=new THREE.Color(0x87ceeb);
+
+    camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,800);
+
+    renderer=new THREE.WebGLRenderer({antialias:false});
+    renderer.setSize(innerWidth,innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    controls=new THREE.PointerLockControls(camera,document.body);
+    scene.add(controls.getObject());
+
+    document.body.addEventListener("click",()=>controls.lock());
+
+    for(let x=0;x<16;x++){
+        for(let z=0;z<16;z++){
+            addBlock(x,0,z,1);
+            addBlock(x,1,z,0);
+        }
+    }
+
+    addSpawnBlock();
+    controls.getObject().position.copy(spawn);
+
+    document.addEventListener("keydown",e=>{
+        keys[e.code]=true;
+
+        if(e.code==="Digit1") setSelected(0);
+        if(e.code==="Digit2") setSelected(1);
+        if(e.code==="Digit3") setSelected(2);
+        if(e.code==="Digit4") setSelected(3);
+        if(e.code==="Digit5") setSelected(4);
+
+        if(e.code==="Enter") interact(true);
+        if(e.code==="Backspace"){e.preventDefault();interact(false);}
+
+        if(e.code==="Space" && isGrounded()) velocity.y=JUMP;
+    });
+
+    document.addEventListener("keyup",e=>keys[e.code]=false);
+
+    window.addEventListener("resize",()=>{
+        camera.aspect=innerWidth/innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(innerWidth,innerHeight);
+    });
+}
+
+/* ================= BLOCKS ================= */
+
+function addSpawnBlock(){
+    const mesh=new THREE.Mesh(
+        new THREE.BoxGeometry(1,1,1),
+        new THREE.MeshBasicMaterial({color:0x000000})
+    );
+    mesh.position.set(8,1,8);
+    mesh.userData.unbreakable=true;
+    scene.add(mesh);
+    blocks[spawnKey]=mesh;
+}
+
+function addBlock(x,y,z,type){
+
+    const k=`${x},${y},${z}`;
+    if(blocks[k]) return;
+
+    const mesh=new THREE.Mesh(
+        new THREE.BoxGeometry(1,1,1),
+        materials[type]
+    );
+
+    mesh.position.set(x,y,z);
+    mesh.userData.unbreakable=false;
+    mesh.userData.type=type;
+
+    scene.add(mesh);
+    blocks[k]=mesh;
+}
+
+function removeBlock(x,y,z){
+
+    const k=`${x},${y},${z}`;
+    if(!blocks[k]) return;
+    if(blocks[k].userData.unbreakable) return;
+
+    scene.remove(blocks[k]);
+    delete blocks[k];
+}
+
+/* ================= COLLISION ================= */
+
+function collides(pos){
+
+    for(const k in blocks){
+        const b=blocks[k];
+
+        if(
+            Math.abs(b.position.x-pos.x)<0.6 &&
+            Math.abs(b.position.y-pos.y)<1.5 &&
+            Math.abs(b.position.z-pos.z)<0.6
+        ) return true;
+    }
+    return false;
+}
+
+function isGrounded(){
+    const p=controls.getObject().position.clone();
+    p.y-=0.1;
+    return collides(p);
+}
+
+/* ================= INTERACT ================= */
+
+function interact(place){
+
+    const ray=new THREE.Raycaster();
+    ray.setFromCamera(new THREE.Vector2(0,0),camera);
+
+    const hits=ray.intersectObjects(Object.values(blocks));
+    if(!hits.length) return;
+
+    const h=hits[0];
+    const p=h.object.position.clone();
+
+    if(place){
+
+        const n=h.face.normal;
+        const np=p.add(n);
+
+        const player=controls.getObject().position;
+
+        if(
+            Math.abs(np.x-player.x)<0.6 &&
+            Math.abs(np.y-player.y)<1.5 &&
+            Math.abs(np.z-player.z)<0.6
+        ) return;
+
+        if(`${Math.round(np.x)},${Math.round(np.y)},${Math.round(np.z)}`===spawnKey) return;
+
+        addBlock(Math.round(np.x),Math.round(np.y),Math.round(np.z),selected);
+
+    } else {
+        removeBlock(p.x,p.y,p.z);
+    }
+}
+
+/* ================= HOTBAR ================= */
+
+function createHotbar(){
+    const bar=document.getElementById("hotbar");
+    for(let i=0;i<5;i++){
+        const slot=document.createElement("div");
+        slot.className="slot";
+        bar.appendChild(slot);
+    }
+    updateHotbar();
+}
+
+function setSelected(i){
+    selected=i;
+    updateHotbar();
+}
+
+function updateHotbar(){
+    const colors=["#3cb371","#7a4e2d","#808080","#d2b48c","#6b4f2a"];
+    document.querySelectorAll(".slot").forEach((s,i)=>{
+        s.style.background=colors[i];
+        s.classList.toggle("active",i===selected);
+    });
+}
+
+/* ================= LOOP ================= */
+
+function animate(){
+    requestAnimationFrame(animate);
+
+    const obj=controls.getObject();
+    const prev=obj.position.clone();
+
+    if(controls.isLocked){
+        if(keys["KeyW"]) controls.moveForward(SPEED);
+        if(keys["KeyS"]) controls.moveForward(-SPEED);
+        if(keys["KeyA"]) controls.moveRight(-SPEED);
+        if(keys["KeyD"]) controls.moveRight(SPEED);
+    }
+
+    if(collides(obj.position)){
+        obj.position.x=prev.x;
+        obj.position.z=prev.z;
+    }
+
+    velocity.y-=GRAVITY;
+    obj.position.y+=velocity.y;
+
+    if(collides(obj.position)){
+        obj.position.y=prev.y;
+        velocity.y=0;
+    }
+
+    if(obj.position.y<-20){
+        obj.position.copy(spawn);
+        velocity.set(0,0,0);
+    }
+
+    renderer.render(scene,camera);
+}
+
+</script>
+
+</body>
+</html>
