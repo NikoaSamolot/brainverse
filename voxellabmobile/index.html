@@ -26,7 +26,23 @@ body{
     z-index:10;
 }
 
-/* JOYSTICK */
+#panel{
+    position:absolute;
+    top:10px;
+    right:10px;
+    z-index:20;
+}
+
+.btn{
+    padding:8px 10px;
+    background:#222;
+    color:white;
+    border:1px solid #555;
+    border-radius:6px;
+    font-size:12px;
+}
+
+/* joystick */
 #joystickBase{
     position:absolute;
     bottom:60px;
@@ -48,7 +64,7 @@ body{
     top:35px;
 }
 
-/* JUMP BUTTON */
+/* jump */
 #jumpBtn{
     position:absolute;
     bottom:80px;
@@ -71,15 +87,14 @@ canvas{display:block;}
 
 <body>
 
-<div id="ui">
-WASD (PC) / joystick (mobile)<br>
-Drag = look | Jump button
+<div id="ui">Joystick | Look drag | Jump | Import JSON</div>
+
+<div id="panel">
+    <button class="btn" onclick="fileInput.click()">IMPORT</button>
+    <input type="file" id="fileInput" accept=".json" style="display:none">
 </div>
 
-<div id="joystickBase">
-    <div id="joystickStick"></div>
-</div>
-
+<div id="joystickBase"><div id="joystickStick"></div></div>
 <div id="jumpBtn">JUMP</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
@@ -87,7 +102,6 @@ Drag = look | Jump button
 <script>
 
 let scene, camera, renderer;
-
 let velocity = new THREE.Vector3();
 let keys = {};
 
@@ -95,13 +109,89 @@ const SPEED = 0.12;
 const GRAVITY = 0.015;
 const JUMP = 0.22;
 
-const spawn = new THREE.Vector3(8, 5, 8);
+const spawn = new THREE.Vector3(8,3,8);
 
 let yaw = 0;
 let pitch = 0;
 
-/* WORLD */
 let blocks = {};
+
+/* ================= TEXTURES ================= */
+
+function makeTexture(drawFn){
+    const size = 32;
+    const c = document.createElement("canvas");
+    c.width = c.height = size;
+    const ctx = c.getContext("2d");
+    drawFn(ctx,size);
+
+    const tex = new THREE.CanvasTexture(c);
+    tex.magFilter = THREE.NearestFilter;
+    tex.minFilter = THREE.NearestFilter;
+    return tex;
+}
+
+function createTextTexture(text){
+    const c = document.createElement("canvas");
+    c.width = c.height = 256;
+    const ctx = c.getContext("2d");
+
+    ctx.fillStyle="#000";
+    ctx.fillRect(0,0,256,256);
+
+    ctx.fillStyle="#fff";
+    ctx.font="24px sans-serif";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+
+    if(text.length>60) text=text.slice(0,60);
+    ctx.fillText(text,128,128);
+
+    return new THREE.CanvasTexture(c);
+}
+
+/* ORIGINAL TEXTURES */
+const grassTop = makeTexture((c,s)=>{
+    c.fillStyle="#3cb371"; c.fillRect(0,0,s,s);
+});
+
+const grassSide = makeTexture((c,s)=>{
+    c.fillStyle="#7a4e2d"; c.fillRect(0,0,s,s);
+    c.fillStyle="#3cb371"; c.fillRect(0,0,s,s/3);
+});
+
+const dirt = makeTexture((c,s)=>{
+    c.fillStyle="#7a4e2d"; c.fillRect(0,0,s,s);
+});
+
+const stone = makeTexture((c,s)=>{
+    c.fillStyle="#7d7d7d"; c.fillRect(0,0,s,s);
+});
+
+const sand = makeTexture((c,s)=>{
+    c.fillStyle="#e6d3a3"; c.fillRect(0,0,s,s);
+});
+
+const wood = makeTexture((c,s)=>{
+    c.fillStyle="#6b4f2a"; c.fillRect(0,0,s,s);
+});
+
+/* MATERIALS */
+const materials = [
+    [
+        new THREE.MeshBasicMaterial({map:grassSide}),
+        new THREE.MeshBasicMaterial({map:grassSide}),
+        new THREE.MeshBasicMaterial({map:grassTop}),
+        new THREE.MeshBasicMaterial({map:dirt}),
+        new THREE.MeshBasicMaterial({map:grassSide}),
+        new THREE.MeshBasicMaterial({map:grassSide})
+    ],
+    new THREE.MeshBasicMaterial({map:dirt}),
+    new THREE.MeshBasicMaterial({map:stone}),
+    new THREE.MeshBasicMaterial({map:sand}),
+    new THREE.MeshBasicMaterial({map:wood}),
+    new THREE.MeshBasicMaterial({map:createTextTexture("")})
+];
 
 /* ================= INIT ================= */
 
@@ -117,153 +207,200 @@ function init(){
     camera.position.copy(spawn);
 
     renderer = new THREE.WebGLRenderer({antialias:false});
-    renderer.setSize(innerWidth, innerHeight);
+    renderer.setSize(innerWidth,innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    /* simple world */
+    /* ground */
     for(let x=0;x<16;x++){
         for(let z=0;z<16;z++){
-            addBlock(x,0,z);
-            addBlock(x,1,z);
+            addBlock(x,0,z,1);
+            addBlock(x,1,z,0);
         }
     }
 
-    /* input */
-    document.addEventListener("keydown", e => keys[e.code] = true);
-    document.addEventListener("keyup", e => keys[e.code] = false);
+    addSpawnBlock(); // <<< ONLY ADDITION
+
+    document.addEventListener("keydown",e=>keys[e.code]=true);
+    document.addEventListener("keyup",e=>keys[e.code]=false);
+
+    setupControls();
+    setupImport();
 
     window.addEventListener("resize",()=>{
-        camera.aspect = innerWidth/innerHeight;
+        camera.aspect=innerWidth/innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(innerWidth,innerHeight);
     });
+}
 
-    setupMobileControls();
+/* ================= SPAWN BLOCK (FIXED) ================= */
+
+function addSpawnBlock(){
+
+    const geo = new THREE.BoxGeometry(1,1,1);
+    const mat = new THREE.MeshBasicMaterial({color:0x000000});
+    const mesh = new THREE.Mesh(geo,mat);
+
+    mesh.position.set(8,1,8);
+    mesh.userData.unbreakable = true;
+
+    scene.add(mesh);
+    blocks["8,1,8"] = mesh;
 }
 
 /* ================= BLOCKS ================= */
 
-function addBlock(x,y,z){
-    const geo = new THREE.BoxGeometry(1,1,1);
-    const mat = new THREE.MeshBasicMaterial({color:0x3cb371});
-    const mesh = new THREE.Mesh(geo,mat);
+function addBlock(x,y,z,type=1,text=null){
+
+    const key=`${x},${y},${z}`;
+    if(blocks[key]) return;
+
+    let mat = materials[type];
+
+    if(type===5){
+        mat = new THREE.MeshBasicMaterial({
+            map:createTextTexture(text||"")
+        });
+    }
+
+    const mesh = new THREE.Mesh(
+        new THREE.BoxGeometry(1,1,1),
+        mat
+    );
 
     mesh.position.set(x,y,z);
-    scene.add(mesh);
+    mesh.userData.type=type;
 
-    blocks[`${x},${y},${z}`] = mesh;
+    scene.add(mesh);
+    blocks[key]=mesh;
 }
 
-/* ================= COLLISION ================= */
+/* ================= IMPORT ================= */
+
+function setupImport(){
+
+    fileInput.addEventListener("change",e=>{
+        const file=e.target.files[0];
+        if(!file) return;
+
+        const reader=new FileReader();
+
+        reader.onload=function(){
+            const data=JSON.parse(reader.result);
+
+            clearWorld();
+
+            for(const b of data.blocks){
+                addBlock(b.x,b.y,b.z,b.type,b.text);
+            }
+
+            addSpawnBlock(); // IMPORTANT FIX
+        };
+
+        reader.readAsText(file);
+    });
+}
+
+function clearWorld(){
+    for(const k in blocks){
+        scene.remove(blocks[k]);
+    }
+    blocks={};
+}
+
+/* ================= CONTROLS ================= */
+
+function setupControls(){
+
+    const stick=document.getElementById("joystickStick");
+    const base=document.getElementById("joystickBase");
+    const jumpBtn=document.getElementById("jumpBtn");
+
+    let mx=0,my=0;
+    let active=false,sx=0,sy=0;
+
+    base.addEventListener("touchstart",e=>{
+        active=true;
+        sx=e.touches[0].clientX;
+        sy=e.touches[0].clientY;
+    });
+
+    base.addEventListener("touchmove",e=>{
+        if(!active)return;
+
+        let dx=e.touches[0].clientX-sx;
+        let dy=e.touches[0].clientY-sy;
+
+        const max=40;
+        dx=Math.max(-max,Math.min(max,dx));
+        dy=Math.max(-max,Math.min(max,dy));
+
+        stick.style.transform=`translate(${dx}px,${dy}px)`;
+
+        mx=dx/max;
+        my=dy/max;
+    });
+
+    base.addEventListener("touchend",()=>{
+        active=false;
+        mx=my=0;
+        stick.style.transform="translate(0,0)";
+    });
+
+    /* LOOK */
+    let lx=0,ly=0,look=false;
+
+    document.addEventListener("touchstart",e=>{
+        if(e.target.closest("#joystickBase")||e.target.id==="jumpBtn")return;
+        look=true;
+        lx=e.touches[0].clientX;
+        ly=e.touches[0].clientY;
+    });
+
+    document.addEventListener("touchmove",e=>{
+        if(!look)return;
+
+        let dx=e.touches[0].clientX-lx;
+        let dy=e.touches[0].clientY-ly;
+
+        yaw -= dx*0.003;
+        pitch -= dy*0.003;
+
+        pitch=Math.max(-1.5,Math.min(1.5,pitch));
+
+        lx=e.touches[0].clientX;
+        ly=e.touches[0].clientY;
+    });
+
+    document.addEventListener("touchend",()=>look=false);
+
+    jumpBtn.addEventListener("touchstart",()=>{
+        if(isGrounded()) velocity.y=JUMP;
+    });
+
+    window._mx=mx;
+    window._my=my;
+
+    setInterval(()=>{window._mx=mx;window._my=my;},16);
+}
+
+/* ================= PHYSICS ================= */
 
 function collides(pos){
     for(const k in blocks){
-        const b = blocks[k];
-
+        const b=blocks[k];
         if(
-            Math.abs(b.position.x - pos.x) < 0.6 &&
-            Math.abs(b.position.y - pos.y) < 1.5 &&
-            Math.abs(b.position.z - pos.z) < 0.6
+            Math.abs(b.position.x-pos.x)<0.6 &&
+            Math.abs(b.position.y-pos.y)<1.5 &&
+            Math.abs(b.position.z-pos.z)<0.6
         ) return true;
     }
     return false;
 }
 
-/* ================= CONTROLS ================= */
-
-function setupMobileControls(){
-
-    const stick = document.getElementById("joystickStick");
-    const base = document.getElementById("joystickBase");
-    const jumpBtn = document.getElementById("jumpBtn");
-
-    let active = false;
-    let startX = 0;
-    let startY = 0;
-
-    let moveX = 0;
-    let moveY = 0;
-
-    /* JOYSTICK */
-    base.addEventListener("touchstart", e=>{
-        active = true;
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-    });
-
-    base.addEventListener("touchmove", e=>{
-        if(!active) return;
-
-        let dx = e.touches[0].clientX - startX;
-        let dy = e.touches[0].clientY - startY;
-
-        const max = 40;
-
-        dx = Math.max(-max, Math.min(max, dx));
-        dy = Math.max(-max, Math.min(max, dy));
-
-        stick.style.transform = `translate(${dx}px,${dy}px)`;
-
-        moveX = dx / max;
-        moveY = dy / max;
-    });
-
-    base.addEventListener("touchend", ()=>{
-        active = false;
-        stick.style.transform = `translate(0px,0px)`;
-        moveX = 0;
-        moveY = 0;
-    });
-
-    /* LOOK (drag anywhere) */
-    let lastX = 0;
-    let lastY = 0;
-    let looking = false;
-
-    document.addEventListener("touchstart", e=>{
-        if(e.target.closest("#joystickBase") || e.target.id==="jumpBtn") return;
-        looking = true;
-        lastX = e.touches[0].clientX;
-        lastY = e.touches[0].clientY;
-    });
-
-    document.addEventListener("touchmove", e=>{
-        if(!looking) return;
-
-        let dx = e.touches[0].clientX - lastX;
-        let dy = e.touches[0].clientY - lastY;
-
-        yaw -= dx * 0.003;
-        pitch -= dy * 0.003;
-
-        pitch = Math.max(-1.5, Math.min(1.5, pitch));
-
-        lastX = e.touches[0].clientX;
-        lastY = e.touches[0].clientY;
-    });
-
-    document.addEventListener("touchend", ()=> looking=false);
-
-    /* JUMP */
-    jumpBtn.addEventListener("touchstart", ()=>{
-        if(isGrounded()) velocity.y = JUMP;
-    });
-
-    /* apply movement each frame */
-    window._moveX = moveX;
-    window._moveY = moveY;
-
-    setInterval(()=>{
-        window._moveX = moveX;
-        window._moveY = moveY;
-    }, 16);
-}
-
-/* ================= PHYSICS ================= */
-
 function isGrounded(){
-    const p = camera.position.clone();
-    p.y -= 0.1;
+    const p=camera.position.clone();
+    p.y-=0.1;
     return collides(p);
 }
 
@@ -272,60 +409,40 @@ function isGrounded(){
 function animate(){
     requestAnimationFrame(animate);
 
-    const prev = camera.position.clone();
+    const prev=camera.position.clone();
 
-    /* rotation */
-    camera.rotation.order = "YXZ";
-    camera.rotation.y = yaw;
-    camera.rotation.x = pitch;
+    camera.rotation.order="YXZ";
+    camera.rotation.y=yaw;
+    camera.rotation.x=pitch;
 
-    /* movement vector */
-    let forward = new THREE.Vector3(
-        -Math.sin(yaw),
-        0,
-        -Math.cos(yaw)
-    );
+    const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
+    const right=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
 
-    let right = new THREE.Vector3(
-        Math.cos(yaw),
-        0,
-        -Math.sin(yaw)
-    );
+    const mx=window._mx||0;
+    const my=window._my||0;
 
-    let mx = window._moveX || 0;
-    let my = window._moveY || 0;
-
-    /* PC fallback */
-    if(keys["KeyW"]) camera.position.addScaledVector(forward, SPEED);
-    if(keys["KeyS"]) camera.position.addScaledVector(forward, -SPEED);
-    if(keys["KeyA"]) camera.position.addScaledVector(right, -SPEED);
-    if(keys["KeyD"]) camera.position.addScaledVector(right, SPEED);
-
-    /* mobile joystick */
-    camera.position.addScaledVector(forward, -my * SPEED);
-    camera.position.addScaledVector(right, mx * SPEED);
-
-    /* collision XZ */
-    if(collides(camera.position)){
-        camera.position.x = prev.x;
-        camera.position.z = prev.z;
-    }
-
-    /* gravity */
-    velocity.y -= GRAVITY;
-    camera.position.y += velocity.y;
+    camera.position.addScaledVector(forward,-my*SPEED);
+    camera.position.addScaledVector(right,mx*SPEED);
 
     if(collides(camera.position)){
-        camera.position.y = prev.y;
-        velocity.y = 0;
+        camera.position.x=prev.x;
+        camera.position.z=prev.z;
     }
 
-    if(camera.position.y < -20){
+    velocity.y-=GRAVITY;
+    camera.position.y+=velocity.y;
+
+    if(collides(camera.position)){
+        camera.position.y=prev.y;
+        velocity.y=0;
+    }
+
+    if(camera.position.y<-20){
         camera.position.copy(spawn);
         velocity.set(0,0,0);
     }
 
-    renderer.render(scene, camera);
+    renderer.render(scene,camera);
 }
 
 </script>
