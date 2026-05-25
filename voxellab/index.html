@@ -102,7 +102,7 @@ canvas{display:block;}
 <div id="title">Voxel Lab</div>
 
 <div id="hud">
-WASD move | Mouse look | Space jump | 1-5 blocks | Enter build | Backspace remove
+WASD move | Mouse look | Space jump | 1-6 blocks | Enter build | Backspace remove
 </div>
 
 <div id="panel">
@@ -135,75 +135,7 @@ const JUMP=0.22;
 
 let selected=0;
 
-/* ================= SAVE ================= */
-
-function serializeWorld(){
-    const data=[];
-    for(const k in blocks){
-        const b=blocks[k];
-        if(b.userData.unbreakable) continue;
-
-        data.push({
-            x:Math.round(b.position.x),
-            y:Math.round(b.position.y),
-            z:Math.round(b.position.z),
-            type:b.userData.type
-        });
-    }
-    return JSON.stringify({blocks:data});
-}
-
-function saveWorld(){
-    localStorage.setItem("voxelLabWorld",serializeWorld());
-    alert("Saved");
-}
-
-function loadWorld(){
-    const raw=localStorage.getItem("voxelLabWorld");
-    if(!raw) return;
-
-    const data=JSON.parse(raw);
-    clearWorld();
-
-    for(const b of data.blocks){
-        addBlock(b.x,b.y,b.z,b.type);
-    }
-}
-
-function exportWorld(){
-    const blob=new Blob([serializeWorld()],{type:"application/json"});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement("a");
-    a.href=url;
-    a.download="voxel_lab.json";
-    a.click();
-}
-
-function importWorld(e){
-    const reader=new FileReader();
-
-    reader.onload=function(){
-        const data=JSON.parse(reader.result);
-        clearWorld();
-
-        for(const b of data.blocks){
-            addBlock(b.x,b.y,b.z,b.type);
-        }
-    };
-
-    reader.readAsText(e.target.files[0]);
-}
-
-function clearWorld(){
-    for(const k in blocks){
-        const b=blocks[k];
-        if(b.userData.unbreakable) continue;
-        scene.remove(b);
-    }
-    blocks={};
-}
-
-/* ================= TEXTURES (TWOJE ORYGINALNE) ================= */
+/* ================= TEXTURE ================= */
 
 function makeTexture(drawFn){
     const size=32;
@@ -219,7 +151,47 @@ function makeTexture(drawFn){
     return tex;
 }
 
-/* GRASS TOP */
+function createTextTexture(text){
+    const canvas=document.createElement("canvas");
+    canvas.width=256;
+    canvas.height=256;
+    const ctx=canvas.getContext("2d");
+
+    ctx.fillStyle="#000";
+    ctx.fillRect(0,0,256,256);
+
+    ctx.fillStyle="#fff";
+    ctx.font="24px sans-serif";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+
+    const maxLen=60;
+    if(text.length>maxLen) text=text.slice(0,maxLen);
+
+    const words=text.split(" ");
+    const lines=[];
+    let line="";
+
+    for(let w of words){
+        if((line+w).length>18){
+            lines.push(line);
+            line=w+" ";
+        }else line+=w+" ";
+    }
+    lines.push(line);
+
+    lines.forEach((l,i)=>{
+        ctx.fillText(l,128,128+(i*28)-(lines.length*14));
+    });
+
+    const tex=new THREE.CanvasTexture(canvas);
+    tex.magFilter=THREE.NearestFilter;
+    tex.minFilter=THREE.NearestFilter;
+    return tex;
+}
+
+/* ================= BLOCK TEXTURES (ORIGINAL LOOK FIX) ================= */
+
 const grassTopTex=makeTexture((ctx,s)=>{
     ctx.fillStyle="#3cb371";
     ctx.fillRect(0,0,s,s);
@@ -230,7 +202,6 @@ const grassTopTex=makeTexture((ctx,s)=>{
     }
 });
 
-/* GRASS SIDE */
 const grassSideTex=makeTexture((ctx,s)=>{
     ctx.fillStyle="#7a4e2d";
     ctx.fillRect(0,0,s,s);
@@ -244,7 +215,6 @@ const grassSideTex=makeTexture((ctx,s)=>{
     }
 });
 
-/* DIRT */
 const dirtTex=makeTexture((ctx,s)=>{
     ctx.fillStyle="#7a4e2d";
     ctx.fillRect(0,0,s,s);
@@ -256,7 +226,6 @@ const dirtTex=makeTexture((ctx,s)=>{
     }
 });
 
-/* STONE */
 const stoneTex=makeTexture((ctx,s)=>{
     ctx.fillStyle="#7d7d7d";
     ctx.fillRect(0,0,s,s);
@@ -268,7 +237,6 @@ const stoneTex=makeTexture((ctx,s)=>{
     }
 });
 
-/* SAND */
 const sandTex=makeTexture((ctx,s)=>{
     ctx.fillStyle="#e6d3a3";
     ctx.fillRect(0,0,s,s);
@@ -279,7 +247,6 @@ const sandTex=makeTexture((ctx,s)=>{
     }
 });
 
-/* WOOD */
 const woodTex=makeTexture((ctx,s)=>{
     ctx.fillStyle="#6b4f2a";
     ctx.fillRect(0,0,s,s);
@@ -290,7 +257,7 @@ const woodTex=makeTexture((ctx,s)=>{
     }
 });
 
-/* MATERIALS */
+/* ================= MATERIALS ================= */
 
 const grassMaterial=[
     new THREE.MeshBasicMaterial({map:grassSideTex}),
@@ -306,7 +273,8 @@ const materials=[
     new THREE.MeshBasicMaterial({map:dirtTex}),
     new THREE.MeshBasicMaterial({map:stoneTex}),
     new THREE.MeshBasicMaterial({map:sandTex}),
-    new THREE.MeshBasicMaterial({map:woodTex})
+    new THREE.MeshBasicMaterial({map:woodTex}),
+    new THREE.MeshBasicMaterial({color:0xffffff})
 ];
 
 /* ================= INIT ================= */
@@ -349,6 +317,7 @@ function init(){
         if(e.code==="Digit3") setSelected(2);
         if(e.code==="Digit4") setSelected(3);
         if(e.code==="Digit5") setSelected(4);
+        if(e.code==="Digit6") setSelected(5);
 
         if(e.code==="Enter") interact(true);
         if(e.code==="Backspace"){e.preventDefault();interact(false);}
@@ -372,25 +341,38 @@ function addSpawnBlock(){
         new THREE.BoxGeometry(1,1,1),
         new THREE.MeshBasicMaterial({color:0x000000})
     );
+
     mesh.position.set(8,1,8);
     mesh.userData.unbreakable=true;
+
     scene.add(mesh);
-    blocks[spawnKey]=mesh;
+
+    const k="8,1,8";
+    if(blocks[k]) scene.remove(blocks[k]);
+    blocks[k]=mesh;
 }
 
-function addBlock(x,y,z,type){
+function addBlock(x,y,z,type,text=null){
 
     const k=`${x},${y},${z}`;
     if(blocks[k]) return;
 
+    let material=materials[type];
+
+    if(type===5){
+        material=new THREE.MeshBasicMaterial({
+            map:createTextTexture(text || "")
+        });
+    }
+
     const mesh=new THREE.Mesh(
         new THREE.BoxGeometry(1,1,1),
-        materials[type]
+        material
     );
 
     mesh.position.set(x,y,z);
-    mesh.userData.unbreakable=false;
     mesh.userData.type=type;
+    mesh.userData.text=text;
 
     scene.add(mesh);
     blocks[k]=mesh;
@@ -409,7 +391,6 @@ function removeBlock(x,y,z){
 /* ================= COLLISION ================= */
 
 function collides(pos){
-
     for(const k in blocks){
         const b=blocks[k];
 
@@ -454,20 +435,109 @@ function interact(place){
             Math.abs(np.z-player.z)<0.6
         ) return;
 
-        if(`${Math.round(np.x)},${Math.round(np.y)},${Math.round(np.z)}`===spawnKey) return;
+        if(selected===5){
+            let text=prompt("Text (max 60):");
+            if(!text) return;
+            if(text.length>60) text=text.slice(0,60);
 
-        addBlock(Math.round(np.x),Math.round(np.y),Math.round(np.z),selected);
+            addBlock(
+                Math.round(np.x),
+                Math.round(np.y),
+                Math.round(np.z),
+                5,
+                text
+            );
+        } else {
+            addBlock(
+                Math.round(np.x),
+                Math.round(np.y),
+                Math.round(np.z),
+                selected
+            );
+        }
 
     } else {
         removeBlock(p.x,p.y,p.z);
     }
 }
 
+/* ================= SAVE ================= */
+
+function serializeWorld(){
+    const data=[];
+    for(const k in blocks){
+        const b=blocks[k];
+        if(b.userData.unbreakable) continue;
+
+        data.push({
+            x:Math.round(b.position.x),
+            y:Math.round(b.position.y),
+            z:Math.round(b.position.z),
+            type:b.userData.type,
+            text:b.userData.text || null
+        });
+    }
+    return JSON.stringify({blocks:data});
+}
+
+function saveWorld(){
+    localStorage.setItem("voxelLabWorld",serializeWorld());
+    alert("Saved");
+}
+
+function loadWorld(){
+    const raw=localStorage.getItem("voxelLabWorld");
+    if(!raw) return;
+
+    const data=JSON.parse(raw);
+
+    clearWorld();
+
+    for(const b of data.blocks){
+        addBlock(b.x,b.y,b.z,b.type,b.text);
+    }
+
+    addSpawnBlock();
+    controls.getObject().position.copy(spawn);
+    velocity.set(0,0,0);
+}
+
+function exportWorld(){
+    const blob=new Blob([serializeWorld()],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="voxel_lab.json";
+    a.click();
+}
+
+function importWorld(e){
+    const reader=new FileReader();
+
+    reader.onload=function(){
+        const data=JSON.parse(reader.result);
+        clearWorld();
+
+        for(const b of data.blocks){
+            addBlock(b.x,b.y,b.z,b.type,b.text);
+        }
+    };
+
+    reader.readAsText(e.target.files[0]);
+}
+
+function clearWorld(){
+    for(const k in blocks){
+        scene.remove(blocks[k]);
+    }
+    blocks={};
+}
+
 /* ================= HOTBAR ================= */
 
 function createHotbar(){
     const bar=document.getElementById("hotbar");
-    for(let i=0;i<5;i++){
+    for(let i=0;i<6;i++){
         const slot=document.createElement("div");
         slot.className="slot";
         bar.appendChild(slot);
@@ -481,7 +551,7 @@ function setSelected(i){
 }
 
 function updateHotbar(){
-    const colors=["#3cb371","#7a4e2d","#808080","#d2b48c","#6b4f2a"];
+    const colors=["#3cb371","#7a4e2d","#808080","#d2b48c","#6b4f2a","#ffffff"];
     document.querySelectorAll(".slot").forEach((s,i)=>{
         s.style.background=colors[i];
         s.classList.toggle("active",i===selected);
