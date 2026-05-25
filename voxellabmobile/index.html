@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voxel Lab - Mobile</title>
+
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    font-family:sans-serif;
+    background:#000;
+    touch-action:none;
+}
+
+#ui{
+    position:absolute;
+    top:10px;
+    left:10px;
+    color:white;
+    font-size:12px;
+    background:rgba(0,0,0,0.5);
+    padding:6px;
+    border-radius:6px;
+    z-index:10;
+}
+
+/* JOYSTICK */
+#joystickBase{
+    position:absolute;
+    bottom:60px;
+    left:60px;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.1);
+    z-index:20;
+}
+
+#joystickStick{
+    position:absolute;
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.4);
+    left:35px;
+    top:35px;
+}
+
+/* JUMP BUTTON */
+#jumpBtn{
+    position:absolute;
+    bottom:80px;
+    right:60px;
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.2);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:14px;
+    z-index:20;
+}
+
+canvas{display:block;}
+</style>
+</head>
+
+<body>
+
+<div id="ui">
+WASD (PC) / joystick (mobile)<br>
+Drag = look | Jump button
+</div>
+
+<div id="joystickBase">
+    <div id="joystickStick"></div>
+</div>
+
+<div id="jumpBtn">JUMP</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+
+<script>
+
+let scene, camera, renderer;
+
+let velocity = new THREE.Vector3();
+let keys = {};
+
+const SPEED = 0.12;
+const GRAVITY = 0.015;
+const JUMP = 0.22;
+
+const spawn = new THREE.Vector3(8, 5, 8);
+
+let yaw = 0;
+let pitch = 0;
+
+/* WORLD */
+let blocks = {};
+
+/* ================= INIT ================= */
+
+init();
+animate();
+
+function init(){
+
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x87ceeb);
+
+    camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 800);
+    camera.position.copy(spawn);
+
+    renderer = new THREE.WebGLRenderer({antialias:false});
+    renderer.setSize(innerWidth, innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    /* simple world */
+    for(let x=0;x<16;x++){
+        for(let z=0;z<16;z++){
+            addBlock(x,0,z);
+            addBlock(x,1,z);
+        }
+    }
+
+    /* input */
+    document.addEventListener("keydown", e => keys[e.code] = true);
+    document.addEventListener("keyup", e => keys[e.code] = false);
+
+    window.addEventListener("resize",()=>{
+        camera.aspect = innerWidth/innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(innerWidth,innerHeight);
+    });
+
+    setupMobileControls();
+}
+
+/* ================= BLOCKS ================= */
+
+function addBlock(x,y,z){
+    const geo = new THREE.BoxGeometry(1,1,1);
+    const mat = new THREE.MeshBasicMaterial({color:0x3cb371});
+    const mesh = new THREE.Mesh(geo,mat);
+
+    mesh.position.set(x,y,z);
+    scene.add(mesh);
+
+    blocks[`${x},${y},${z}`] = mesh;
+}
+
+/* ================= COLLISION ================= */
+
+function collides(pos){
+    for(const k in blocks){
+        const b = blocks[k];
+
+        if(
+            Math.abs(b.position.x - pos.x) < 0.6 &&
+            Math.abs(b.position.y - pos.y) < 1.5 &&
+            Math.abs(b.position.z - pos.z) < 0.6
+        ) return true;
+    }
+    return false;
+}
+
+/* ================= CONTROLS ================= */
+
+function setupMobileControls(){
+
+    const stick = document.getElementById("joystickStick");
+    const base = document.getElementById("joystickBase");
+    const jumpBtn = document.getElementById("jumpBtn");
+
+    let active = false;
+    let startX = 0;
+    let startY = 0;
+
+    let moveX = 0;
+    let moveY = 0;
+
+    /* JOYSTICK */
+    base.addEventListener("touchstart", e=>{
+        active = true;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    });
+
+    base.addEventListener("touchmove", e=>{
+        if(!active) return;
+
+        let dx = e.touches[0].clientX - startX;
+        let dy = e.touches[0].clientY - startY;
+
+        const max = 40;
+
+        dx = Math.max(-max, Math.min(max, dx));
+        dy = Math.max(-max, Math.min(max, dy));
+
+        stick.style.transform = `translate(${dx}px,${dy}px)`;
+
+        moveX = dx / max;
+        moveY = dy / max;
+    });
+
+    base.addEventListener("touchend", ()=>{
+        active = false;
+        stick.style.transform = `translate(0px,0px)`;
+        moveX = 0;
+        moveY = 0;
+    });
+
+    /* LOOK (drag anywhere) */
+    let lastX = 0;
+    let lastY = 0;
+    let looking = false;
+
+    document.addEventListener("touchstart", e=>{
+        if(e.target.closest("#joystickBase") || e.target.id==="jumpBtn") return;
+        looking = true;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+    });
+
+    document.addEventListener("touchmove", e=>{
+        if(!looking) return;
+
+        let dx = e.touches[0].clientX - lastX;
+        let dy = e.touches[0].clientY - lastY;
+
+        yaw -= dx * 0.003;
+        pitch -= dy * 0.003;
+
+        pitch = Math.max(-1.5, Math.min(1.5, pitch));
+
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+    });
+
+    document.addEventListener("touchend", ()=> looking=false);
+
+    /* JUMP */
+    jumpBtn.addEventListener("touchstart", ()=>{
+        if(isGrounded()) velocity.y = JUMP;
+    });
+
+    /* apply movement each frame */
+    window._moveX = moveX;
+    window._moveY = moveY;
+
+    setInterval(()=>{
+        window._moveX = moveX;
+        window._moveY = moveY;
+    }, 16);
+}
+
+/* ================= PHYSICS ================= */
+
+function isGrounded(){
+    const p = camera.position.clone();
+    p.y -= 0.1;
+    return collides(p);
+}
+
+/* ================= LOOP ================= */
+
+function animate(){
+    requestAnimationFrame(animate);
+
+    const prev = camera.position.clone();
+
+    /* rotation */
+    camera.rotation.order = "YXZ";
+    camera.rotation.y = yaw;
+    camera.rotation.x = pitch;
+
+    /* movement vector */
+    let forward = new THREE.Vector3(
+        -Math.sin(yaw),
+        0,
+        -Math.cos(yaw)
+    );
+
+    let right = new THREE.Vector3(
+        Math.cos(yaw),
+        0,
+        -Math.sin(yaw)
+    );
+
+    let mx = window._moveX || 0;
+    let my = window._moveY || 0;
+
+    /* PC fallback */
+    if(keys["KeyW"]) camera.position.addScaledVector(forward, SPEED);
+    if(keys["KeyS"]) camera.position.addScaledVector(forward, -SPEED);
+    if(keys["KeyA"]) camera.position.addScaledVector(right, -SPEED);
+    if(keys["KeyD"]) camera.position.addScaledVector(right, SPEED);
+
+    /* mobile joystick */
+    camera.position.addScaledVector(forward, -my * SPEED);
+    camera.position.addScaledVector(right, mx * SPEED);
+
+    /* collision XZ */
+    if(collides(camera.position)){
+        camera.position.x = prev.x;
+        camera.position.z = prev.z;
+    }
+
+    /* gravity */
+    velocity.y -= GRAVITY;
+    camera.position.y += velocity.y;
+
+    if(collides(camera.position)){
+        camera.position.y = prev.y;
+        velocity.y = 0;
+    }
+
+    if(camera.position.y < -20){
+        camera.position.copy(spawn);
+        velocity.set(0,0,0);
+    }
+
+    renderer.render(scene, camera);
+}
+
+</script>
+
+</body>
+</html>
