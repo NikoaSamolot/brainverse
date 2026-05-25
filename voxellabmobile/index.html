@@ -31,10 +31,6 @@ body{
     z-index:10;
 }
 
-#hud{
-    display:none; /* USUNIĘTE INFO O BUILD/REMOVE */
-}
-
 #panel{
     position:absolute;
     top:10px;
@@ -65,26 +61,6 @@ body{
     height:8px;
     margin:-4px;
     border:1px solid white;
-}
-
-#hotbar{
-    position:absolute;
-    bottom:20px;
-    left:50%;
-    transform:translateX(-50%);
-    display:flex;
-    gap:6px;
-}
-
-.slot{
-    width:45px;
-    height:45px;
-    border:2px solid #555;
-    background:#222;
-}
-
-.slot.active{
-    border:2px solid yellow;
 }
 
 /* ===== MOBILE CONTROLS ===== */
@@ -140,7 +116,6 @@ canvas{display:block;}
 </div>
 
 <div id="crosshair"></div>
-<div id="hotbar"></div>
 
 <!-- MOBILE CONTROLS -->
 <div id="mobileLeft">
@@ -165,11 +140,12 @@ let blocks={};
 let keys={};
 
 const spawn=new THREE.Vector3(8,3,8);
+
 const SPEED=0.12;
 const GRAVITY=0.015;
 const JUMP=0.22;
 
-let selected=0;
+let selected=0; // dalej działa, ale bez UI
 
 /* ===== MOBILE INPUT ===== */
 
@@ -207,64 +183,10 @@ function jump(){
     if(isGrounded()) velocity.y=JUMP;
 }
 
-/* ===== TEXTURES ===== */
-
-function makeTexture(drawFn){
-    const size=32;
-    const canvas=document.createElement("canvas");
-    canvas.width=size;
-    canvas.height=size;
-    const ctx=canvas.getContext("2d");
-    drawFn(ctx,size);
-
-    const tex=new THREE.CanvasTexture(canvas);
-    tex.magFilter=THREE.NearestFilter;
-    tex.minFilter=THREE.NearestFilter;
-    return tex;
-}
-
-/* ===== BLOCK TEXTURES ===== */
-
-const grassTopTex=makeTexture((ctx,s)=>{
-    ctx.fillStyle="#3cb371";
-    ctx.fillRect(0,0,s,s);
-});
-
-const dirtTex=makeTexture((ctx,s)=>{
-    ctx.fillStyle="#7a4e2d";
-    ctx.fillRect(0,0,s,s);
-});
-
-const stoneTex=makeTexture((ctx,s)=>{
-    ctx.fillStyle="#7d7d7d";
-    ctx.fillRect(0,0,s,s);
-});
-
-const sandTex=makeTexture((ctx,s)=>{
-    ctx.fillStyle="#e6d3a3";
-    ctx.fillRect(0,0,s,s);
-});
-
-const woodTex=makeTexture((ctx,s)=>{
-    ctx.fillStyle="#6b4f2a";
-    ctx.fillRect(0,0,s,s);
-});
-
-/* ===== MATERIALS ===== */
-
-const materials=[
-    new THREE.MeshBasicMaterial({map:grassTopTex}),
-    new THREE.MeshBasicMaterial({map:dirtTex}),
-    new THREE.MeshBasicMaterial({map:stoneTex}),
-    new THREE.MeshBasicMaterial({map:sandTex}),
-    new THREE.MeshBasicMaterial({map:woodTex}),
-];
-
 /* ===== INIT ===== */
 
 init();
 animate();
-createHotbar();
 
 function init(){
 
@@ -294,12 +216,6 @@ function init(){
     document.addEventListener("keydown",e=>{
         keys[e.code]=true;
 
-        if(e.code==="Digit1") setSelected(0);
-        if(e.code==="Digit2") setSelected(1);
-        if(e.code==="Digit3") setSelected(2);
-        if(e.code==="Digit4") setSelected(3);
-        if(e.code==="Digit5") setSelected(4);
-
         if(e.code==="Space" && isGrounded()) velocity.y=JUMP;
     });
 
@@ -312,9 +228,17 @@ function addBlock(x,y,z,type){
     const k=`${x},${y},${z}`;
     if(blocks[k]) return;
 
+    const material=new THREE.MeshBasicMaterial({
+        color: type===0?0x3cb371:
+               type===1?0x7a4e2d:
+               type===2?0x808080:
+               type===3?0xd2b48c:
+               0x6b4f2a
+    });
+
     const mesh=new THREE.Mesh(
         new THREE.BoxGeometry(1,1,1),
-        materials[type]
+        material
     );
 
     mesh.position.set(x,y,z);
@@ -343,31 +267,6 @@ function isGrounded(){
     const p=controls.getObject().position.clone();
     p.y-=0.1;
     return collides(p);
-}
-
-/* ===== HOTBAR ===== */
-
-function createHotbar(){
-    const bar=document.getElementById("hotbar");
-    for(let i=0;i<5;i++){
-        const slot=document.createElement("div");
-        slot.className="slot";
-        bar.appendChild(slot);
-    }
-    updateHotbar();
-}
-
-function setSelected(i){
-    selected=i;
-    updateHotbar();
-}
-
-function updateHotbar(){
-    const colors=["#3cb371","#7a4e2d","#808080","#d2b48c","#6b4f2a"];
-    document.querySelectorAll(".slot").forEach((s,i)=>{
-        s.style.background=colors[i];
-        s.classList.toggle("active",i===selected);
-    });
 }
 
 /* ===== LOOP ===== */
