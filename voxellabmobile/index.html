@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Voxel Lab</title>
-
-<link rel="icon" type="image/png" href="vlp.png">
+<title>Voxel Lab - Mobile</title>
 
 <style>
 body{
@@ -13,91 +11,59 @@ body{
     overflow:hidden;
     font-family:sans-serif;
     background:#000;
+    touch-action:none;
 }
 
-/* ===== UI ===== */
-
-#title{
+#ui{
     position:absolute;
     top:10px;
-    left:50%;
-    transform:translateX(-50%);
+    left:10px;
     color:white;
-    font-size:20px;
-    font-weight:bold;
-    background:rgba(0,0,0,0.5);
-    padding:6px 14px;
-    border-radius:6px;
-    z-index:10;
-}
-
-#panel{
-    position:absolute;
-    top:10px;
-    right:10px;
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    z-index:10;
-}
-
-.btn{
-    padding:8px 10px;
-    background:#222;
-    color:white;
-    border:1px solid #555;
-    cursor:pointer;
-    border-radius:6px;
     font-size:12px;
-}
-
-.btn:hover{ background:#333; }
-
-#crosshair{
-    position:absolute;
-    top:50%;
-    left:50%;
-    width:8px;
-    height:8px;
-    margin:-4px;
-    border:1px solid white;
-}
-
-/* ===== MOBILE CONTROLS ===== */
-
-#mobileLeft{
-    position:absolute;
-    left:15px;
-    bottom:80px;
-    display:grid;
-    grid-template-columns:40px 40px 40px;
-    grid-template-rows:40px 40px 40px;
-    gap:5px;
-    z-index:20;
-}
-
-#mobileRight{
-    position:absolute;
-    right:20px;
-    bottom:100px;
-    z-index:20;
-}
-
-.mbtn{
-    width:40px;
-    height:40px;
     background:rgba(0,0,0,0.5);
-    border:1px solid #666;
-    color:white;
-    font-size:16px;
+    padding:6px;
     border-radius:6px;
+    z-index:10;
 }
 
-/* układ strzałek */
-#up{ grid-column:2; grid-row:1; }
-#left{ grid-column:1; grid-row:2; }
-#down{ grid-column:2; grid-row:3; }
-#right{ grid-column:3; grid-row:2; }
+/* JOYSTICK */
+#joystickBase{
+    position:absolute;
+    bottom:60px;
+    left:60px;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.1);
+    z-index:20;
+}
+
+#joystickStick{
+    position:absolute;
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.4);
+    left:35px;
+    top:35px;
+}
+
+/* JUMP BUTTON */
+#jumpBtn{
+    position:absolute;
+    bottom:80px;
+    right:60px;
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.2);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:14px;
+    z-index:20;
+}
 
 canvas{display:block;}
 </style>
@@ -105,199 +71,261 @@ canvas{display:block;}
 
 <body>
 
-<div id="title">Voxel Lab</div>
-
-<div id="panel">
-    <button class="btn" onclick="saveWorld()">Save</button>
-    <button class="btn" onclick="loadWorld()">Load</button>
-    <button class="btn" onclick="exportWorld()">Export</button>
-    <input type="file" id="fileInput" style="display:none" onchange="importWorld(event)">
-    <button class="btn" onclick="fileInput.click()">Import</button>
+<div id="ui">
+WASD (PC) / joystick (mobile)<br>
+Drag = look | Jump button
 </div>
 
-<div id="crosshair"></div>
-
-<!-- MOBILE CONTROLS -->
-<div id="mobileLeft">
-    <button class="mbtn" id="up">▲</button>
-    <button class="mbtn" id="left">◀</button>
-    <button class="mbtn" id="down">▼</button>
-    <button class="mbtn" id="right">▶</button>
+<div id="joystickBase">
+    <div id="joystickStick"></div>
 </div>
 
-<div id="mobileRight">
-    <button class="mbtn" id="jump">⤒</button>
-</div>
+<div id="jumpBtn">JUMP</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
 
 <script>
 
-let scene,camera,renderer,controls;
-let velocity=new THREE.Vector3();
-let blocks={};
-let keys={};
+let scene, camera, renderer;
 
-const spawn=new THREE.Vector3(8,3,8);
+let velocity = new THREE.Vector3();
+let keys = {};
 
-const SPEED=0.12;
-const GRAVITY=0.015;
-const JUMP=0.22;
+const SPEED = 0.12;
+const GRAVITY = 0.015;
+const JUMP = 0.22;
 
-let selected=0; // dalej działa, ale bez UI
+const spawn = new THREE.Vector3(8, 5, 8);
 
-/* ===== MOBILE INPUT ===== */
+let yaw = 0;
+let pitch = 0;
 
-function bindHold(id, key){
-    const el=document.getElementById(id);
+/* WORLD */
+let blocks = {};
 
-    el.addEventListener("touchstart",e=>{
-        e.preventDefault();
-        keys[key]=true;
-    });
-
-    el.addEventListener("touchend",e=>{
-        e.preventDefault();
-        keys[key]=false;
-    });
-
-    el.addEventListener("mousedown",()=>{
-        keys[key]=true;
-    });
-
-    el.addEventListener("mouseup",()=>{
-        keys[key]=false;
-    });
-}
-
-bindHold("up","KeyW");
-bindHold("down","KeyS");
-bindHold("left","KeyA");
-bindHold("right","KeyD");
-
-document.getElementById("jump").addEventListener("touchstart",jump);
-document.getElementById("jump").addEventListener("mousedown",jump);
-
-function jump(){
-    if(isGrounded()) velocity.y=JUMP;
-}
-
-/* ===== INIT ===== */
+/* ================= INIT ================= */
 
 init();
 animate();
 
 function init(){
 
-    scene=new THREE.Scene();
-    scene.background=new THREE.Color(0x87ceeb);
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x87ceeb);
 
-    camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,800);
+    camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 800);
+    camera.position.copy(spawn);
 
-    renderer=new THREE.WebGLRenderer({antialias:false});
-    renderer.setSize(innerWidth,innerHeight);
+    renderer = new THREE.WebGLRenderer({antialias:false});
+    renderer.setSize(innerWidth, innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    controls=new THREE.PointerLockControls(camera,document.body);
-    scene.add(controls.getObject());
-
-    document.body.addEventListener("click",()=>controls.lock());
-
+    /* simple world */
     for(let x=0;x<16;x++){
         for(let z=0;z<16;z++){
-            addBlock(x,0,z,1);
-            addBlock(x,1,z,0);
+            addBlock(x,0,z);
+            addBlock(x,1,z);
         }
     }
 
-    controls.getObject().position.copy(spawn);
+    /* input */
+    document.addEventListener("keydown", e => keys[e.code] = true);
+    document.addEventListener("keyup", e => keys[e.code] = false);
 
-    document.addEventListener("keydown",e=>{
-        keys[e.code]=true;
-
-        if(e.code==="Space" && isGrounded()) velocity.y=JUMP;
+    window.addEventListener("resize",()=>{
+        camera.aspect = innerWidth/innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(innerWidth,innerHeight);
     });
 
-    document.addEventListener("keyup",e=>keys[e.code]=false);
+    setupMobileControls();
 }
 
-/* ===== BLOCKS ===== */
+/* ================= BLOCKS ================= */
 
-function addBlock(x,y,z,type){
-    const k=`${x},${y},${z}`;
-    if(blocks[k]) return;
-
-    const material=new THREE.MeshBasicMaterial({
-        color: type===0?0x3cb371:
-               type===1?0x7a4e2d:
-               type===2?0x808080:
-               type===3?0xd2b48c:
-               0x6b4f2a
-    });
-
-    const mesh=new THREE.Mesh(
-        new THREE.BoxGeometry(1,1,1),
-        material
-    );
+function addBlock(x,y,z){
+    const geo = new THREE.BoxGeometry(1,1,1);
+    const mat = new THREE.MeshBasicMaterial({color:0x3cb371});
+    const mesh = new THREE.Mesh(geo,mat);
 
     mesh.position.set(x,y,z);
-    mesh.userData.type=type;
-
     scene.add(mesh);
-    blocks[k]=mesh;
+
+    blocks[`${x},${y},${z}`] = mesh;
 }
 
-/* ===== COLLISION ===== */
+/* ================= COLLISION ================= */
 
 function collides(pos){
     for(const k in blocks){
-        const b=blocks[k];
+        const b = blocks[k];
 
         if(
-            Math.abs(b.position.x-pos.x)<0.6 &&
-            Math.abs(b.position.y-pos.y)<1.5 &&
-            Math.abs(b.position.z-pos.z)<0.6
+            Math.abs(b.position.x - pos.x) < 0.6 &&
+            Math.abs(b.position.y - pos.y) < 1.5 &&
+            Math.abs(b.position.z - pos.z) < 0.6
         ) return true;
     }
     return false;
 }
 
+/* ================= CONTROLS ================= */
+
+function setupMobileControls(){
+
+    const stick = document.getElementById("joystickStick");
+    const base = document.getElementById("joystickBase");
+    const jumpBtn = document.getElementById("jumpBtn");
+
+    let active = false;
+    let startX = 0;
+    let startY = 0;
+
+    let moveX = 0;
+    let moveY = 0;
+
+    /* JOYSTICK */
+    base.addEventListener("touchstart", e=>{
+        active = true;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    });
+
+    base.addEventListener("touchmove", e=>{
+        if(!active) return;
+
+        let dx = e.touches[0].clientX - startX;
+        let dy = e.touches[0].clientY - startY;
+
+        const max = 40;
+
+        dx = Math.max(-max, Math.min(max, dx));
+        dy = Math.max(-max, Math.min(max, dy));
+
+        stick.style.transform = `translate(${dx}px,${dy}px)`;
+
+        moveX = dx / max;
+        moveY = dy / max;
+    });
+
+    base.addEventListener("touchend", ()=>{
+        active = false;
+        stick.style.transform = `translate(0px,0px)`;
+        moveX = 0;
+        moveY = 0;
+    });
+
+    /* LOOK (drag anywhere) */
+    let lastX = 0;
+    let lastY = 0;
+    let looking = false;
+
+    document.addEventListener("touchstart", e=>{
+        if(e.target.closest("#joystickBase") || e.target.id==="jumpBtn") return;
+        looking = true;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+    });
+
+    document.addEventListener("touchmove", e=>{
+        if(!looking) return;
+
+        let dx = e.touches[0].clientX - lastX;
+        let dy = e.touches[0].clientY - lastY;
+
+        yaw -= dx * 0.003;
+        pitch -= dy * 0.003;
+
+        pitch = Math.max(-1.5, Math.min(1.5, pitch));
+
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+    });
+
+    document.addEventListener("touchend", ()=> looking=false);
+
+    /* JUMP */
+    jumpBtn.addEventListener("touchstart", ()=>{
+        if(isGrounded()) velocity.y = JUMP;
+    });
+
+    /* apply movement each frame */
+    window._moveX = moveX;
+    window._moveY = moveY;
+
+    setInterval(()=>{
+        window._moveX = moveX;
+        window._moveY = moveY;
+    }, 16);
+}
+
+/* ================= PHYSICS ================= */
+
 function isGrounded(){
-    const p=controls.getObject().position.clone();
-    p.y-=0.1;
+    const p = camera.position.clone();
+    p.y -= 0.1;
     return collides(p);
 }
 
-/* ===== LOOP ===== */
+/* ================= LOOP ================= */
 
 function animate(){
     requestAnimationFrame(animate);
 
-    const obj=controls.getObject();
-    const prev=obj.position.clone();
+    const prev = camera.position.clone();
 
-    if(controls.isLocked){
-        if(keys["KeyW"]) controls.moveForward(SPEED);
-        if(keys["KeyS"]) controls.moveForward(-SPEED);
-        if(keys["KeyA"]) controls.moveRight(-SPEED);
-        if(keys["KeyD"]) controls.moveRight(SPEED);
+    /* rotation */
+    camera.rotation.order = "YXZ";
+    camera.rotation.y = yaw;
+    camera.rotation.x = pitch;
+
+    /* movement vector */
+    let forward = new THREE.Vector3(
+        -Math.sin(yaw),
+        0,
+        -Math.cos(yaw)
+    );
+
+    let right = new THREE.Vector3(
+        Math.cos(yaw),
+        0,
+        -Math.sin(yaw)
+    );
+
+    let mx = window._moveX || 0;
+    let my = window._moveY || 0;
+
+    /* PC fallback */
+    if(keys["KeyW"]) camera.position.addScaledVector(forward, SPEED);
+    if(keys["KeyS"]) camera.position.addScaledVector(forward, -SPEED);
+    if(keys["KeyA"]) camera.position.addScaledVector(right, -SPEED);
+    if(keys["KeyD"]) camera.position.addScaledVector(right, SPEED);
+
+    /* mobile joystick */
+    camera.position.addScaledVector(forward, -my * SPEED);
+    camera.position.addScaledVector(right, mx * SPEED);
+
+    /* collision XZ */
+    if(collides(camera.position)){
+        camera.position.x = prev.x;
+        camera.position.z = prev.z;
     }
 
-    if(collides(obj.position)){
-        obj.position.x=prev.x;
-        obj.position.z=prev.z;
+    /* gravity */
+    velocity.y -= GRAVITY;
+    camera.position.y += velocity.y;
+
+    if(collides(camera.position)){
+        camera.position.y = prev.y;
+        velocity.y = 0;
     }
 
-    velocity.y-=GRAVITY;
-    obj.position.y+=velocity.y;
-
-    if(collides(obj.position)){
-        obj.position.y=prev.y;
-        velocity.y=0;
+    if(camera.position.y < -20){
+        camera.position.copy(spawn);
+        velocity.set(0,0,0);
     }
 
-    renderer.render(scene,camera);
+    renderer.render(scene, camera);
 }
 
 </script>
