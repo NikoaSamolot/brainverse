@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="BrainVerse Gry, launcher gier przeglądarkowych. Graj w ekskluzywne gry indie nic nie instalując." />
 <title>BrainVerse Gry</title>
 
 <link rel="icon" type="image/png" href="bvg.png">
@@ -42,33 +41,43 @@ header {
     display: flex;
 }
 
+/* SIDEBAR */
 #sidebar {
     width: 220px;
     background: #151826;
-    height: calc(100vh - 100px);
+    min-height: calc(100vh - 100px);
     padding: 10px;
     box-sizing: border-box;
 }
 
+/* TAG BUTTONS (checkbox style) */
 .cat {
     background: #22263a;
     padding: 10px;
     margin-bottom: 8px;
     border-radius: 8px;
     cursor: pointer;
+    user-select: none;
+    transition: 0.15s;
 }
 
 .cat:hover {
     background: #2f3552;
 }
 
+.cat.active {
+    background: #3b4266;
+    outline: 2px solid #5c6cff;
+}
+
+/* MAIN */
 #main {
     flex: 1;
     padding: 20px;
 }
 
 /* GRID */
-.grid {
+#list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 15px;
@@ -96,50 +105,13 @@ header {
 .card h3 {
     margin: 10px;
 }
-
-/* GAME VIEW */
-#gameView {
-    display: none;
-}
-
-#gameLogo {
-    width: 120px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-}
-
-iframe {
-    width: 100%;
-    height: 500px;
-    border: none;
-    border-radius: 12px;
-    margin-top: 10px;
-}
-
-/* BUTTONS */
-button {
-    margin-top: 10px;
-    margin-right: 10px;
-    padding: 10px 14px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.play { background: #2ecc71; color: black; }
-.web { background: #3498db; }
-.dl { background: #f39c12; color: black; }
-
-button:hover { opacity: 0.85; }
-
 </style>
 </head>
 
 <body>
 
 <header>
-    <img src="bvg.png" alt="logo" style="height:160px; vertical-align:middle; margin-right:10px;">
+    <img src="bvg.png" style="height:160px; vertical-align:middle; margin-right:10px;">
     BrainVerse Games
 </header>
 
@@ -147,167 +119,142 @@ button:hover { opacity: 0.85; }
 
 <div id="layout">
 
-<!-- KATEGORIE -->
+<!-- TAGI -->
 <div id="sidebar">
-    <div class="cat" onclick="setCat('all')">Wszystkie</div>
-    <div class="cat" onclick="setCat('horror')">Horror</div>
-    <div class="cat" onclick="setCat('akcja')">Akcja</div>
-    <div class="cat" onclick="setCat('quiz')">Quizy</div>
-    <div class="cat" onclick="setCat('logic')">Logiczne</div>
-    <div class="cat" onclick="setCat('reflex')">Zręcznościowe</div>
-    <div class="cat" onclick="setCat('sandbox')">Sandbox</div>
+
+    <div class="cat active" onclick="toggleTag('all', this)">Wszystkie</div>
+
+    <div class="cat" onclick="toggleTag('horror', this)">Horror</div>
+    <div class="cat" onclick="toggleTag('akcja', this)">Akcja</div>
+    <div class="cat" onclick="toggleTag('quiz', this)">Quizy</div>
+    <div class="cat" onclick="toggleTag('logic', this)">Logiczne</div>
+    <div class="cat" onclick="toggleTag('reflex', this)">Zręcznościowe</div>
+    <div class="cat" onclick="toggleTag('sandbox', this)">Sandbox</div>
+    <div class="cat" onclick="toggleTag('survival', this)">Survival</div>
+    <div class="cat" onclick="toggleTag('lore', this)">Fabularne</div>
+    <div class="cat" onclick="toggleTag('fps', this)">First-Person Shooter</div>
+    <div class="cat" onclick="toggleTag('3d', this)">3D</div>
+    <div class="cat" onclick="toggleTag('2d', this)">2D</div>
+    <div class="cat" onclick="toggleTag('arcade', this)">Arcade</div>
+    <div class="cat" onclick="toggleTag('platformer', this)">Platformer</div>
+
 </div>
 
 <!-- MAIN -->
 <div id="main">
-
-<div id="list" class="grid"></div>
-
-<div id="gameView">
-    <img id="gameLogo">
-    <h2 id="title"></h2>
-    <p id="desc"></p>
-
-    <div id="buttons"></div>
-
-    <iframe id="frame"></iframe>
-
-    <button onclick="back()">Powrót</button>
+    <div id="list"></div>
 </div>
 
-</div>
 </div>
 
 <script>
 
-/* =========================
-   TWOJE GRY (ZOSTAŁY 1:1)
-========================= */
 const games = [
 {
-    id: "carrot-apocalypse",
-    title: "Carrot Apocalypse",
-    category: "akcja",
-    image: "carrotap.jpg",
-    description: "You are a Carrot in a farmland, escape the zombie apocalypse.",
-    embed: "https://brainverse.pl/carrotapocalypse/",
-    download: "https://gamejolt.com/games/carrot/1029450"
+    id:"carrot-apocalypse",
+    title:"Carrot Apocalypse",
+    tags:["akcja","survival","lore","2d"],
+    image:"carrotap.jpg",
+    url:"https://brainverse.pl/gry/carrot-apocalypse/"
 },
 {
-    id: "quizy-1",
-    title: "Quizy 1",
-    category: "quiz",
-    image: "quizy1.jpg",
-    description: "Pierwsza część z serii quizy.",
-    embed: "https://brainverse.pl/quizy1/",
-    download: ""
+    id:"quizy-1",
+    title:"Quizy 1",
+    tags:["quiz","2d","logic"],
+    image:"quizy1.jpg",
+    url:"https://brainverse.pl/gry/quizy1/"
 },
 {
-    id: "quizy-2",
-    title: "Quizy 2",
-    category: "quiz",
-    image: "quizy2.jpg",
-    description: "Druga część z serii quizy.",
-    embed: "https://brainverse.pl/quizy2/",
-    download: ""
+    id:"quizy-2",
+    title:"Quizy 2",
+    tags:["quiz","2d","logic"],
+    image:"quizy2.jpg",
+    url:"https://brainverse.pl/gry/quizy2/"
 },
 {
-    id: "laczenie",
-    title: "Łączenie",
-    category: "logic",
-    image: "laczenie.jpg",
-    description: "Gra logiczna w której łaczysz elementy, aby tworzyć nowe.",
-    embed: "https://brainverse.pl/laczenie/",
-    download: ""
+    id:"laczenie",
+    title:"Łączenie",
+    tags:["logic", "2d"],
+    image:"laczenie.jpg",
+    url:"https://brainverse.pl/gry/laczenie/"
 },
 {
-    id: "zgadnij-liczbe",
-    title: "Zgadnij Liczbę",
-    category: "logic",
-    image: "zgadnijliczbe.jpg",
-    description: "Odgadnij liczbę od 1 do 100",
-    embed: "https://brainverse.pl/Zgadnijliczbe/",
-    download: ""
+    id:"zgadnij-liczbe",
+    title:"Zgadnij Liczbę",
+    tags:["logic","2d"],
+    image:"zgadnijliczbe.jpg",
+    url:"https://brainverse.pl/gry/Zgadnij-liczbe/"
 },
 {
-    id: "pi-challenge",
-    title: "π Memory Challenge 1000",
-    category: "logic",
-    image: "pi1000.jpg",
-    description: "Gra w zapamiętywanie liczby pi.",
-    embed: "https://brainverse.pl/PiChallenge/",
-    download: ""
+    id:"pi-challenge",
+    title:"π Memory Challenge 1000",
+    tags:["logic","quiz","2d"],
+    image:"pi1000.jpg",
+    url:"https://brainverse.pl/gry/Pi-Challenge/"
 },
 {
-    id: "quiz-protocol",
-    title: "The Quiz Protocol",
-    category: "horror",
-    image: "quizprot.png",
-    description: "Horror quiz z wieloma zakończeniami.",
-    embed: "https://brainverse.pl/thequizprotocol/",
-    download: "https://play.google.com/store/apps/details?id=pl.nikoa.quizprotocol"
+    id:"quiz-protocol",
+    title:"The Quiz Protocol",
+    tags:["horror","lore","2d"],
+    image:"quizprot.png",
+    url:"https://brainverse.pl/thequizprotocol/"
 },
 {
-    id: "iron-shot",
-    title: "IronShot",
-    category: "akcja",
-    image: "ironshot.jpg",
-    description: "FPS rogue-like.",
-    embed: "https://brainverse.pl/ironshot/",
-    download: ""
+    id:"iron-shot",
+    title:"IronShot",
+    tags:["akcja","fps","3d","arcade"],
+    image:"ironshot.jpg",
+    url:"https://brainverse.pl/gry/ironshot/"
 },
 {
-    id: "voxel-lab",
-    title: "Voxel Lab",
-    category: "sandbox",
-    image: "vl.png",
-    description: "Sandbox w którym możesz zbudować cokolwiek chcesz. Żeby pobrać mapy wejdź na https://brainverse.pl i wpisz login: voxellab hasło: voxellab.",
-    embed: "https://brainverse.pl/voxellab/",
-    download: ""
+    id:"voxel-lab",
+    title:"Voxel Lab",
+    tags:["sandbox","3d"],
+    image:"vl.png",
+    url:"https://brainverse.pl/gry/voxel-lab/"
 },
 {
-    id: "voxel-lab-mobile",
-    title: "Voxel Lab Mobile",
-    category: "sandbox",
-    image: "vl.png",
-    description: "Wersja uproszczona na telefony gry Voxel Lab.",
-    embed: "https://brainverse.pl/voxellabmobile/",
-    download: ""
+    id:"reaction-circles",
+    title:"Reaction Circles",
+    tags:["reflex","2d","arcade"],
+    image:"rc.png",
+    url:"https://brainverse.pl/gry/reaction-circles/"
 },
 {
-    id: "reaction-circles",
-    title: "Reaction Circles",
-    category: "reflex",
-    image: "rc.png",
-    description: "Spróbuj swoich sił w grze Reaction Circles, która sprawdzi twój refleks.",
-    embed: "https://brainverse.pl/reactioncircles/",
-    download: ""
-},
-{
-    id: "dont-get-orange",
-    title: "Don't Get Orange! Demo",
-    category: "reflex",
-    image: "dgo.png",
-    description: "Don’t Get Orange! is a fast-paced rage game where chaos spreads across every level. Your main goal is simple: move quickly, react fast, and avoid becoming orange. In each level, you must navigate through increasingly difficult challenges while trying not to touch or get hit by anything orange. But there’s a twist — the entire screen slowly becomes more and more orange over time, creating constant pressure and forcing you to finish the level as fast as possible before everything is fully consumed by the color. Every mistake can cost you progress, and hesitation is dangerous. The longer you stay in a level, the harder it becomes to see and survive.",
-    embed: "https://brainverse.pl/dontgetorange/",
-    download: "https://nikoa-samolot.itch.io/dont-get-orange"
-},
-{
-    id: "dont-get-orange-pad",
-    title: "Don't Get Orange! Gamepad Demo",
-    category: "reflex",
-    image: "dgo.png",
-    description: "Don’t Get Orange! is a fast-paced rage game where chaos spreads across every level. Your main goal is simple: move quickly, react fast, and avoid becoming orange. In each level, you must navigate through increasingly difficult challenges while trying not to touch or get hit by anything orange. But there’s a twist — the entire screen slowly becomes more and more orange over time, creating constant pressure and forcing you to finish the level as fast as possible before everything is fully consumed by the color. Every mistake can cost you progress, and hesitation is dangerous. The longer you stay in a level, the harder it becomes to see and survive.",
-    embed: "https://brainverse.pl/dontgetorangepad/",
-    download: ""
+    id:"dont-get-orange",
+    title:"Don't Get Orange! Demo",
+    tags:["reflex","akcja","2d","arcade","platformer"],
+    image:"dgo.png",
+    url:"https://brainverse.pl/gry/dont-get-orange/"
 }
 ];
 
-let currentCat = "all";
+let activeTags = new Set();
 
-/* =========================
-   RENDER + SEARCH
-========================= */
+function toggleTag(tag, el) {
+
+    if (tag === "all") {
+        activeTags.clear();
+        document.querySelectorAll(".cat").forEach(c => c.classList.remove("active"));
+        el.classList.add("active");
+        render();
+        return;
+    }
+
+    document.querySelector(".cat").classList.remove("active"); // remove "all"
+
+    if (activeTags.has(tag)) {
+        activeTags.delete(tag);
+        el.classList.remove("active");
+    } else {
+        activeTags.add(tag);
+        el.classList.add("active");
+    }
+
+    render();
+}
+
+/* AND FILTER SYSTEM */
 function render() {
     const list = document.getElementById("list");
     list.innerHTML = "";
@@ -315,8 +262,17 @@ function render() {
     const search = document.getElementById("searchBar").value.toLowerCase();
 
     games.forEach(g => {
-        if (currentCat !== "all" && g.category !== currentCat) return;
+
+        // SEARCH
         if (!g.title.toLowerCase().includes(search)) return;
+
+        // AND TAG FILTER
+        if (activeTags.size > 0) {
+            const hasAll = [...activeTags].every(tag =>
+                g.tags.includes(tag)
+            );
+            if (!hasAll) return;
+        }
 
         const div = document.createElement("div");
         div.className = "card";
@@ -326,81 +282,12 @@ function render() {
             <h3>${g.title}</h3>
         `;
 
-        div.onclick = () => openGame(g.id);
+        div.onclick = () => window.location.href = g.url;
+
         list.appendChild(div);
     });
 }
 
-/* =========================
-   CATEGORY
-========================= */
-function setCat(c) {
-    currentCat = c;
-    render();
-}
-
-/* =========================
-   OPEN GAME
-========================= */
-function openGame(id) {
-    const g = games.find(x => x.id === id);
-
-    document.getElementById("list").style.display = "none";
-    document.getElementById("gameView").style.display = "block";
-
-    document.getElementById("title").innerText = g.title;
-    document.getElementById("desc").innerText = g.description;
-
-    document.getElementById("gameLogo").src = g.image;
-
-    const frame = document.getElementById("frame");
-    const buttons = document.getElementById("buttons");
-
-    buttons.innerHTML = "";
-    frame.src = "";
-    frame.style.display = "none";
-
-    // PLAY
-    if (g.embed) {
-        const b = document.createElement("button");
-        b.className = "play";
-        b.innerText = "🎮 Odpal tu";
-        b.onclick = () => {
-            frame.src = g.embed;
-            frame.style.display = "block";
-        };
-        buttons.appendChild(b);
-    }
-
-    // WEB
-    if (g.embed) {
-        const b = document.createElement("button");
-        b.className = "web";
-        b.innerText = "🌐 Otwórz stronę gry";
-        b.onclick = () => window.open(g.embed, "_blank");
-        buttons.appendChild(b);
-    }
-
-    // DOWNLOAD
-    if (g.download) {
-        const b = document.createElement("button");
-        b.className = "dl";
-        b.innerText = "⬇ Pobierz";
-        b.onclick = () => window.open(g.download, "_blank");
-        buttons.appendChild(b);
-    }
-}
-
-/* =========================
-   BACK
-========================= */
-function back() {
-    document.getElementById("list").style.display = "grid";
-    document.getElementById("gameView").style.display = "none";
-    document.getElementById("frame").src = "";
-}
-
-/* START */
 render();
 
 </script>
