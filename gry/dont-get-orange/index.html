@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Don't Get Orange! DEMO - BrainVerse.pl</title>
 
-<link rel="icon" href="/gry/bvg.png" type="image/png">
+<link rel="icon" href="bvg.png" type="image/png">
 
 <style>
 body {
@@ -212,7 +212,7 @@ body {
 <body>
 
 <div class="header">
-    <img src="/gry/bvg.png" class="logo">
+    <img src="bvg.png" class="logo">
     <span>Don't Get Orange! DEMO</span>
 </div>
 
@@ -246,8 +246,6 @@ body {
         <span class="tag">Platformer</span>
         <span class="tag">Akcja</span>
         <span class="tag">Arcade</span>
-        <span class="tag">Zręcznościowe</span>
-        <span class="tag">2D</span>
     </div>
 
 </div>
@@ -256,7 +254,13 @@ body {
 <div class="right">
 
     <button class="btn download" onclick="openDownload()">POBIERZ</button>
-    <button class="btn play" onclick="openPlay()">GRAJ W PRZEGLĄDARCE</button>
+    <button class="btn play" onclick="openPlay('keyboard')">
+  GRAJ W PRZEGLĄDARCE (KLAWIATURA)
+</button>
+
+<button class="btn play" onclick="openPlay('gamepad')">
+  GRAJ W PRZEGLĄDARCE (PAD)
+</button>
 
 <div class="section">
     <h3>Języki</h3>
@@ -280,7 +284,7 @@ body {
         <h3>Sterowanie</h3>
         <table class="lang-table">
             <tr><td>Klawiatura</td><td>✔</td></tr>
-            <tr><td>Pad</td><td>✖</td></tr>
+            <tr><td>Pad</td><td>✔</td></tr>
             <tr><td>Touchscreen</td><td>✖</td></tr>
         </table>
     </div>
@@ -333,7 +337,10 @@ const downloadLinks = [
     { name: "itch.io", url: "https://nikoa-samolot.itch.io/dont-get-orange" }
 ];
 
-const playLink = "https://brainverse.pl/dontgetorange";
+const playLinks = {
+    keyboard: "https://brainverse.pl/dontgetorange",
+    gamepad: "https://brainverse.pl/dontgetorangepad"
+};
 
 function getValidLinks() {
     return downloadLinks.filter(l => l.url && l.url.trim() !== "");
@@ -355,8 +362,15 @@ function openDownload() {
     showModal(links);
 }
 
-function openPlay() {
-    window.location.href = playLink;
+function openPlay(mode) {
+    const url = playLinks[mode];
+
+    if (!url) {
+        alert("Brak linku dla tego trybu");
+        return;
+    }
+
+    window.location.href = url;
 }
 
 function showModal(links) {
