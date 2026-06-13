@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quizy 2 - BrainVerse.pl</title>
+
+<link rel="icon" href="/gry/bvg.png" type="image/png">
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0e141b;
+    color: #c7d5e0;
+}
+
+/* HEADER (Steam-like) */
+.header {
+    background: linear-gradient(90deg, #171a21, #0f141b);
+    padding: 12px 20px;
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #2a475e;
+}
+
+.logo {
+    height: 110px;
+    width: auto;
+    filter: drop-shadow(0 0 6px rgba(0,0,0,0.6));
+}
+
+/* LAYOUT */
+.container {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+}
+
+/* LEFT */
+.left { flex: 2; }
+
+/* HERO (Steam store style) */
+.hero {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    box-shadow: 0 0 0 1px rgba(42,71,94,0.3);
+}
+
+/* blur background effect */
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--bg, #000);
+    background-size: cover;
+    background-position: center;
+    filter: blur(20px);
+    transform: scale(1.2);
+    opacity: 0.4;
+}
+
+.hero img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.hero img.active {
+    opacity: 1;
+}
+
+/* THUMBS */
+.gallery {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.thumb {
+    flex: 1;
+    height: 80px;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.6;
+    border: 2px solid transparent;
+    transition: 0.2s;
+}
+
+.thumb:hover {
+    opacity: 0.9;
+    transform: scale(1.03);
+}
+
+.thumb.active {
+    opacity: 1;
+    border: 2px solid #1a9fff;
+}
+
+.thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* SECTIONS */
+.section {
+    margin-top: 20px;
+    background: #0f141b;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px rgba(42,71,94,0.25);
+}
+
+/* RIGHT PANEL */
+.right {
+    flex: 1;
+    background: #0f141b;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px rgba(42,71,94,0.25);
+}
+
+/* BUTTONS */
+.btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.2s;
+}
+
+.btn:hover {
+    transform: scale(1.02);
+    filter: brightness(1.1);
+}
+
+.download { background: #5c7e10; color: white; }
+.play { background: #1a9fff; color: white; }
+
+/* TAGS */
+.tag {
+    display: inline-block;
+    background: #2a475e;
+    padding: 4px 8px;
+    margin: 3px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+/* TABLE */
+.lang-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.lang-table td {
+    padding: 6px;
+    border-bottom: 1px solid #2a475e;
+}
+
+/* MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-box {
+    background: #171a21;
+    padding: 20px;
+    width: 300px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.modal-btn {
+    width: 100%;
+    margin: 5px 0;
+    padding: 10px;
+    background: #1a9fff;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <img src="/gry/bvg.png" class="logo">
+    <span>Quizy 2</span>
+</div>
+
+<div class="container">
+
+<!-- LEFT -->
+<div class="left">
+
+    <div class="hero" id="hero">
+        <img id="slide0" src="/gry/quizy1.jpg">
+        <img id="slide1" src="screen2.png">
+        <img id="slide2" src="screen3.png">
+
+    </div>
+
+    <div class="gallery">
+        <div class="thumb" onclick="showSlide(0)"><img src="/gry/quizy2.jpg"></div>
+        <div class="thumb" onclick="showSlide(1)"><img src="screen2.png"></div>
+        <div class="thumb" onclick="showSlide(2)"><img src="screen3.png"></div>
+    </div>
+
+    <div class="section">
+        <h3>O grze</h3>
+        <p>Quizy 2 to druga odsłona serii Quizy, w której czeka na Ciebie zestaw różnorodnych pytań z wielu kategorii tematycznych. Każda kategoria to kilka krótkich wyzwań, które sprawdzają Twoją wiedzę i refleks.</p>
+    </div>
+
+    <div class="section">
+        <h3>Tagi</h3>
+        <span class="tag">Quiz</span>
+        <span class="tag">2D</span>
+        <span class="tag">Logiczne</span>
+    </div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+
+    <button class="btn download" onclick="openDownload()">POBIERZ</button>
+    <button class="btn play" onclick="openPlay()">GRAJ W PRZEGLĄDARCE</button>
+
+<div class="section">
+    <h3>Języki</h3>
+    <table class="lang-table">
+        <tr>
+            <td>Polski</td>
+            <td>Audio ✖ &nbsp; UI ✔ &nbsp; Napisy ✖</td>
+        </tr>
+        <tr>
+            <td>English</td>
+            <td>Audio ✖ &nbsp; UI ✖ &nbsp; Subtitles ✖</td>
+        </tr>
+        <tr>
+            <td>Deutsch</td>
+            <td>Audio ✖ &nbsp; UI ✖ &nbsp; Untertitel ✖</td>
+        </tr>
+    </table>
+</div>
+
+    <div class="section">
+        <h3>Sterowanie</h3>
+        <table class="lang-table">
+            <tr><td>Klawiatura</td><td>✔</td></tr>
+            <tr><td>Pad</td><td>✖</td></tr>
+            <tr><td>Touchscreen</td><td>✔</td></tr>
+        </table>
+    </div>
+
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+    <div class="modal-box">
+        <h3>Wybierz platformę</h3>
+        <div id="modalButtons"></div>
+        <button onclick="closeModal()" style="margin-top:10px;width:100%;padding:8px;background:#c33;color:white;border:none;">Zamknij</button>
+    </div>
+</div>
+
+<script>
+
+let current = 0;
+const slides = document.querySelectorAll(".hero img");
+const thumbs = document.querySelectorAll(".thumb");
+const hero = document.getElementById("hero");
+
+function resetSlides() {
+    slides.forEach(s => s.classList.remove("active"));
+    thumbs.forEach(t => t.classList.remove("active"));
+}
+
+function showSlide(i) {
+    resetSlides();
+    current = i;
+
+    slides[i].classList.add("active");
+    thumbs[i].classList.add("active");
+
+    hero.style.setProperty("--bg", `url(${slides[i].src})`);
+}
+
+setInterval(() => {
+    current = (current + 1) % slides.length;
+    showSlide(current);
+}, 5000);
+
+showSlide(0);
+
+const downloadLinks = [
+    { name: "Google Drive", url: "" },
+    { name: "GameJolt", url: "" },
+    { name: "itch.io", url: "" }
+];
+
+const playLink = "https://brainverse.pl/quizy2";
+
+function getValidLinks() {
+    return downloadLinks.filter(l => l.url && l.url.trim() !== "");
+}
+
+function openDownload() {
+    const links = getValidLinks();
+
+    if (links.length === 0) {
+        alert("Brak linków do pobrania");
+        return;
+    }
+
+    if (links.length === 1) {
+        window.location.href = links[0].url;
+        return;
+    }
+
+    showModal(links);
+}
+
+function openPlay() {
+    window.location.href = playLink;
+}
+
+function showModal(links) {
+    const modal = document.getElementById("modal");
+    const box = document.getElementById("modalButtons");
+
+    box.innerHTML = "";
+
+    links.forEach(l => {
+        const b = document.createElement("button");
+        b.className = "modal-btn";
+        b.innerText = l.name;
+
+        b.onclick = () => {
+            window.location.href = l.url;
+        };
+
+        box.appendChild(b);
+    });
+
+    modal.style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+</script>
+
+</body>
+</html>
