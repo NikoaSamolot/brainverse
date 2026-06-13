@@ -1,266 +1,243 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gra Łączenie</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gra Tworzenia Elementów</title>
 
-        h1 {
-            margin-bottom: 10px;
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f9;
+}
 
-        #instructions {
-            margin-bottom: 20px;
-        }
+h1 { margin-bottom: 10px; }
 
-        #elements, #crafted {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 10px 0;
-        }
+#instructions { margin-bottom: 20px; }
 
-        .element {
-            width: 100px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            background-color: #fff;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-        }
+#elements, #crafted {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0;
+}
 
-        .element:hover {
-            transform: scale(1.1);
-        }
+.element {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #fff;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    user-select: none;
+}
 
-        #crafted {
-            border-top: 2px solid #ddd;
-            padding-top: 10px;
-        }
+.element:hover { transform: scale(1.1); }
 
-        #counter {
-            margin-top: 10px;
-            font-weight: bold;
-        }
+#crafted {
+    border-top: 2px solid #ddd;
+    padding-top: 10px;
+}
 
-        #achievement {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: gold;
-            color: black;
-            font-weight: bold;
-            border-radius: 5px;
-            display: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        }
+#counter {
+    margin-top: 10px;
+    font-weight: bold;
+}
 
-        #achievement.visible {
-            display: block;
-        }
+#achievement {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: gold;
+    color: black;
+    font-weight: bold;
+    border-radius: 5px;
+    display: none;
+}
 
-        #resetButton {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #f44336;
-            color: white;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            border: none;
-            transition: background-color 0.2s;
-        }
+#achievement.visible { display: block; }
 
-        #resetButton:hover {
-            background-color: #d32f2f;
-        }
-    </style>
+#resetButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #f44336;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+</style>
 </head>
+
 <body>
-    <h1>Gra Tworzenia Elementów</h1>
-    <div id="instructions">
-        Kliknij dwa elementy, aby je połączyć i stworzyć nowe!
-    </div>
-    <div id="elements">
-        <div class="element" data-element="woda">Woda</div>
-        <div class="element" data-element="ziemia">Ziemia</div>
-        <div class="element" data-element="ogień">Ogień</div>
-        <div class="element" data-element="powietrze">Powietrze</div>
-    </div>
-    <div id="crafted">
-        <!-- Nowe elementy pojawią się tutaj -->
-    </div>
-    <div id="counter">
-        Odkryto elementy: <span id="discovered">4</span>/<span id="total">17</span>
-    </div>
-    <div id="achievement">
-        Osiągnięcie: Odkryto wszystkie elementy!
-    </div>
-    <button id="resetButton">Zresetuj grę</button>
 
-    <script>
-        const elements = document.querySelectorAll('.element');
-        const crafted = document.getElementById('crafted');
-        const discoveredCounter = document.getElementById('discovered');
-        const totalCounter = document.getElementById('total');
-        const achievement = document.getElementById('achievement');
-        const resetButton = document.getElementById('resetButton');
+<h1>Gra Tworzenia Elementów</h1>
 
-        // Zasady tworzenia
-        const craftingRecipes = {
-            'woda+ziemia': 'Błoto',
-            'ogień+powietrze': 'Dym',
-            'woda+ogień': 'Energia',
-            'ziemia+powietrze': 'Pył',
-            'błoto+ogień': 'Glina',
-            'woda+powietrze': 'Chmura',
-            'dym+ziemia': 'Węgiel',
-            'pył+powietrze': 'Piasek',
-            'woda+glina': 'Ceramika',
-            'para+glina': 'Boczek',
-            'ogień+piasek': 'Szkło',
-            'chmura+powietrze': 'Burza',
-            'życie+glina': 'Człowiek',
-            'ceramika+ogień': 'Piec',
-            'dym+powietrze': 'Pustynia',
-            'błoto+woda': 'Bagno',
-			'ogień+ziemia': 'Lawa',
-			'woda+lawa': 'Para',
-			'bagno+energia': 'Życie',
-    };
+<div id="instructions">
+Kliknij dwa elementy, aby je połączyć.
+</div>
 
-        // Wszystkie elementy do odkrycia
-        const allElements = new Set([
-            'woda', 'ziemia', 'ogień', 'powietrze', 'błoto', 'dym', 'para', 'pył', 'glina', 'ceramika',
-            'chmura', 'węgiel', 'piasek', 'pustynia', 'kamień', 'burza', 'bagno', 'energia', 'człowiek', 'lawa'
-        ]);
+<div id="elements">
+    <div class="element" data-element="woda">Woda</div>
+    <div class="element" data-element="ziemia">Ziemia</div>
+    <div class="element" data-element="ogień">Ogień</div>
+    <div class="element" data-element="powietrze">Powietrze</div>
+</div>
 
-        // Zapisane odkrycia
-        const savedDiscoveredElements = JSON.parse(localStorage.getItem('discoveredElements')) || [];
-        const discoveredElements = new Set(savedDiscoveredElements);
+<div id="crafted"></div>
 
-        // Zaktualizuj licznik odkrytych elementów
-        discoveredCounter.textContent = discoveredElements.size;
-        totalCounter.textContent = allElements.size;
+<div id="counter">
+Odkryto: <span id="discovered">4</span>/<span id="total">20</span>
+</div>
 
-        // Dodaj już odkryte elementy do ekranu
-        savedDiscoveredElements.forEach(element => {
-            if (!['woda', 'ziemia', 'ogień', 'powietrze'].includes(element)) {
-                const newDiv = document.createElement('div');
-                newDiv.className = 'element';
-                newDiv.innerText = element.charAt(0).toUpperCase() + element.slice(1);
-                newDiv.dataset.element = element;
-                newDiv.addEventListener('click', handleElementClick);
-                crafted.appendChild(newDiv);
-            }
-        });
+<div id="achievement">Osiągnięcie: Wszystkie elementy odkryte!</div>
 
-        // Zaznacz odkrycie wszystkich elementów
-        if (discoveredElements.size === allElements.size) {
-            achievement.classList.add('visible');
-        }
+<button id="resetButton">Zresetuj grę</button>
 
-        let firstSelectedElement = null;
+<script>
+const elements = document.querySelectorAll('.element');
+const crafted = document.getElementById('crafted');
+const discoveredCounter = document.getElementById('discovered');
+const totalCounter = document.getElementById('total');
+const achievement = document.getElementById('achievement');
+const resetButton = document.getElementById('resetButton');
 
-        // Obsługa kliknięcia elementu
-        function handleElementClick(e) {
-            const clickedElement = e.target.dataset.element;
+const craftingRecipes = {
+    'woda+ziemia': 'Błoto',
+    'ogień+powietrze': 'Dym',
+    'woda+ogień': 'Energia',
+    'ziemia+powietrze': 'Pył',
+    'błoto+ogień': 'Glina',
+    'woda+powietrze': 'Chmura',
+    'dym+ziemia': 'Węgiel',
+    'pył+powietrze': 'Piasek',
+    'woda+glina': 'Ceramika',
+    'ogień+piasek': 'Szkło',
+    'chmura+powietrze': 'Burza',
+    'glina+ogień': 'Piec',
+    'błoto+woda': 'Bagno',
+    'ogień+ziemia': 'Lawa',
+    'woda+lawa': 'Para',
+    'bagno+energia': 'Życie',
+};
 
-            if (!firstSelectedElement) {
-                // Zapisz pierwszy wybrany element
-                firstSelectedElement = clickedElement;
-                e.target.style.borderColor = 'blue';
-            } else {
-                // Połącz z drugim elementem
-                const combinedKey = `${firstSelectedElement}+${clickedElement}`;
-                const reverseKey = `${clickedElement}+${firstSelectedElement}`;
-                const newItem = craftingRecipes[combinedKey] || craftingRecipes[reverseKey];
+const allElements = new Set([
+    'woda','ziemia','ogień','powietrze',
+    'błoto','dym','energia','pył','glina','chmura',
+    'węgiel','piasek','ceramika','szkło','burza',
+    'piec','bagno','lawa','para','życie'
+]);
 
-                // Resetuj styl zaznaczenia
-                document.querySelector(`[data-element="${firstSelectedElement}"]`).style.borderColor = '#ccc';
-                firstSelectedElement = null;
+const BASE = ['woda','ziemia','ogień','powietrze'];
 
-                if (newItem) {
-                    const newElementKey = newItem.toLowerCase();
-                    if (!discoveredElements.has(newElementKey)) {
-                        discoveredElements.add(newElementKey);
-                        saveDiscoveredElements();
-                        updateCounter();
+let discoveredElements = new Set(
+    JSON.parse(localStorage.getItem('discoveredElements')) || BASE
+);
 
-                        const newDiv = document.createElement('div');
-                        newDiv.className = 'element';
-                        newDiv.innerText = newItem;
-                        newDiv.dataset.element = newElementKey;
-                        newDiv.addEventListener('click', handleElementClick);
-                        crafted.appendChild(newDiv);
-                    } else {
-                        alert(`${newItem} już istnieje!`);
-                    }
-                } else {
-                    alert('Nie można połączyć tych elementów!');
-                }
-            }
-        }
+let selected = null;
 
-        // Funkcja aktualizująca licznik
-        function updateCounter() {
-            discoveredCounter.textContent = discoveredElements.size;
-            if (discoveredElements.size === allElements.size) {
-                achievement.classList.add('visible');
-            }
-        }
+function updateUI() {
+    discoveredCounter.textContent = discoveredElements.size;
 
-        // Funkcja zapisywania odkrytych elementów do localStorage
-        function saveDiscoveredElements() {
-            localStorage.setItem('discoveredElements', JSON.stringify([...discoveredElements]));
-        }
+    if (discoveredElements.size === allElements.size) {
+        achievement.classList.add('visible');
+    }
+}
 
-        // Funkcja resetująca grę
-        function resetGame() {
-            // Usuwamy zapisane elementy z localStorage
-            localStorage.removeItem('discoveredElements');
+function save() {
+    localStorage.setItem(
+        'discoveredElements',
+        JSON.stringify([...discoveredElements])
+    );
+}
 
-            // Przywracamy domyślne elementy
-            discoveredElements.clear();
-            discoveredElements.add('woda');
-            discoveredElements.add('ziemia');
-            discoveredElements.add('ogień');
-            discoveredElements.add('powietrze');
+function createElement(name) {
+    const div = document.createElement('div');
+    div.className = 'element';
+    div.innerText = name.charAt(0).toUpperCase() + name.slice(1);
+    div.dataset.element = name;
+    div.addEventListener('click', handleClick);
+    return div;
+}
 
-            // Zaktualizuj widok i licznik
-            discoveredCounter.textContent = discoveredElements.size;
-            crafted.innerHTML = '';
-            achievement.classList.remove('visible');
+function handleClick(e) {
+    const el = e.currentTarget.dataset.element;
 
-            // Ponownie dodaj podstawowe elementy do sekcji
-            elements.forEach(element => {
-                element.style.borderColor = '#ccc'; // Reset stylu
-            });
-        }
+    if (!selected) {
+        selected = { name: el, node: e.currentTarget };
+        e.currentTarget.style.borderColor = 'blue';
+        return;
+    }
 
-        // Obsługa przycisku resetowania gry
-        resetButton.addEventListener('click', resetGame);
+    if (selected.name === el) {
+        selected.node.style.borderColor = '#ccc';
+        selected = null;
+        return;
+    }
 
-        // Dodaj obsługę kliknięcia do każdego elementu
-        elements.forEach(element => {
-            element.addEventListener('click', handleElementClick);
-        });
-    </script>
+    const key = `${selected.name}+${el}`;
+    const reverse = `${el}+${selected.name}`;
+    const result = craftingRecipes[key] || craftingRecipes[reverse];
+
+    selected.node.style.borderColor = '#ccc';
+    selected = null;
+
+    if (!result) {
+        alert('Nie można połączyć!');
+        return;
+    }
+
+    const keyResult = result.toLowerCase();
+
+    if (discoveredElements.has(keyResult)) {
+        alert('Już odkryte!');
+        return;
+    }
+
+    discoveredElements.add(keyResult);
+    save();
+    updateUI();
+
+    crafted.appendChild(createElement(keyResult));
+}
+
+function resetGame() {
+    localStorage.removeItem('discoveredElements');
+
+    discoveredElements = new Set(BASE);
+    crafted.innerHTML = '';
+    selected = null;
+
+    achievement.classList.remove('visible');
+    updateUI();
+}
+
+[...discoveredElements].forEach(el => {
+    if (!BASE.includes(el)) {
+        crafted.appendChild(createElement(el));
+    }
+});
+
+elements.forEach(el => {
+    el.addEventListener('click', handleClick);
+});
+
+resetButton.addEventListener('click', resetGame);
+
+updateUI();
+</script>
+
 </body>
 </html>
