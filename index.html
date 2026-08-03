@@ -1,456 +1,3333 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="BrainVerse - darmowa strona do grania w gry przeglądarkowe">
-<title>BrainVerse - darmowe gry przeglądarkowe</title>
 
-<link rel="icon" type="image/png" href="brainverse_icon.png">
-<link rel="shortcut icon" type="image/png" href="brainverse_icon.png">
-<link rel="apple-touch-icon" href="brainverse_icon.png">
-<link rel="manifest" href="manifest.json">
-<link rel="canonical" href="https://brainverse.pl/">
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+<meta
+name="description"
+content="BrainVerse - darmowa strona do grania w gry przeglądarkowe">
+
+<title>
+BrainVerse - darmowe gry przeglądarkowe
+</title>
+
+
+<!-- Ikony i ustawienia strony -->
+
+<link
+rel="icon"
+type="image/png"
+href="brainverse_icon.png">
+
+<link
+rel="shortcut icon"
+type="image/png"
+href="brainverse_icon.png">
+
+<link
+rel="apple-touch-icon"
+href="brainverse_icon.png">
+
+<link
+rel="manifest"
+href="/manifest.json">
+
+<link
+rel="canonical"
+href="https://brainverse.pl/">
+
+
+<!-- Czcionki -->
+
+<link
+href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Roboto:wght@400;500;700&display=swap"
+rel="stylesheet">
+
 
 <style>
+
+/* ==================================================
+   PODSTAWOWE USTAWIENIA
+================================================== */
+
 *{
     box-sizing:border-box;
 }
 
-body{
-    margin:0;
-    font-family:'Segoe UI', sans-serif;
-    background: linear-gradient(135deg,#ff9a3c,#ff6a00);
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+
+html{
+    scroll-behavior:smooth;
 }
 
-/* BrainVerse tło */
-body::before{
-    content:"";
-    position:fixed;
-    width:400px;
-    height:400px;
-    background:url("brainverse_icon.png") no-repeat center;
-    background-size:contain;
-    opacity:0.08;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    pointer-events:none;
+
+body{
+
+    margin:0;
+
+    min-height:100vh;
+
+    font-family:
+    "Roboto",
+    "Segoe UI",
+    sans-serif;
+
+    color:white;
+
+    overflow-x:hidden;
+
+    background:
+
+    radial-gradient(
+    circle at 15% 15%,
+    rgba(255,180,70,.35),
+    transparent 30%
+    ),
+
+    radial-gradient(
+    circle at 85% 80%,
+    rgba(255,80,0,.35),
+    transparent 35%
+    ),
+
+    linear-gradient(
+    135deg,
+    #7d2600,
+    #d64a00,
+    #ff7100
+    );
+
 }
+
+
+/* ==================================================
+   ANIMOWANE TŁO
+================================================== */
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:-2;
+
+    background:
+
+    linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255,255,255,.06) 45%,
+    transparent 70%
+    );
+
+    animation:
+    backgroundMove
+    12s
+    linear
+    infinite;
+
+}
+
+
+@keyframes backgroundMove{
+
+    from{
+
+        transform:
+        translateX(-30%);
+
+    }
+
+    to{
+
+        transform:
+        translateX(30%);
+
+    }
+
+}
+
+
+/* ==================================================
+   DUŻE LOGO W TLE
+================================================== */
+
+body::after{
+
+    content:"";
+
+    position:fixed;
+
+    width:650px;
+
+    height:650px;
+
+    top:50%;
+
+    left:50%;
+
+    transform:
+    translate(-50%,-50%);
+
+    background:
+
+    url("brainverse_icon.png")
+
+    center
+
+    /
+
+    contain
+
+    no-repeat;
+
+    opacity:.055;
+
+    pointer-events:none;
+
+    z-index:-1;
+
+    animation:
+
+    logoFloat
+
+    8s
+
+    ease-in-out
+
+    infinite;
+
+}
+
+
+@keyframes logoFloat{
+
+    0%,
+    100%{
+
+        transform:
+
+        translate(-50%,-50%)
+
+        rotate(-4deg)
+
+        scale(1);
+
+    }
+
+
+    50%{
+
+        transform:
+
+        translate(-50%,-53%)
+
+        rotate(4deg)
+
+        scale(1.04);
+
+    }
+
+}
+
+
+/* ==================================================
+   GÓRNY PASEK
+================================================== */
+
+.topBar{
+
+    position:fixed;
+
+    top:0;
+
+    left:0;
+
+    width:100%;
+
+    min-height:88px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+    padding:
+
+    15px
+
+    clamp(
+    18px,
+    5vw,
+    70px
+    );
+
+    background:
+
+    rgba(
+    20,
+    8,
+    2,
+    .78
+    );
+
+    backdrop-filter:
+    blur(18px);
+
+    border-bottom:
+
+    1px solid
+
+    rgba(
+    255,
+    180,
+    90,
+    .35
+    );
+
+    box-shadow:
+
+    0 10px 40px
+
+    rgba(
+    0,
+    0,
+    0,
+    .25
+    );
+
+    z-index:5000;
+
+}
+
+
+.brand{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    user-select:none;
+
+}
+
+
+.brandLogo{
+
+    width:56px;
+
+    height:56px;
+
+    object-fit:contain;
+
+    filter:
+
+    drop-shadow(
+
+    0 0 10px
+
+    rgba(
+    255,
+    130,
+    0,
+    .8
+    )
+
+    );
+
+}
+
+
+.brandText{
+
+    font-family:
+
+    "Orbitron",
+
+    sans-serif;
+
+    font-size:
+
+    clamp(
+    24px,
+    4vw,
+    38px
+    );
+
+    font-weight:800;
+
+    letter-spacing:1px;
+
+    color:white;
+
+    text-shadow:
+
+    0 0 5px white,
+
+    0 0 15px
+    #ff7800,
+
+    0 0 30px
+    #ff7800;
+
+}
+
+
+.brandSubtitle{
+
+    margin-top:3px;
+
+    color:
+
+    rgba(
+    255,
+    255,
+    255,
+    .65
+    );
+
+    font-size:12px;
+
+    letter-spacing:2px;
+
+    text-transform:
+    uppercase;
+
+}
+
+
+/* ==================================================
+   PRZYCISK GIER
+================================================== */
+
+.gamesButton{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:9px;
+
+    min-width:155px;
+
+    padding:
+
+    13px
+
+    21px;
+
+    border-radius:
+    100px;
+
+    color:white;
+
+    background:
+
+    linear-gradient(
+
+    135deg,
+
+    #ff4300,
+
+    #ff9700
+
+    );
+
+    text-decoration:none;
+
+    font-weight:800;
+
+    font-size:14px;
+
+    letter-spacing:.5px;
+
+    box-shadow:
+
+    0 8px 25px
+
+    rgba(
+    255,
+    90,
+    0,
+    .45
+    );
+
+    transition:
+
+    transform .2s,
+
+    box-shadow .2s,
+
+    filter .2s;
+
+}
+
+
+.gamesButton:hover{
+
+    transform:
+
+    translateY(-3px)
+
+    scale(1.03);
+
+    filter:
+    brightness(1.12);
+
+    box-shadow:
+
+    0 13px 35px
+
+    rgba(
+    255,
+    120,
+    0,
+    .7
+    );
+
+}
+
+
+/* ==================================================
+   GŁÓWNA ZAWARTOŚĆ
+================================================== */
+
+main{
+
+    width:100%;
+
+    min-height:100vh;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:
+
+    135px
+
+    25px
+
+    150px;
+
+}
+
+
+/* ==================================================
+   GŁÓWNA KARTA
+================================================== */
 
 .card{
-    background:white;
-    width:420px;
-    padding:40px;
-    border-radius:25px;
-    box-shadow:0 20px 50px rgba(0,0,0,0.25);
-    text-align:center;
+
+    position:relative;
+
+    width:
+
+    min(
+    1050px,
+    100%
+    );
+
+    padding:
+
+    clamp(
+    25px,
+    5vw,
+    55px
+    );
+
+    border:
+
+    1px solid
+
+    rgba(
+    255,
+    255,
+    255,
+    .25
+    );
+
+    border-radius:
+    34px;
+
+    background:
+
+    linear-gradient(
+
+    135deg,
+
+    rgba(
+    255,
+    255,
+    255,
+    .20
+    ),
+
+    rgba(
+    255,
+    255,
+    255,
+    .08
+    )
+
+    );
+
+    backdrop-filter:
+    blur(22px);
+
+    box-shadow:
+
+    0 30px 80px
+
+    rgba(
+    35,
+    8,
+    0,
+    .38
+    );
+
+    overflow:hidden;
+
+    animation:
+
+    cardAppear
+
+    .7s
+
+    ease-out;
+
 }
 
-.profile{
-    width:110px;
-    height:110px;
-    border-radius:50%;
-    object-fit:cover;
+
+.card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:0;
+
+    width:100%;
+
+    height:4px;
+
+    background:
+
+    linear-gradient(
+
+    90deg,
+
+    transparent,
+
+    #ffbd52,
+
+    white,
+
+    #ff7100,
+
+    transparent
+
+    );
+
+}
+
+
+@keyframes cardAppear{
+
+    from{
+
+        opacity:0;
+
+        transform:
+
+        translateY(30px)
+
+        scale(.97);
+
+    }
+
+
+    to{
+
+        opacity:1;
+
+        transform:
+
+        translateY(0)
+
+        scale(1);
+
+    }
+
+}
+
+
+/* ==================================================
+   LOGOWANIE
+================================================== */
+
+.loginLogo{
+
+    width:125px;
+
+    height:125px;
+
+    object-fit:contain;
+
     margin-bottom:15px;
-    border:4px solid #ff6a00;
+
+    filter:
+
+    drop-shadow(
+
+    0 0 25px
+
+    rgba(
+    255,
+    120,
+    0,
+    .75
+    )
+
+    );
+
+    animation:
+
+    loginLogoFloat
+
+    4s
+
+    ease-in-out
+
+    infinite;
+
 }
 
-h1{
-    margin-top:0;
-    color:#ff6a00;
+
+@keyframes loginLogoFloat{
+
+    0%,
+    100%{
+
+        transform:
+        translateY(0);
+
+    }
+
+
+    50%{
+
+        transform:
+        translateY(-10px);
+
+    }
+
 }
+
+
+.loginTitle{
+
+    margin:
+
+    0
+
+    0
+
+    8px;
+
+    font-family:
+    "Orbitron";
+
+    font-size:
+
+    clamp(
+    34px,
+    6vw,
+    58px
+    );
+
+    color:white;
+
+    text-shadow:
+
+    0 0 15px
+
+    rgba(
+    255,
+    120,
+    0,
+    .8
+    );
+
+}
+
+
+.loginDescription{
+
+    margin:
+
+    0
+
+    0
+
+    32px;
+
+    color:
+
+    rgba(
+    255,
+    255,
+    255,
+    .72
+    );
+
+    font-size:16px;
+
+}
+
+
+.loginContainer{
+
+    width:
+
+    min(
+    440px,
+    100%
+    );
+
+    margin:auto;
+
+    text-align:center;
+
+}
+
+
+.inputGroup{
+
+    position:relative;
+
+    margin:
+
+    15px
+
+    0;
+
+}
+
+
+.inputIcon{
+
+    position:absolute;
+
+    top:50%;
+
+    left:18px;
+
+    transform:
+
+    translateY(-50%);
+
+    font-size:20px;
+
+    opacity:.75;
+
+}
+
 
 input{
+
     width:100%;
-    padding:12px;
-    margin:10px 0;
-    border-radius:12px;
-    border:1px solid #eee;
+
+    padding:
+
+    17px
+
+    18px
+
+    17px
+
+    53px;
+
+    color:white;
+
     font-size:16px;
+
+    border:
+
+    1px solid
+
+    rgba(
+    255,
+    255,
+    255,
+    .22
+    );
+
+    border-radius:
+    17px;
+
+    outline:none;
+
+    background:
+
+    rgba(
+    0,
+    0,
+    0,
+    .20
+    );
+
+    transition:
+
+    border .2s,
+
+    box-shadow .2s,
+
+    background .2s;
+
 }
+
+
+input::placeholder{
+
+    color:
+
+    rgba(
+    255,
+    255,
+    255,
+    .55
+    );
+
+}
+
+
+input:focus{
+
+    border-color:
+    #ffb14a;
+
+    background:
+
+    rgba(
+    0,
+    0,
+    0,
+    .30
+    );
+
+    box-shadow:
+
+    0 0 0 4px
+
+    rgba(
+    255,
+    130,
+    0,
+    .14
+    );
+
+}
+
+
+/* ==================================================
+   PRZYCISKI
+================================================== */
 
 button{
+
     width:100%;
-    padding:12px;
-    margin-top:10px;
+
+    padding:
+
+    17px
+
+    22px;
+
+    margin-top:12px;
+
     border:none;
-    border-radius:12px;
-    background:#ff6a00;
+
+    border-radius:
+    17px;
+
     color:white;
+
     font-size:16px;
+
+    font-weight:800;
+
     cursor:pointer;
-    transition:0.2s;
+
+    background:
+
+    linear-gradient(
+
+    135deg,
+
+    #ff3d00,
+
+    #ff9500
+
+    );
+
+    box-shadow:
+
+    0 12px 30px
+
+    rgba(
+    255,
+    80,
+    0,
+    .38
+    );
+
+    transition:
+
+    transform .2s,
+
+    box-shadow .2s,
+
+    filter .2s;
+
 }
+
 
 button:hover{
-    background:#e85d00;
+
+    transform:
+
+    translateY(-3px);
+
+    filter:
+    brightness(1.12);
+
+    box-shadow:
+
+    0 18px 40px
+
+    rgba(
+    255,
+    90,
+    0,
+    .58
+    );
+
 }
 
-.file{
-    background:#fff3e6;
-    padding:12px;
-    margin:10px 0;
-    border-radius:12px;
+
+button:active{
+
+    transform:
+
+    translateY(0)
+
+    scale(.98);
+
 }
 
-.file a{
-    text-decoration:none;
-    color:#ff6a00;
-    font-weight:bold;
-}
 
-.accountLabel{
-    background:#ff6a00;
-    color:white;
-    padding:10px;
-    border-radius:12px;
-    margin-bottom:20px;
-    font-weight:bold;
-}
+/* ==================================================
+   BŁĘDY I ŁADOWANIE
+================================================== */
 
 #error{
-    color:red;
+
+    min-height:20px;
+
+    margin-top:17px;
+
+    color:
+    #ffd0c4;
+
+    font-weight:700;
+
 }
+
+
+.loadingText{
+
+    color:
+
+    rgba(
+    255,
+    255,
+    255,
+    .72
+    );
+
+    margin-top:15px;
+
+    font-size:14px;
+
+}
+
+
+/* ==================================================
+   PANEL UŻYTKOWNIKA
+================================================== */
+
+.userHeader{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:25px;
+
+    margin-bottom:40px;
+
+    padding-bottom:28px;
+
+    border-bottom:
+
+    1px solid
+
+    rgba(
+    255,
+    255,
+    255,
+    .16
+    );
+
+}
+
+
+.userInfo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+}
+
+
+.profile{
+
+    width:105px;
+
+    height:105px;
+
+    object-fit:cover;
+
+    flex-shrink:0;
+
+    border:
+
+    4px solid
+
+    rgba(
+    255,
+    170,
+    70,
+    .95
+    );
+
+    border-radius:
+    28px;
+
+    background:
+
+    rgba(
+    255,
+    255,
+    255,
+    .12
+    );
+
+    box-shadow:
+
+    0 0 0 8px
+
+    rgba(
+    255,
+    120,
+    0,
+    .12
+    ),
+
+    0 15px 35px
+
+    rgba(
+    0,
+    0,
+    0,
+    .28
+    );
+
+}
+
+
+.welcome{
+
+    margin:0;
+
+    color:
+
+    rgba(
+    255,
+    255,
+    255,
+    .65
+    );
+
+    font-size:14px;
+
+    text-transform:
+    uppercase;
+
+    letter-spacing:2px;
+
+}
+
+
+.accountLabel{
+
+    margin-top:7px;
+
+    font-family:
+    "Orbitron";
+
+    font-size:
+
+    clamp(
+    24px,
+    4vw,
+    38px
+    );
+
+    font-weight:800;
+
+    color:white;
+
+    text-shadow:
+
+    0 0 18px
+
+    rgba(
+    255,
+    125,
+    0,
+    .65
+    );
+
+}
+
+
+.fileCount{
+
+    margin-top:10px;
+
+    display:inline-flex;
+
+    padding:
+
+    7px
+
+    12px;
+
+    border-radius:
+    100px;
+
+    color:
+    #ffd49a;
+
+    font-size:13px;
+
+    background:
+
+    rgba(
+    255,
+    120,
+    0,
+    .15
+    );
+
+}
+
+
+/* ==================================================
+   NAGŁÓWEK PLIKÓW
+================================================== */
+
+.filesTitle{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+    margin-bottom:23px;
+
+}
+
+
+.filesTitle h2{
+
+    margin:0;
+
+    font-size:
+
+    clamp(
+    25px,
+    4vw,
+    37px
+    );
+
+}
+
+
+.filesTitle p{
+
+    margin:0;
+
+    color:
+
+    rgba(
+    255,
+    255,
+    255,
+    .62
+    );
+
+}
+
+
+/* ==================================================
+   KAFELKI PLIKÓW
+================================================== */
+
+#files{
+
+    display:grid;
+
+    grid-template-columns:
+
+    repeat(
+
+    auto-fit,
+
+    minmax(
+    210px,
+    1fr
+    )
+
+    );
+
+    gap:18px;
+
+}
+
+
+.file{
+
+    position:relative;
+
+    min-height:180px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    padding:24px;
+
+    border:
+
+    1px solid
+
+    rgba(
+    255,
+    255,
+    255,
+    .18
+    );
+
+    border-radius:
+    23px;
+
+    background:
+
+    linear-gradient(
+
+    145deg,
+
+    rgba(
+    255,
+    255,
+    255,
+    .14
+    ),
+
+    rgba(
+    0,
+    0,
+    0,
+    .12
+    )
+
+    );
+
+    overflow:hidden;
+
+    transition:
+
+    transform .25s,
+
+    border .25s,
+
+    box-shadow .25s,
+
+    background .25s;
+
+}
+
+
+.file::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:150px;
+
+    height:150px;
+
+    top:-80px;
+
+    right:-80px;
+
+    border-radius:50%;
+
+    background:
+
+    rgba(
+    255,
+    130,
+    0,
+    .14
+    );
+
+    transition:
+
+    transform .4s;
+
+}
+
+
+.file:hover{
+
+    transform:
+
+    translateY(-7px);
+
+    border-color:
+
+    rgba(
+    255,
+    180,
+    80,
+    .65
+    );
+
+    background:
+
+    linear-gradient(
+
+    145deg,
+
+    rgba(
+    255,
+    160,
+    50,
+    .20
+    ),
+
+    rgba(
+    0,
+    0,
+    0,
+    .15
+    )
+
+    );
+
+    box-shadow:
+
+    0 20px 45px
+
+    rgba(
+    55,
+    10,
+    0,
+    .25
+    );
+
+}
+
+
+.file:hover::before{
+
+    transform:
+    scale(1.8);
+
+}
+
+
+.fileIcon{
+
+    position:relative;
+
+    z-index:1;
+
+    width:55px;
+
+    height:55px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    margin-bottom:18px;
+
+    border-radius:
+    17px;
+
+    font-size:27px;
+
+    background:
+
+    linear-gradient(
+
+    135deg,
+
+    #ff5000,
+
+    #ff9d00
+
+    );
+
+    box-shadow:
+
+    0 8px 22px
+
+    rgba(
+    255,
+    90,
+    0,
+    .35
+    );
+
+}
+
+
+.fileName{
+
+    position:relative;
+
+    z-index:1;
+
+    font-size:18px;
+
+    font-weight:800;
+
+    line-height:1.35;
+
+    word-break:
+    break-word;
+
+}
+
+
+.file a{
+
+    position:relative;
+
+    z-index:1;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    width:100%;
+
+    margin-top:22px;
+
+    padding:
+
+    12px
+
+    15px;
+
+    color:white;
+
+    text-decoration:none;
+
+    font-weight:800;
+
+    border-radius:
+    13px;
+
+    background:
+
+    rgba(
+    0,
+    0,
+    0,
+    .26
+    );
+
+    border:
+
+    1px solid
+
+    rgba(
+    255,
+    255,
+    255,
+    .13
+    );
+
+    transition:
+
+    background .2s,
+
+    transform .2s;
+
+}
+
+
+.file a:hover{
+
+    transform:
+
+    translateY(-2px);
+
+    background:
+
+    rgba(
+    255,
+    105,
+    0,
+    .75
+    );
+
+}
+
+
+.comingSoon{
+
+    position:relative;
+
+    z-index:1;
+
+    display:flex;
+
+    justify-content:center;
+
+    margin-top:22px;
+
+    padding:
+
+    12px
+
+    15px;
+
+    color:
+
+    rgba(
+    255,
+    255,
+    255,
+    .55
+    );
+
+    font-weight:800;
+
+    border-radius:
+    13px;
+
+    background:
+
+    rgba(
+    0,
+    0,
+    0,
+    .18
+    );
+
+}
+
+
+/* ==================================================
+   PRZYCISK WYLOGOWANIA
+================================================== */
+
+.logoutButton{
+
+    width:auto;
+
+    min-width:150px;
+
+    margin:0;
+
+    padding:
+
+    13px
+
+    20px;
+
+    background:
+
+    rgba(
+    0,
+    0,
+    0,
+    .25
+    );
+
+    border:
+
+    1px solid
+
+    rgba(
+    255,
+    255,
+    255,
+    .18
+    );
+
+    box-shadow:none;
+
+}
+
+
+.logoutButton:hover{
+
+    background:
+
+    rgba(
+    210,
+    40,
+    0,
+    .65
+    );
+
+}
+
+
+/* ==================================================
+   STOPKA
+================================================== */
+
+footer{
+
+    position:fixed;
+
+    bottom:0;
+
+    left:0;
+
+    width:100%;
+
+    z-index:5000;
+
+    padding:
+
+    12px
+
+    clamp(
+    15px,
+    4vw,
+    50px
+    );
+
+    background:
+
+    rgba(
+    15,
+    5,
+    0,
+    .86
+    );
+
+    backdrop-filter:
+    blur(15px);
+
+    border-top:
+
+    1px solid
+
+    rgba(
+    255,
+    145,
+    35,
+    .45
+    );
+
+}
+
+
+.footerContent{
+
+    width:100%;
+
+    max-width:1300px;
+
+    margin:auto;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+}
+
+
+.gamePortal {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 18px 35px;
+
+    background:
+        linear-gradient(135deg,#ff4500,#ff9900);
+
+    color:white !important;
+    text-decoration:none;
+
+    border-radius:25px;
+
+    font-family:'Segoe UI', sans-serif;
+
+    box-shadow:
+        0 0 20px rgba(255,120,0,0.8),
+        0 0 50px rgba(255,60,0,0.5);
+
+    overflow:hidden;
+
+    transition:0.3s;
+
+    animation: portalGlow 2s infinite;
+}
+
+
+.gamePortal strong {
+    display:block;
+    font-size:22px;
+    font-weight:900;
+    letter-spacing:1px;
+}
+
+
+.gamePortal small {
+    display:block;
+    font-size:13px;
+    opacity:0.9;
+}
+
+
+.gameIcon {
+    font-size:45px;
+}
+
+
+.gamePortal:hover {
+    transform:scale(1.12) translateY(-5px);
+
+    box-shadow:
+        0 0 35px orange,
+        0 0 80px red;
+}
+
+
+/* efekt przesuwającego się światła */
+.gamePortal::before {
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:-100%;
+
+    width:60%;
+    height:100%;
+
+    background:
+    linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.5),
+        transparent
+    );
+
+    animation: shine 3s infinite;
+}
+
+
+@keyframes shine {
+
+    0% {
+        left:-100%;
+    }
+
+    50%,100% {
+        left:150%;
+    }
+
+}
+
+
+@keyframes portalGlow {
+
+    0%,100% {
+        box-shadow:
+        0 0 20px rgba(255,120,0,.8);
+    }
+
+    50% {
+        box-shadow:
+        0 0 45px rgba(255,180,0,1);
+    }
+
+}
+
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+.footerText{
+
+    color:
+
+    rgba(
+    255,
+    255,
+    255,
+    .75
+    );
+
+    font-size:12px;
+
+    line-height:1.55;
+
+}
+
+
+.footerText b{
+
+    color:white;
+
+}
+
+
+.footerText a{
+
+    color:
+    #ffad45;
+
+    font-weight:800;
+
+    text-decoration:none;
+
+}
+
+
+.publicAccount{
+
+    color:
+    #ffb34e;
+
+    font-weight:800;
+
+}
+
+
+/* ==================================================
+   TELEFONY
+================================================== */
+
+@media(
+max-width:700px
+){
+
+    .topBar{
+
+        min-height:72px;
+
+        padding:
+
+        10px
+
+        15px;
+
+    }
+
+
+    .brandLogo{
+
+        width:45px;
+
+        height:45px;
+
+    }
+
+
+    .brandSubtitle{
+
+        display:none;
+
+    }
+
+
+    .gamesButton{
+
+        min-width:auto;
+
+        padding:
+
+        11px
+
+        14px;
+
+        font-size:12px;
+
+    }
+
+
+    main{
+
+        align-items:flex-start;
+
+        padding:
+
+        105px
+
+        14px
+
+        50px;
+
+    }
+
+
+    .card{
+
+        border-radius:
+        25px;
+
+        padding:
+
+        25px
+
+        18px;
+
+    }
+
+
+    .userHeader{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+
+    .userInfo{
+
+        align-items:flex-start;
+
+    }
+
+
+    .profile{
+
+        width:78px;
+
+        height:78px;
+
+        border-radius:
+        21px;
+
+    }
+
+
+    .logoutButton{
+
+        width:100%;
+
+    }
+
+
+    .filesTitle{
+
+        align-items:flex-start;
+
+        flex-direction:column;
+
+    }
+
+
+    #files{
+
+        grid-template-columns:
+        1fr;
+
+    }
+
+
+    footer{
+
+        position:relative;
+
+    }
+
+
+    .footerContent{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+}
+
 </style>
+
 </head>
+
 
 <body>
 
-<div class="card" id="loginBox">
-    <h1>BrainVerse</h1>
-    <input type="text" id="username" placeholder="Login">
-    <input type="password" id="password" placeholder="Hasło">
-    <button onclick="login()">Zaloguj</button>
-    <p id="error"></p>
+
+<!-- ==================================================
+     GÓRNY PASEK
+================================================== -->
+
+<header class="topBar">
+
+
+<div class="brand">
+
+
+<img
+
+class="brandLogo"
+
+src="brainverse_icon.png"
+
+alt="Logo BrainVerse">
+
+
+<div>
+
+
+<div class="brandText">
+
+BrainVerse
+
 </div>
 
-<div class="card" id="panel" style="display:none;">
-    <img id="profileImage" class="profile">
-    <div class="accountLabel" id="accountInfo"></div>
-    <h1>Twoje pliki</h1>
-    <div id="files"></div>
-    <button onclick="logout()">Wyloguj</button>
+
+<div class="brandSubtitle">
+
+Gry • Projekty
+
 </div>
+
+
+</div>
+
+
+</div>
+
+
+<a href="https://brainverse.pl/gry/" class="gamePortal">
+    <span class="gameIcon">🎮</span>
+    <span>
+        <strong>PRZEJDŹ DO GIER</strong>
+        <small>Odkryj gry BrainVerse</small>
+    </span>
+</a>
+
+
+</header>
+
+
+
+<!-- ==================================================
+     GŁÓWNA CZĘŚĆ STRONY
+================================================== -->
+
+<main>
+
+
+
+<!-- ==================================================
+     PANEL LOGOWANIA
+================================================== -->
+
+<div
+
+class="card"
+
+id="loginBox">
+
+
+<div class="loginContainer">
+
+
+<img
+
+class="loginLogo"
+
+src="brainverse_icon.png"
+
+alt="Logo BrainVerse">
+
+
+<h1 class="loginTitle">
+
+BrainVerse
+
+</h1>
+
+
+<p class="loginDescription">
+
+Zaloguj się, aby uzyskać dostęp
+do swoich gier, plików i projektów.
+
+</p>
+
+
+<div class="inputGroup">
+
+
+<span class="inputIcon">
+
+👤
+
+</span>
+
+
+<input
+
+type="text"
+
+id="username"
+
+placeholder="Login"
+
+autocomplete="username">
+
+
+</div>
+
+
+<div class="inputGroup">
+
+
+<span class="inputIcon">
+
+🔒
+
+</span>
+
+
+<input
+
+type="password"
+
+id="password"
+
+placeholder="Hasło"
+
+autocomplete="current-password">
+
+
+</div>
+
+
+<button
+
+id="loginButton"
+
+onclick="login()">
+
+ZALOGUJ SIĘ →
+
+</button>
+
+
+<p
+
+class="loadingText"
+
+id="loadingText">
+
+Ładowanie danych...
+
+</p>
+
+
+<p id="error"></p>
+
+
+</div>
+
+
+</div>
+
+
+
+<!-- ==================================================
+     PANEL UŻYTKOWNIKA
+================================================== -->
+
+<div
+
+class="card"
+
+id="panel"
+
+style="display:none;">
+
+
+<div class="userHeader">
+
+
+<div class="userInfo">
+
+
+<img
+
+id="profileImage"
+
+class="profile"
+
+alt="Zdjęcie profilowe">
+
+
+<div>
+
+
+<p class="welcome">
+
+Zalogowano jako
+
+</p>
+
+
+<div
+
+class="accountLabel"
+
+id="accountInfo">
+
+</div>
+
+
+<div
+
+class="fileCount"
+
+id="fileCount">
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<button
+
+class="logoutButton"
+
+onclick="logout()">
+
+↪ WYLOGUJ
+
+</button>
+
+
+</div>
+
+
+
+<div class="filesTitle">
+
+
+<div>
+
+
+<h2>
+
+📁 Twoje materiały
+
+</h2>
+
+
+<p>
+
+Wybierz projekt,
+który chcesz otworzyć.
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+<div id="files">
+
+</div>
+
+
+</div>
+
+
+</main>
+
+
+
+<!-- ==================================================
+     STOPKA
+================================================== -->
+
+<footer>
+
+
+<div class="footerContent">
+
+
+<div class="footerText">
+
+
+Aby stworzyć konto
+lub uzyskać pomoc,
+napisz na:
+
+
+<b>
+
+brainversehelp@gmail.com
+
+</b>
+
+
+<br>
+
+
+Konto publiczne:
+
+
+<span class="publicAccount">
+
+login: gosc
+
+•
+
+hasło: gosc
+
+</span>
+
+
+•
+
+
+<a
+
+href="https://brainverse.pl/privacy-policy.html">
+
+Polityka prywatności
+
+</a>
+
+
+</div>
+
+
+
+<a id="gamesButton" class="gamesButton" href="https://brainverse.pl/gry/">
+    🎮 GRY
+</a>
+
+
+</div>
+
+
+</footer>
+
+
+
+<!-- ==================================================
+     GŁÓWNY JAVASCRIPT
+================================================== -->
+
+<script>
+    // Ustaw true aby pokazać przycisk, false aby ukryć
+    const showGamesButton = false;
+
+    const gamesButton = document.getElementById("gamesButton");
+
+    if (!showGamesButton) {
+        gamesButton.style.display = "none";
+    }
+</script>
 
 <script>
 
-const users = {
-    user1: {
-        label: "KONTO NR 1",
-        password: "haslo1",
-        image: "user1.png",
-        files: [
-            {name: "Plik A1", link: "https://example.com/a1"},
-            {name: "Plik A2", link: "https://example.com/a2"}
-        ]
-    },
-    user2: {
-        label: "KONTO NR 2",
-        password: "haslo2",
-        image: "user2.png",
-        files: [
-            {name: "Plik B1", link: "https://example.com/b1"}
-        ]
-    },
-    Nikoa: {
-        label: "Nikoa",
-        password: "carrot",
-        image: "brainverse_icon.png",
-        files: [
-            {name: "Carrot", link: "https://drive.google.com/drive/folders/1DnKcC-nhJsF_8Fj1Xnpuc1CUq48et7ts"},
-            {name: "Carrot Apocalypse 1.6 for Windows", link: "https://gamejolt.com/games/carrot/1029450"},
-            {name: "Prezentacje", link: "https://brainverse.pl/prezentacja"}
-        ]
-    },
-    voxellab: {
-        label: "Voxel Lab maps",
-        password: "voxellab",
-        image: "user2.png",
-        files: [
-            {name: "Voxel Lab Tutorial World", link: "https://drive.google.com/file/d/1TkQv3zgZ217_52Cy4hU8sq0UGnRbwNxa/view?usp=sharing"},
-            {name: "Small House", link: "https://drive.google.com/file/d/1RvGFpSTx4-stLBWrIKhp9xPawPAG922S/view?usp=sharing"},
-            {name: "Coming Soon", link: ""}
-        ]
-    },
-    cv: {
-        label: "CineVerse",
-        password: "cvhaslo",
-        image: "random.png",
-        files: [
-            {name: "CineVerse", link: "https://brainverse.pl/wYv5bmT3CwMvd6EswYGtkvrswpaRKcF2V3X6x6g4u9AAFrDbCRmHnwMrXhnzkAaWKvz893yadjkyUrKGXqDj3ycpK895SDpBbsB7MwGsN5zAfPfn78EYWXyjcxaDXnswYqvxTsbpJXqgbcbwx2SSApDE45Ka3D5Z/"}
-        ]
-    },
-    gry: {
-        label: "Gry",
-        password: "gry",
-        image: "user3.png",
-        files: [
-            {name: "Łączenie", link: "https://brainverse.pl/laczenie/"},
-            {name: "Quizy 1", link: "https://brainverse.pl/quizy1/"},
-            {name: "Quizy 2", link: "https://brainverse.pl/quizy2/"},
-            {name: "Zgadnij liczbę", link: "https://brainverse.pl/Zgadnijliczbe/"},
-            {name: "Carrot Apocalypse", link: "https://brainverse.pl/carrotapocalypse/"},
-            {name: "Pi Challenge 1000", link: "https://brainverse.pl/PiChallenge/"},
-            {name: "IronShot", link: "https://brainverse.pl/ironshot/"}
-        ]
-    },
-    gosc: {
-        label: "Gość",
-        password: "gosc",
-        image: "user2.png",
-        files: [
-            {name: "Zgadnij liczbę wersja light", link: "https://drive.google.com/file/d/1xcUw69ktrPTZtQZ52ubfmhDlTmsnIGUH/view?usp=sharing"},
-            {name: "Carrot Apocalypse 1.6 for Windows", link: "https://gamejolt.com/games/carrot/1029450"},   
-            {name: "Polityka prywatności", link: "https://brainverse.pl/privacy-policy.html"}
-        ]
+
+/* ==================================================
+   ZMIENNA NA KONTA
+
+   Dane zostaną pobrane
+   z pliku WCSD7oLgX3mePwcmeaBwj2gIHkOKoMEnPdO4o4F0eoqurNUQlM.json.
+================================================== */
+
+let users = {};
+
+
+/* ==================================================
+   ŁADOWANIE WCSD7oLgX3mePwcmeaBwj2gIHkOKoMEnPdO4o4F0eoqurNUQlM.json
+================================================== */
+
+async function loadAccounts(){
+
+
+    const loadingText =
+
+    document
+    .getElementById(
+    "loadingText"
+    );
+
+
+    const loginButton =
+
+    document
+    .getElementById(
+    "loginButton"
+    );
+
+
+    const error =
+
+    document
+    .getElementById(
+    "error"
+    );
+
+
+    try{
+
+
+        loadingText
+        .innerText =
+
+        "Ładowanie danych...";
+
+
+        loginButton
+        .disabled =
+
+        true;
+
+
+        const response =
+
+        await fetch(
+
+        "WCSD7oLgX3mePwcmeaBwj2gIHkOKoMEnPdO4o4F0eoqurNUQlM.json"
+
+        );
+
+
+        if(
+
+        !response.ok
+
+        ){
+
+
+            throw new Error(
+
+            "nie udało się pobrać danych kont"
+
+            );
+
+
+        }
+
+
+        users =
+
+        await response.json();
+
+
+        loadingText
+        .innerText =
+
+        "";
+
+
+        loginButton
+        .disabled =
+
+        false;
+
+
+        const savedUser =
+
+        localStorage
+        .getItem(
+
+        "loggedUser"
+
+        );
+
+
+        if(
+
+        savedUser
+
+        &&
+
+        users[savedUser]
+
+        ){
+
+
+            loadPanel();
+
+
+        }
+
+
+        else{
+
+
+            localStorage
+            .removeItem(
+
+            "loggedUser"
+
+            );
+
+
+        }
+
+
     }
-};
+
+
+    catch(
+
+    error
+
+    ){
+
+
+        console.error(
+
+        error
+
+        );
+
+
+        loadingText
+        .innerText =
+
+        "";
+
+
+        loginButton
+        .disabled =
+
+        true;
+
+
+        document
+        .getElementById(
+        "error"
+        )
+        .innerText =
+
+        "Nie udało się załadować danych kont.";
+
+
+    }
+
+
+}
+
+
+
+/* ==================================================
+   LOGOWANIE
+================================================== */
 
 function login(){
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
 
-    if(users[username] && users[username].password === password){
-        localStorage.setItem("loggedUser", username);
-        loadPanel();
-    } else {
-        document.getElementById("error").innerText = "Nieprawidłowe dane logowania.";
+
+    const username =
+
+    document
+    .getElementById(
+    "username"
+    )
+    .value
+    .trim();
+
+
+    const password =
+
+    document
+    .getElementById(
+    "password"
+    )
+    .value;
+
+
+    const error =
+
+    document
+    .getElementById(
+    "error"
+    );
+
+
+    if(
+
+    Object
+    .keys(
+    users
+    )
+    .length
+
+    ===
+
+    0
+
+    ){
+
+
+        error
+        .innerText =
+
+        "Nie udało się załadować danych kont.";
+
+
+        return;
+
+
     }
+
+
+    if(
+
+    users[username]
+
+    &&
+
+    users[username]
+    .password
+
+    ===
+
+    password
+
+    ){
+
+
+        localStorage
+        .setItem(
+
+        "loggedUser",
+
+        username
+
+        );
+
+
+        error
+        .innerText =
+
+        "";
+
+
+        loadPanel();
+
+
+    }
+
+
+    else{
+
+
+        error
+        .innerText =
+
+        "Nieprawidłowy login lub hasło.";
+
+
+    }
+
+
 }
+
+
+
+/* ==================================================
+   ŁADOWANIE PANELU
+================================================== */
 
 function loadPanel(){
-    const user = localStorage.getItem("loggedUser");
-    if(!user) return;
 
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("panel").style.display = "block";
 
-    document.getElementById("accountInfo").innerText = users[user].label;
-    document.getElementById("profileImage").src = users[user].image;
+    const username =
 
-    const fileDiv = document.getElementById("files");
-    fileDiv.innerHTML = "";
+    localStorage
+    .getItem(
 
-    users[user].files.forEach(file => {
-        fileDiv.innerHTML += `
-            <div class="file">
-                ${file.name}<br>
-                <a href="${file.link}" target="_blank">Otwórz</a>
+    "loggedUser"
+
+    );
+
+
+    if(
+
+    !username
+
+    ||
+
+    !users[username]
+
+    ){
+
+
+        return;
+
+
+    }
+
+
+    const user =
+
+    users[username];
+
+
+    document
+    .getElementById(
+    "loginBox"
+    )
+    .style
+    .display =
+
+    "none";
+
+
+    document
+    .getElementById(
+    "panel"
+    )
+    .style
+    .display =
+
+    "block";
+
+
+    document
+    .getElementById(
+    "accountInfo"
+    )
+    .innerText =
+
+    user.label;
+
+
+    document
+    .getElementById(
+    "profileImage"
+    )
+    .src =
+
+    user.image;
+
+
+    document
+    .getElementById(
+    "profileImage"
+    )
+    .alt =
+
+    "Profil użytkownika "
+
+    +
+
+    user.label;
+
+
+    const amount =
+
+    user.files.length;
+
+
+    let materialText;
+
+
+    if(
+
+    amount === 1
+
+    ){
+
+
+        materialText =
+
+        "materiał";
+
+
+    }
+
+
+    else if(
+
+    amount >= 2
+
+    &&
+
+    amount <= 4
+
+    ){
+
+
+        materialText =
+
+        "materiały";
+
+
+    }
+
+
+    else{
+
+
+        materialText =
+
+        "materiałów";
+
+
+    }
+
+
+    document
+    .getElementById(
+    "fileCount"
+    )
+    .innerText =
+
+    amount
+
+    +
+
+    " "
+
+    +
+
+    materialText;
+
+
+    const fileDiv =
+
+    document
+    .getElementById(
+    "files"
+    );
+
+
+    fileDiv
+    .innerHTML =
+
+    "";
+
+
+    user.files
+    .forEach(
+
+    file => {
+
+
+        const icon =
+
+        file.icon
+
+        ||
+
+        "📁";
+
+
+        let action;
+
+
+        if(
+
+        file.link
+
+        ){
+
+
+            action =
+
+            `
+
+            <a
+
+            href="${file.link}"
+
+            target="_blank"
+
+            rel="noopener noreferrer">
+
+            Otwórz
+
+            <span>
+
+            →
+
+            </span>
+
+            </a>
+
+            `;
+
+
+        }
+
+
+        else{
+
+
+            action =
+
+            `
+
+            <div
+
+            class="comingSoon">
+
+            WKRÓTCE
+
             </div>
+
+            `;
+
+
+        }
+
+
+        fileDiv
+        .innerHTML
+
+        +=
+
+        `
+
+        <article
+
+        class="file">
+
+
+        <div>
+
+
+        <div
+
+        class="fileIcon">
+
+        ${icon}
+
+        </div>
+
+
+        <div
+
+        class="fileName">
+
+        ${file.name}
+
+        </div>
+
+
+        </div>
+
+
+        ${action}
+
+
+        </article>
+
         `;
+
+
     });
+
+
 }
+
+
+
+/* ==================================================
+   WYLOGOWANIE
+================================================== */
 
 function logout(){
-    localStorage.removeItem("loggedUser");
-    location.reload();
+
+
+    localStorage
+    .removeItem(
+
+    "loggedUser"
+
+    );
+
+
+    location
+    .reload();
+
+
 }
 
-window.onload = loadPanel;
+
+
+/* ==================================================
+   ENTER = LOGOWANIE
+================================================== */
+
+document
+.addEventListener(
+
+"keydown",
+
+event => {
+
+
+    if(
+
+    event.key
+
+    ===
+
+    "Enter"
+
+    ){
+
+
+        const loginBox =
+
+        document
+        .getElementById(
+        "loginBox"
+        );
+
+
+        if(
+
+        loginBox
+        .style
+        .display
+
+        !==
+
+        "none"
+
+        ){
+
+
+            login();
+
+
+        }
+
+
+    }
+
+
+});
+
+
+
+/* ==================================================
+   START STRONY
+================================================== */
+
+window
+.addEventListener(
+
+"load",
+
+loadAccounts
+
+);
+
 
 </script>
 
-<footer style="position: fixed; bottom: 0; width: 100%; background: rgba(0,0,0,0.85); color: white; font-family: 'Segoe UI', Roboto, sans-serif; z-index: 9999; backdrop-filter: blur(5px); border-top: 2px solid #ff8c00; padding: 10px 0;">
-    <!-- Kontener trzymający zawartość blisko środka i w jednej linii -->
-    <div style="display: flex; align-items: center; justify-content: center; gap: 25px; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
-        
-        <!-- Tekst po lewej -->
-        <div style="font-size: 13px; opacity: 0.9; line-height: 1.4; text-align: left; max-width: 700px;">
-            Aby stworzyć konto oraz uzyskać pomoc napisz na: <b>brainversehelp@gmail.com</b>.<br>
-            Konta publiczne: <span style="color: #ff8c00;">login gosc hasło gosc</span>, aby przejść do gier kliknij przycisk na dole ekranu.
-            <a href="https://brainverse.pl/privacy-policy.html" style="color: #ff8c00; text-decoration: none; font-weight: bold; margin-left: 5px;">Polityka Prywatności</a>
-        </div>
-        
-        <!-- Ultra pomarańczowy przycisk po prawej -->
-        <div>
-            <a href="https://brainverse.pl/gry/" class="orange-btn">
-                PRZEJDŹ DO GIER
-            </a>
-        </div>
-    </div>
-
-    <style>
-        .orange-btn {
-            display: inline-block;
-            background: linear-gradient(45deg, #ff4500, #ff8c00);
-            color: white !important;
-            padding: 8px 20px;
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 13px;
-            border-radius: 30px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 0 12px rgba(255, 140, 0, 0.4);
-            transition: all 0.2s ease-in-out;
-            white-space: nowrap; /* Zapobiega łamaniu tekstu w przycisku */
-        }
-
-        .orange-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(255, 140, 0, 0.7);
-            background: linear-gradient(45deg, #ff8c00, #ffae42);
-        }
-    </style>
-</footer>
 
 
-<!-- Neonowy napis na górze -->
-<div id="brainverseTopFixed">
-  BrainVerse
-</div>
-
-<!-- Pasek po prawej stronie (tylko na komputerze) -->
-<footer id="rightBar">
-  <div id="randomText" style="margin-bottom: 10px; font-weight: bold;"></div>
-  <div>Jeśli chcesz skorzystać z trybu gościa: login: gosc, hasło: gosc. Jeśli chcesz skorzystać z trybu grania, kliknij przycisk na dole ekranu.</div>
-</footer>
-
-
-<script>
-  // Losowy tekst w pasku
-  const texts = [
-    "Internet jest starszy niż myślisz – pierwsze sieci komputerowe powstały już w latach 60. XX wieku w ramach projektu ARPANET w USA, który był zalążkiem internetu.",
-    "Pierwsza wiadomość e-mail została wysłana w 1971 roku przez Raya Tomlinsona, który użył znak @ do oddzielenia użytkownika od komputera.",
-    "Internet nie ma jednego właściciela – składa się z milionów sieci połączonych protokołem TCP/IP, zarządzanych przez różne organizacje, firmy i instytucje.",
-    "Codziennie powstają miliardy danych – w 2023 roku codziennie na całym świecie tworzyło się około 2,5 kwintyliona bajtów danych (2,5×10¹⁸ bajtów).",
-    "Większość ruchu w internecie to boty – szacuje się, że nawet 50–60% całego ruchu internetowego pochodzi od botów, a nie od ludzi.",
-    "Pierwsza strona internetowa nadal istnieje – strona CERN z 1991 roku jest dostępna i pokazuje, jak wyglądał internet w początkach WWW.",
-    "Google przetwarza miliardy zapytań dziennie – codziennie w wyszukiwarce Google pojawia się około 8,5 miliarda wyszukiwań.",
-    "Internet ma ogromny wpływ na język – skróty takie jak „LOL”, „BRB” czy emotikony powstały i rozpowszechniły się głównie dzięki komunikatorom internetowym.",
-    "Pierwsza strona WWW w historii była tekstowa – nie zawierała grafik ani multimediów, a jedynie instrukcje, jak korzystać z internetu.",
-    "Możesz zagrać w ekskluzywne gry BrainVerse, klikając przycisk na dole ekranu.",
-    "Większość ludzi na świecie ma teraz dostęp do internetu – w 2025 roku około 65% światowej populacji korzystało z internetu.",
-    "Pierwszy dysk twardy na świecie, stworzony przez firmę IBM w 1956 roku, ważył ponad tonę i miał pojemność zaledwie 5 MB. Dla porównania jedno dzisiejsze zdjęcie z telefonu potrafi zajmować więcej miejsca niż ten dysk!"
-  ];
-
-  const randomText = texts[Math.floor(Math.random() * texts.length)];
-  document.getElementById("randomText").innerText = randomText;
-</script>
+<!-- ==================================================
+     FIREBASE ANALYTICS
+================================================== -->
 
 <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyBO7oIIOjgUYUtxfL2uAYIQwpVV-Vph0Po",
-    authDomain: "brainversepl.firebaseapp.com",
-    projectId: "brainversepl",
-    storageBucket: "brainversepl.firebasestorage.app",
-    messagingSenderId: "653595968750",
-    appId: "1:653595968750:web:c17d23fc4087e738fc1fff",
-    measurementId: "G-Y6DSHLXZEC"
-  };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+import {
+
+initializeApp
+
+}
+
+from
+
+"https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+
+
+import {
+
+getAnalytics
+
+}
+
+from
+
+"https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+
+
+const firebaseConfig = {
+
+
+apiKey:
+
+"AIzaSyBO7oIIOjgUYUtxfL2uAYIQwpVV-Vph0Po",
+
+
+authDomain:
+
+"brainversepl.firebaseapp.com",
+
+
+projectId:
+
+"brainversepl",
+
+
+storageBucket:
+
+"brainversepl.firebasestorage.app",
+
+
+messagingSenderId:
+
+"653595968750",
+
+
+appId:
+
+"1:653595968750:web:c17d23fc4087e738fc1fff",
+
+
+measurementId:
+
+"G-Y6DSHLXZEC"
+
+
+};
+
+
+const app =
+
+initializeApp(
+
+firebaseConfig
+
+);
+
+
+const analytics =
+
+getAnalytics(
+
+app
+
+);
+
+
 </script>
 
-
-<style>
-  /* Neonowy napis */
-  #brainverseTopFixed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    font-size: 60px; /* duży na komputerze */
-    font-weight: 700;
-    font-family: 'Orbitron', sans-serif;
-    color: #ffffff;
-    text-shadow:
-      0 0 5px #ffffff,
-      0 0 10px #00ffff,
-      0 0 20px #00ffff,
-      0 0 40px #00ffff,
-      0 0 80px #00ffff;
-    animation: neonGlow 1.5s ease-in-out infinite alternate;
-    padding: 20px 10px;
-    z-index: 1000;
-  }
-
-  @keyframes neonGlow {
-    0% {
-      text-shadow:
-        0 0 5px #ffffff,
-        0 0 10px #00ffff,
-        0 0 20px #00ffff,
-        0 0 40px #00ffff,
-        0 0 80px #00ffff;
-    }
-    50% {
-      text-shadow:
-        0 0 10px #ffffff,
-        0 0 20px #00ffff,
-        0 0 30px #00ffff,
-        0 0 50px #00ffff,
-        0 0 100px #00ffff;
-    }
-    100% {
-      text-shadow:
-        0 0 5px #ffffff,
-        0 0 10px #00ffff,
-        0 0 20px #00ffff,
-        0 0 40px #00ffff,
-        0 0 80px #00ffff;
-    }
-  }
-
-  /* Pasek po prawej (tylko na desktopie) */
-  #rightBar {
-    position: fixed;
-    top: 100px; /* poniżej napisu */
-    right: 0;
-    width: 200px;
-    height: calc(100% - 100px);
-    text-align: center;
-    padding: 10px;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    font-size: 14px;
-    overflow-y: auto;
-    z-index: 999;
-  }
-
-
-
-  /* RESPONSYWNOŚĆ – na telefonie ukrywamy pasek i napis */
-  @media screen and (max-width: 600px) {
-    #brainverseTopFixed,
-    #rightBar,
-    #leftbar {
-      display: none;
-    }
-  }
-</style>
 
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
