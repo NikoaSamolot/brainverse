@@ -1,40 +1,361 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BrainVerse - Prezentacje</title>
+
+<link rel="icon" href="brainverse_icon.png">
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+
+body{
+
+    margin:0;
+
+    min-height:100vh;
+
+    font-family:'Segoe UI',sans-serif;
+
+    background:linear-gradient(135deg,#ff9a3c,#ff6a00);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+
+/* logo w tle */
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    width:450px;
+
+    height:450px;
+
+    background:url("brainverse_icon.png") center/contain no-repeat;
+
+    opacity:0.08;
+
+    top:50%;
+
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    pointer-events:none;
+
+}
+
+
+
+
+.container{
+
+    width:90%;
+
+    max-width:900px;
+
+    background:white;
+
+    padding:40px;
+
+    border-radius:30px;
+
+    box-shadow:0 20px 60px rgba(0,0,0,0.3);
+
+    text-align:center;
+
+}
+
+
+
+h1{
+
+    margin:0;
+
+    color:#ff6a00;
+
+    font-size:45px;
+
+}
+
+
+
+.subtitle{
+
+    margin-top:10px;
+
+    color:#777;
+
+    font-size:18px;
+
+}
+
+
+
+.cards{
+
+    margin-top:40px;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:30px;
+
+    flex-wrap:wrap;
+
+}
+
+
+
+.card{
+
+    width:300px;
+
+    background:#fff3e6;
+
+    border-radius:25px;
+
+    overflow:hidden;
+
+    box-shadow:0 10px 25px rgba(0,0,0,0.15);
+
+    transition:0.3s;
+
+}
+
+
+
+.card:hover{
+
+    transform:translateY(-10px) scale(1.04);
+
+    box-shadow:0 15px 40px rgba(255,106,0,0.5);
+
+}
+
+
+
+.card img{
+
+    width:100%;
+
+    height:180px;
+
+    object-fit:cover;
+
+}
+
+
+
+.card-content{
+
+    padding:20px;
+
+}
+
+
+
+.card h2{
+
+    margin:0 0 20px;
+
+    color:#ff6a00;
+
+    font-size:25px;
+
+}
+
+
+
+
+button{
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:#ff6a00;
+
+    color:white;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:0.2s;
+
+}
+
+
+
+button:hover{
+
+    background:#e85d00;
+
+    transform:scale(1.05);
+
+}
+
+
+
+
+.footer{
+
+    margin-top:35px;
+
+    color:#999;
+
+    font-size:13px;
+
+}
+
+
+
+@media(max-width:600px){
+
+    .container{
+
+        padding:25px;
+
+    }
+
+
+    h1{
+
+        font-size:35px;
+
+    }
+
+
+    .card{
+
+        width:100%;
+
+    }
+
+}
+
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+
+<div class="container">
+
+
+<h1>🧠 BrainVerse</h1>
+
+<div class="subtitle">
+    Prezentacje
+</div>
+
+
+
 <div class="cards">
 
 
+
 <div class="card">
+
 
 <img src="images/antarktyda.jpg">
 
+
 <div class="card-content">
+
 
 <h2>❄️ Antarktyda</h2>
 
+
 <button onclick="window.location.href='https://drive.google.com/drive/folders/1aEseAWkTPx7YMvk0v1cNJRftvgfVlN32?usp=sharing'">
+
 Otwórz
+
 </button>
 
-</div>
 
 </div>
+
+
+</div>
+
 
 
 
 
 <div class="card">
 
+
 <img src="images/liechtenstein.jpg">
+
 
 <div class="card-content">
 
+
 <h2>🏔️ Liechtenstein</h2>
 
+
 <button onclick="window.location.href='https://drive.google.com/drive/folders/1BcAtCvyDqPLPk9b2qoY1saOTa_BE-2EL?usp=sharing'">
+
 Otwórz
+
 </button>
 
-</div>
 
 </div>
 
 
 </div>
+
+
+
+</div>
+
+
+
+
+<div class="footer">
+
+BrainVerse Presentation Hub
+
+</div>
+
+
+
+</div>
+
+
+
+</body>
+
+</html>
