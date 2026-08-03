@@ -1,0 +1,162 @@
+{
+"user1": {
+"label": "KONTO NR 1",
+"password": "haslo1",
+"image": "user1.png",
+"files": [
+{
+"name": "Plik A1",
+"link": "https://example.com/a1",
+"icon": "📄"
+},
+{
+"name": "Plik A2",
+"link": "https://example.com/a2",
+"icon": "📄"
+}
+]
+},
+
+"user2": {
+"label": "KONTO NR 2",
+"password": "haslo2",
+"image": "user2.png",
+"files": [
+{
+"name": "Plik B1",
+"link": "https://example.com/b1",
+"icon": "📄"
+}
+]
+},
+
+"Nikoa": {
+"label": "Nikoa",
+"password": "carrot",
+"image": "brainverse_icon.png",
+"files": [
+{
+"name": "Carrot",
+"link": "https://drive.google.com/drive/folders/1DnKcC-nhJsF_8Fj1Xnpuc1CUq48et7ts",
+"icon": "🥕"
+},
+{
+"name": "Carrot Apocalypse 1.6 for Windows",
+"link": "https://gamejolt.com/games/carrot/1029450",
+"icon": "🥕"
+},
+{
+"name": "Prezentacje",
+"link": "https://brainverse.pl/prezentacja",
+"icon": "📊"
+},
+{
+"name": "test",
+"link": "https://brainverse.pl/",
+"icon": "test"
+}
+]
+},
+
+"voxellab": {
+"label": "Voxel Lab maps",
+"password": "voxellab",
+"image": "user2.png",
+"files": [
+{
+"name": "Voxel Lab Tutorial World",
+"link": "https://drive.google.com/file/d/1TkQv3zgZ217_52Cy4hU8sq0UGnRbwNxa/view?usp=sharing",
+"icon": "🧱"
+},
+{
+"name": "Small House",
+"link": "https://drive.google.com/file/d/1RvGFpSTx4-stLBWrIKhp9xPawPAG922S/view?usp=sharing",
+"icon": "🏠"
+},
+{
+"name": "Coming Soon",
+"link": "",
+"icon": "⏳"
+}
+]
+},
+
+"cv": {
+"label": "CineVerse",
+"password": "cvhaslo",
+"image": "random.png",
+"files": [
+{
+"name": "CineVerse",
+"link": "https://brainverse.pl/wYv5bmT3CwMvd6EswYGtkvrswpaRKcF2V3X6x6g4u9AAFrDbCRmHnwMrXhnzkAaWKvz893yadjkyUrKGXqDj3ycpK895SDpBbsB7MwGsN5zAfPfn78EYWXyjcxaDXnswYqvxTsbpJXqgbcbwx2SSApDE45Ka3D5Z/",
+"icon": "🎬"
+}
+]
+},
+
+"gry": {
+"label": "Gry",
+"password": "gry",
+"image": "user3.png",
+"files": [
+{
+"name": "Łączenie",
+"link": "https://brainverse.pl/laczenie/",
+"icon": "🔗"
+},
+{
+"name": "Quizy 1",
+"link": "https://brainverse.pl/quizy1/",
+"icon": "🧠"
+},
+{
+"name": "Quizy 2",
+"link": "https://brainverse.pl/quizy2/",
+"icon": "🧠"
+},
+{
+"name": "Zgadnij liczbę",
+"link": "https://brainverse.pl/Zgadnijliczbe/",
+"icon": "🔢"
+},
+{
+"name": "Carrot Apocalypse",
+"link": "https://brainverse.pl/carrotapocalypse/",
+"icon": "🥕"
+},
+{
+"name": "Pi Challenge 1000",
+"link": "https://brainverse.pl/PiChallenge/",
+"icon": "π"
+},
+{
+"name": "IronShot",
+"link": "https://brainverse.pl/ironshot/",
+"icon": "🔫"
+}
+]
+},
+
+"gosc": {
+"label": "Gość",
+"password": "gosc",
+"image": "user2.png",
+"files": [
+{
+"name": "Zgadnij liczbę wersja light",
+"link": "https://drive.google.com/file/d/1xcUw69ktrPTZtQZ52ubfmhDlTmsnIGUH/view?usp=sharing",
+"icon": "🔢"
+},
+{
+"name": "Carrot Apocalypse 1.6 for Windows",
+"link": "https://gamejolt.com/games/carrot/1029450",
+"icon": "🥕"
+},
+{
+"name": "Polityka prywatności",
+"link": "https://brainverse.pl/privacy-policy.html",
+"icon": "🔒"
+}
+]
+}
+}
