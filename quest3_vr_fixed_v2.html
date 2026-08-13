@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Quest 3 WebXR - Mini VR</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101218;font-family:Arial,sans-serif}
+canvas{display:block}
+#ui{position:fixed;z-index:20;left:50%;top:16px;transform:translateX(-50%);
+background:rgba(0,0,0,.78);color:#fff;padding:14px 18px;border-radius:14px;
+text-align:center;line-height:1.4;max-width:90%}
+#start{margin-top:10px;padding:14px 24px;border:0;border-radius:12px;font-size:18px;
+font-weight:bold;cursor:pointer;background:#fff;color:#111}
+#status{font-size:13px;opacity:.8;margin-top:7px}
+.hidden{display:none!important}
+#error{color:#ff8080}
+</style>
+</head>
+<body>
+<div id="ui">
+  <b>Mini VR — Meta Quest 3</b>
+  <div>Rozglądaj się głową. Kontrolery będą widoczne jako ręce.</div>
+  <button id="start">WEJDŹ DO VR</button>
+  <div id="status">Sprawdzam WebXR…</div>
+  <div id="error"></div>
+</div>
+
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+import {VRButton} from "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/webxr/VRButton.js";
+import {XRControllerModelFactory} from "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/webxr/XRControllerModelFactory.js";
+
+const statusEl=document.getElementById("status");
+const errorEl=document.getElementById("error");
+const startBtn=document.getElementById("start");
+const ui=document.getElementById("ui");
+
+let scene,camera,renderer,controllers=[],controllerGrips=[];
+let interactive=[];
+let rayLineMaterial;
+
+function setStatus(t){statusEl.textContent=t}
+function fail(t){errorEl.textContent=t;setStatus("WebXR niedostępne");console.error(t)}
+
+init();
+
+async function init(){
+  if(!window.isSecureContext){
+    fail("Ta strona musi być otwarta przez HTTPS. Na Quest nie uruchamiaj jej jako file://.");
+  }
+
+  if(!navigator.xr){
+    fail("WebXR nie jest dostępny. Otwórz plik przez HTTPS w Meta Quest Browser.");
+  }else{
+    // Nie blokujemy wejścia na czas isSessionSupported().
+    // W niektórych wersjach Quest Browser to sprawdzenie potrafi długo wisieć.
+    setStatus("WebXR wykryty — przygotowuję VR…");
+    startBtn.disabled=false;
+
+    try{
+      const supportPromise=navigator.xr.isSessionSupported("immersive-vr");
+      const timeout=new Promise(resolve=>setTimeout(()=>resolve(null),2500));
+      const ok=await Promise.race([supportPromise,timeout]);
+
+      if(ok===true){
+        setStatus("WebXR immersive-vr jest dostępne.");
+      }else if(ok===false){
+        setStatus("WebXR nie zgłasza immersive-vr. Spróbuj mimo to przyciskiem VR.");
+      }else{
+        setStatus("Sprawdzanie WebXR trwa za długo. Spróbuj wejść do VR.");
+      }
+    }catch(e){
+      console.warn("isSessionSupported:",e);
+      setStatus("WebXR wykryty. Spróbuj wejść do VR.");
+    }
+  }
+
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x151922);
+
+  camera=new THREE.PerspectiveCamera(70,innerWidth/innerHeight,.05,100);
+  camera.position.set(0,1.6,2.8);
+
+  scene.add(new THREE.HemisphereLight(0xffffff,0x303040,2.4));
+
+  const light=new THREE.DirectionalLight(0xffffff,2);
+  light.position.set(2,4,2);
+  scene.add(light);
+
+  // Podłoga
+  const floor=new THREE.Mesh(
+    new THREE.PlaneGeometry(12,12),
+    new THREE.MeshStandardMaterial({color:0x292d35,roughness:.9})
+  );
+  floor.rotation.x=-Math.PI/2;
+  scene.add(floor);
+
+  // Ściana
+  const wall=new THREE.Mesh(
+    new THREE.BoxGeometry(8,4,.12),
+    new THREE.MeshStandardMaterial({color:0x1c2028})
+  );
+  wall.position.set(0,2,-3);
+  scene.add(wall);
+
+  createDesk();
+  createMonitor();
+
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.xr.enabled=true;
+  try{ renderer.xr.setReferenceSpaceType("local-floor"); }catch(e){ console.warn(e); }
+  document.body.appendChild(renderer.domElement);
+
+  // Kontrolery muszą być tworzone dopiero po utworzeniu renderera XR.
+  createControllers();
+
+  // VRButton z Three.js robi poprawny requestSession("immersive-vr").
+  const vrButton=VRButton.createButton(renderer);
+  vrButton.style.display="none";
+  document.body.appendChild(vrButton);
+
+  vrButton.addEventListener("click",()=>{ setStatus("Uruchamianie VR…"); });
+
+  startBtn.onclick=()=>{
+    if(!navigator.xr){
+      fail("Brak navigator.xr.");
+      return;
+    }
+    // Nie używamy własnego requestSession — VRButton obsługuje zgodność
+    // z przeglądarką i poprawnie tworzy sesję immersive-vr.
+    vrButton.click();
+  };
+
+  renderer.xr.addEventListener("sessionstart",()=>{
+    ui.classList.add("hidden");
+  });
+
+  renderer.xr.addEventListener("sessionend",()=>{
+    ui.classList.remove("hidden");
+  });
+
+  window.addEventListener("resize",resize);
+
+  renderer.setAnimationLoop(render);
+}
+
+function createDesk(){
+  const desk=new THREE.Mesh(
+    new THREE.BoxGeometry(2.8,.12,1.2),
+    new THREE.MeshStandardMaterial({color:0x65452e})
+  );
+  desk.position.set(0,1.02,-1.25);
+  scene.add(desk);
+
+  for(const x of [-1.2,1.2]){
+    for(const z of [-.45,.45]){
+      const leg=new THREE.Mesh(
+        new THREE.BoxGeometry(.1,1,.1),
+        new THREE.MeshStandardMaterial({color:0x292929})
+      );
+      leg.position.set(x,.5,-1.25+z);
+      scene.add(leg);
+    }
+  }
+}
+
+function createMonitor(){
+  const group=new THREE.Group();
+  group.position.set(0,1.72,-1.25);
+  scene.add(group);
+
+  const bezel=new THREE.Mesh(
+    new THREE.BoxGeometry(2.2,1.3,.12),
+    new THREE.MeshStandardMaterial({color:0x080808})
+  );
+  group.add(bezel);
+
+  // Ekran jako canvas texture.
+  const c=document.createElement("canvas");
+  c.width=1200;c.height=700;
+  const ctx=c.getContext("2d");
+
+  function drawScreen(){
+    ctx.fillStyle="#fff";
+    ctx.fillRect(0,0,c.width,c.height);
+
+    ctx.fillStyle="#4285f4";
+    ctx.font="bold 150px Arial";
+    ctx.textAlign="center";
+    ctx.fillText("Google",600,300);
+
+    ctx.strokeStyle="#aaa";
+    ctx.lineWidth=5;
+    ctx.strokeRect(230,380,740,90);
+
+    ctx.fillStyle="#777";
+    ctx.font="32px Arial";
+    ctx.textAlign="left";
+    ctx.fillText("Szukaj w Google",260,438);
+
+    ctx.fillStyle="#4285f4";
+    ctx.fillRect(500,510,200,70);
+    ctx.fillStyle="#fff";
+    ctx.font="28px Arial";
+    ctx.textAlign="center";
+    ctx.fillText("SZUKAJ",600,555);
+  }
+  drawScreen();
+
+  const tex=new THREE.CanvasTexture(c);
+  tex.colorSpace=THREE.SRGBColorSpace;
+
+  const screen=new THREE.Mesh(
+    new THREE.PlaneGeometry(1.94,1.05),
+    new THREE.MeshBasicMaterial({map:tex})
+  );
+  screen.position.z=.071;
+  group.add(screen);
+
+  const stand=new THREE.Mesh(
+    new THREE.BoxGeometry(.12,.45,.12),
+    new THREE.MeshStandardMaterial({color:0x111111})
+  );
+  stand.position.y=-.84;
+  group.add(stand);
+
+  const base=new THREE.Mesh(
+    new THREE.BoxGeometry(.65,.06,.4),
+    new THREE.MeshStandardMaterial({color:0x111111})
+  );
+  base.position.y=-1.07;
+  group.add(base);
+
+  // Interaktywny przycisk 3D przed monitorem.
+  const button=new THREE.Mesh(
+    new THREE.BoxGeometry(.7,.18,.08),
+    new THREE.MeshStandardMaterial({color:0x4285f4})
+  );
+  button.position.set(0,-.55,.15);
+  button.userData.interactive=true;
+  group.add(button);
+  interactive.push(button);
+}
+
+function createControllers(){
+  const factory=new XRControllerModelFactory();
+
+  for(let i=0;i<2;i++){
+    const controller=renderer?.xr?.getController(i);
+    if(controller){
+      setupController(controller,i);
+    }else{
+      // Renderer jeszcze nie istnieje — tworzenie zostanie wykonane po rendererze.
+    }
+  }
+
+  // Po utworzeniu renderera:
+  if(renderer){
+    for(let i=0;i<2;i++){
+      const controller=renderer.xr.getController(i);
+      setupController(controller,i);
+
+      const grip=renderer.xr.getControllerGrip(i);
+      grip.add(factory.createControllerModel(grip));
+      scene.add(grip);
+      controllerGrips.push(grip);
+    }
+  }
+}
+
+function setupController(controller,index){
+  if(controllers.includes(controller))return;
+
+  const hand=new THREE.Group();
+
+  // Prosta dłoń.
+  const palm=new THREE.Mesh(
+    new THREE.SphereGeometry(.075,16,12),
+    new THREE.MeshStandardMaterial({color:index===0?0x4ea1ff:0xff6b6b})
+  );
+  hand.add(palm);
+
+  for(let j=0;j<4;j++){
+    const finger=new THREE.Mesh(
+      new THREE.CapsuleGeometry(.018,.08,4,8),
+      palm.material
+    );
+    finger.position.set((j-1.5)*.035,.08,0);
+    hand.add(finger);
+  }
+
+  controller.add(hand);
+
+  // Ray wychodzący z kontrolera.
+  const lineGeom=new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(0,0,0),
+    new THREE.Vector3(0,0,-1)
+  ]);
+  const line=new THREE.Line(
+    lineGeom,
+    new THREE.LineBasicMaterial({color:0xffffff})
+  );
+  line.scale.z=3;
+  controller.add(line);
+
+  controller.addEventListener("selectstart",()=>{
+    interact(controller);
+  });
+
+  controller.addEventListener("connected",e=>{
+    console.log("Controller connected",index,e.data);
+  });
+
+  controller.addEventListener("disconnected",()=>{
+    console.log("Controller disconnected",index);
+  });
+
+  scene.add(controller);
+  controllers.push(controller);
+}
+
+function interact(controller){
+  const rc=new THREE.Raycaster();
+  rc.setFromXRController(controller);
+
+  const hits=rc.intersectObjects(interactive,true);
+  if(!hits.length)return;
+
+  const obj=hits[0].object;
+  const old=obj.material.color.getHex();
+
+  obj.material.color.setHex(0x34a853);
+  obj.scale.set(1.08,1.08,1.08);
+
+  setTimeout(()=>{
+    obj.material.color.setHex(old);
+    obj.scale.set(1,1,1);
+  },250);
+}
+
+function resize(){
+  camera.aspect=innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+}
+
+function render(){
+  // WebXR sam automatycznie aktualizuje pozycję kamery z headsetu.
+  renderer.render(scene,camera);
+}
+</script>
+</body>
+</html>
