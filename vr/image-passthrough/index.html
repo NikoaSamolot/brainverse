@@ -2,16 +2,16 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,
-               maximum-scale=1,user-scalable=no">
 
-<title>PHOTO//SPACE XR</title>
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1,
+      maximum-scale=1,
+      user-scalable=no">
+
+<title>PHOTO//SPACE — Quest 3</title>
 
 <style>
-*{
-    box-sizing:border-box;
-}
 
 html,body{
     margin:0;
@@ -19,74 +19,69 @@ html,body{
     height:100%;
     overflow:hidden;
     background:#000;
-    font-family:system-ui,Arial,sans-serif;
+    font-family:Arial,system-ui,sans-serif;
 }
 
 canvas{
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
+    display:block;
 }
 
-/* =========================
-   START
-========================= */
-
-#desktopUI{
+#start{
     position:fixed;
     inset:0;
     z-index:100;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     background:
         radial-gradient(
-            circle at 50% 45%,
-            #12343c 0%,
-            #07151b 40%,
-            #020607 100%
+            circle at 50% 40%,
+            #12343d,
+            #061016 40%,
+            #010304 85%
         );
-}
-
-#card{
-    width:min(92vw,620px);
-    padding:35px;
-    border-radius:28px;
-
-    background:rgba(4,12,17,.96);
-
-    border:1px solid rgba(0,255,255,.5);
 
     color:white;
-    text-align:center;
+}
+
+.startBox{
+    width:min(90vw,560px);
+    padding:35px;
+
+    box-sizing:border-box;
+
+    border:1px solid
+        rgba(0,255,255,.4);
+
+    border-radius:28px;
+
+    background:
+        rgba(5,15,20,.94);
 
     box-shadow:
-        0 0 70px rgba(0,255,255,.15),
-        inset 0 0 40px rgba(0,255,255,.04);
+        0 0 60px
+        rgba(0,255,255,.15);
+
+    text-align:center;
 }
 
-#card h1{
+.startBox h1{
     margin:0;
+
     font-size:34px;
-    letter-spacing:6px;
+
+    letter-spacing:5px;
 
     text-shadow:
-        0 0 12px #00ffff,
-        0 0 35px #00ffff;
+        0 0 15px
+        rgba(0,255,255,.8);
 }
 
-#card h2{
-    margin:8px 0 25px;
-    font-size:13px;
-    font-weight:400;
-    letter-spacing:4px;
-    color:#65edff;
-}
-
-#card p{
-    color:#9bb5bb;
-    line-height:1.55;
+.startBox p{
+    color:#9ab5bc;
+    line-height:1.5;
 }
 
 #file{
@@ -95,317 +90,221 @@ canvas{
     color:white;
 }
 
-#enterXR{
-    width:100%;
-    padding:18px;
+#startVR{
+    padding:16px 30px;
 
-    border:0;
-    border-radius:16px;
+    border:1px solid
+        #00ffff;
+
+    border-radius:15px;
 
     background:
         linear-gradient(
             135deg,
-            #ffffff,
-            #58ecff
+            #eaffff,
+            #55eaff
         );
 
     color:#001016;
 
-    font-size:16px;
     font-weight:900;
+
+    font-size:16px;
 
     letter-spacing:2px;
 
-    cursor:pointer;
-
     box-shadow:
-        0 0 30px rgba(0,255,255,.35);
-
-    transition:
-        transform .12s,
-        box-shadow .12s;
+        0 0 25px
+        rgba(0,255,255,.35);
 }
 
-#enterXR:hover{
-    box-shadow:
-        0 0 45px rgba(0,255,255,.65);
-}
+#info{
+    position:fixed;
 
-#enterXR:active{
-    transform:scale(.97);
-}
+    left:50%;
+    bottom:20px;
 
-#message{
-    margin-top:18px;
-    min-height:20px;
+    transform:translateX(-50%);
 
-    color:#70efff;
+    display:none;
+
+    z-index:20;
+
+    padding:10px 18px;
+
+    border-radius:30px;
+
+    color:#bfffff;
+
+    background:
+        rgba(0,10,15,.85);
+
+    border:
+        1px solid
+        rgba(0,255,255,.4);
 
     font-size:13px;
 }
 
-#formats{
-    margin-top:20px;
-
-    color:#607b82;
-
-    font-size:11px;
-
-    line-height:1.5;
-}
-
-/* =========================
-   XR OVERLAY
-========================= */
-
-#xrOverlay{
-    position:fixed;
-    inset:0;
-
-    pointer-events:none;
-
-    z-index:500;
-}
-
-#xrStatus{
-    position:absolute;
-
-    top:18px;
-    left:50%;
-
-    transform:translateX(-50%);
-
-    padding:9px 16px;
-
-    border-radius:30px;
-
-    background:rgba(0,5,8,.72);
-
-    border:1px solid rgba(0,255,255,.45);
-
-    color:#c7ffff;
-
-    font-size:12px;
-
-    opacity:0;
-
-    transition:.2s;
-}
-
-#xrStatus.show{
-    opacity:1;
-}
-
-/* =========================
-   ERROR
-========================= */
-
-#errorBox{
-    display:none;
-
-    position:fixed;
-
-    left:50%;
-    top:50%;
-
-    transform:translate(-50%,-50%);
-
-    width:min(90vw,550px);
-
-    padding:25px;
-
-    z-index:1000;
-
-    border-radius:20px;
-
-    background:#080e12;
-
-    border:1px solid #ff3b62;
-
-    color:white;
-
-    text-align:center;
-
-    box-shadow:
-        0 0 60px rgba(255,0,60,.25);
-}
-
-#errorBox h2{
-    color:#ff5574;
-}
-
-#errorText{
-    color:#b9c7ca;
-
-    line-height:1.5;
-
-    white-space:pre-line;
-}
 </style>
 </head>
 
 <body>
 
-<!-- =====================================================
-     EKRAN STARTOWY
-===================================================== -->
+<div id="start">
 
-<div id="desktopUI">
-
-    <div id="card">
+    <div class="startBox">
 
         <h1>PHOTO//SPACE</h1>
 
-        <h2>XR OBJECT STUDIO</h2>
-
         <p>
-            Wybierz zdjęcie albo model 3D.
-            Następnie uruchom Mixed Reality
-            na Meta Quest 3.
+            FUTURISTIC MIXED REALITY
+            PHOTO WORKSPACE
         </p>
 
         <input
             id="file"
             type="file"
-            accept="
-                image/*,
-                .glb,
-                .gltf,
-                .stl,
-                .obj,
-                .fbx,
-                .ply,
-                .3mf,
-                .dae,
-                .3ds
-            "
-        >
+            accept="image/*">
 
-        <!-- ZAWSZE AKTYWNY -->
-        <button id="enterXR">
-            URUCHOM PASSTHROUGH
+        <br>
+
+        <button id="startVR">
+            ENTER XR
         </button>
 
-        <div id="message">
-            Wybierz plik albo od razu spróbuj uruchomić XR.
-        </div>
-
-        <div id="formats">
-            OBRAZY: JPG • JPEG • PNG • WEBP • BMP • GIF<br>
-            3D: GLB • GLTF • STL • OBJ • FBX • PLY •
-            3MF • DAE • 3DS
-        </div>
+        <p style="font-size:12px">
+            Optimized for Meta Quest 3
+        </p>
 
     </div>
 
 </div>
 
-<!-- =====================================================
-     XR DOM OVERLAY
-===================================================== -->
-
-<div id="xrOverlay">
-
-    <div id="xrStatus"></div>
-
-</div>
-
-<!-- =====================================================
-     ERROR
-===================================================== -->
-
-<div id="errorBox">
-
-    <h2>XR ERROR</h2>
-
-    <div id="errorText"></div>
-
+<div id="info">
+    Laserem wskaż element i naciśnij Trigger.
 </div>
 
 
 <script type="module">
 
-/* =====================================================
-   THREE.JS
-===================================================== */
-
 import * as THREE from
 "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
 
-import {GLTFLoader} from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/GLTFLoader.js";
+import { ARButton } from
+"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/webxr/ARButton.js";
 
-import {STLLoader} from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/STLLoader.js";
 
-import {OBJLoader} from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/OBJLoader.js";
+/* =====================================================
+   GLOBAL
+===================================================== */
 
-import {FBXLoader} from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/FBXLoader.js";
+let renderer;
+let scene;
+let camera;
 
-import {PLYLoader} from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/PLYLoader.js";
+let controller1;
+let controller2;
 
-import {ThreeMFLoader} from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/3MFLoader.js";
+let session=null;
 
-import {ColladaLoader} from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/ColladaLoader.js";
+let photo=null;
 
-import {TDSLoader} from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/3DSLoader.js";
+let photos=[];
+
+let currentPhotoIndex=-1;
+
+let texture=null;
+
+
+/* MENU */
+
+let menu=null;
+
+let miniMenu=null;
+
+let menuButtons=[];
+
+let selectedButton=null;
+
+let menuVisible=true;
+
+let menuMoving=false;
+
+let menuMoveController=null;
+
+let menuMoveDistance=1.2;
+
+
+/* PHOTO */
+
+let mode="MOVE";
+
+let locked=false;
+
+let dragging=false;
+
+let activeController=null;
+
+let dragDistance=2;
+
+let startScale=1;
+
+let twoHandStart=null;
+
+let frameEnabled=false;
+
+let frameMesh=null;
+
+let gridMesh=null;
+
+let photoOpacity=1;
 
 
 /* =====================================================
    DOM
 ===================================================== */
 
-const desktopUI =
-    document.getElementById("desktopUI");
+const startScreen =
+document.getElementById("start");
 
 const fileInput =
-    document.getElementById("file");
+document.getElementById("file");
 
-const enterXR =
-    document.getElementById("enterXR");
+const startVR =
+document.getElementById("startVR");
 
-const message =
-    document.getElementById("message");
-
-const xrStatus =
-    document.getElementById("xrStatus");
-
-const errorBox =
-    document.getElementById("errorBox");
-
-const errorText =
-    document.getElementById("errorText");
+const info =
+document.getElementById("info");
 
 
 /* =====================================================
    THREE
 ===================================================== */
 
-const scene =
-    new THREE.Scene();
+scene=new THREE.Scene();
 
-const camera =
-    new THREE.PerspectiveCamera(
-        70,
-        innerWidth / innerHeight,
-        .01,
-        100
-    );
+camera=
+new THREE.PerspectiveCamera(
+    70,
+    innerWidth/innerHeight,
+    .01,
+    100
+);
 
-const renderer =
-    new THREE.WebGLRenderer({
-        antialias:true,
-        alpha:true,
-        powerPreference:"high-performance"
-    });
 
-renderer.xr.enabled = true;
+renderer=
+new THREE.WebGLRenderer({
+
+    antialias:true,
+
+    alpha:true,
+
+    powerPreference:
+        "high-performance"
+
+});
+
 
 renderer.setPixelRatio(
     Math.min(
@@ -419,13 +318,15 @@ renderer.setSize(
     innerHeight
 );
 
+renderer.xr.enabled=true;
+
+renderer.outputColorSpace=
+    THREE.SRGBColorSpace;
+
 renderer.setClearColor(
     0x000000,
     0
 );
-
-renderer.outputColorSpace =
-    THREE.SRGBColorSpace;
 
 document.body.appendChild(
     renderer.domElement
@@ -433,41 +334,44 @@ document.body.appendChild(
 
 
 /* =====================================================
-   OŚWIETLENIE
+   WEBXR
 ===================================================== */
 
-scene.add(
-    new THREE.HemisphereLight(
-        0xffffff,
-        0x334455,
-        2
-    )
+const arButton=
+ARButton.createButton(
+    renderer,
+    {
+
+        requiredFeatures:[
+            "local-floor"
+        ],
+
+        optionalFeatures:[
+            "hand-tracking",
+            "anchors",
+            "hit-test",
+            "bounded-floor"
+        ]
+
+    }
 );
 
-const light =
-    new THREE.DirectionalLight(
-        0xffffff,
-        2
-    );
+arButton.style.display="none";
 
-light.position.set(
-    3,
-    5,
-    3
+document.body.appendChild(
+    arButton
 );
-
-scene.add(light);
 
 
 /* =====================================================
-   CONTROLLERY
+   CONTROLLERS
 ===================================================== */
 
-const controller1 =
-    renderer.xr.getController(0);
+controller1=
+renderer.xr.getController(0);
 
-const controller2 =
-    renderer.xr.getController(1);
+controller2=
+renderer.xr.getController(1);
 
 scene.add(
     controller1,
@@ -476,1417 +380,100 @@ scene.add(
 
 
 /* =====================================================
-   LASERY QUEST
+   LASERS
 ===================================================== */
 
 function createLaser(){
 
-    const geometry =
+    const geometry=
         new THREE.BufferGeometry();
 
     geometry.setFromPoints([
+
         new THREE.Vector3(0,0,0),
+
         new THREE.Vector3(0,0,-1)
+
     ]);
 
-    const material =
+    const material=
         new THREE.LineBasicMaterial({
+
             color:0x00ffff,
+
             transparent:true,
+
             opacity:.95
+
         });
 
-    const line =
+    const line=
         new THREE.Line(
             geometry,
             material
         );
 
-    line.scale.z = 8;
+    line.scale.z=8;
 
     return line;
+
 }
 
-const laser1 =
-    createLaser();
 
-const laser2 =
-    createLaser();
+const laser1=createLaser();
+const laser2=createLaser();
 
 controller1.add(laser1);
 controller2.add(laser2);
 
 
 /* =====================================================
-   STAN
+   LASER DOTS
 ===================================================== */
 
-let selectedFile = null;
+function createDot(){
 
-let selectedObject = null;
+    return new THREE.Mesh(
 
-let objects = [];
+        new THREE.SphereGeometry(
+            .018,
+            12,
+            12
+        ),
 
-let session = null;
+        new THREE.MeshBasicMaterial({
+            color:0x00ffff
+        })
 
-let menu = null;
+    );
 
-let miniMenu = null;
+}
 
-let menuOpen = true;
+const dot1=createDot();
+const dot2=createDot();
 
-let locked = false;
-
-let autoRotate = false;
-
-let mode = "MOVE";
-
-let grabbed = false;
-
-let grabbedController = null;
-
-let grabDistance = 2;
-
-let grabScale = 1;
-
-let twoHandStart = null;
-
-let grid = null;
-
-let objectCounter = 0;
-
-const buttons = [];
-
-
-/* =====================================================
-   WYBÓR PLIKU
-===================================================== */
-
-fileInput.addEventListener(
-    "change",
-    () => {
-
-        const file =
-            fileInput.files?.[0];
-
-        if(!file){
-
-            selectedFile = null;
-
-            message.textContent =
-                "Nie wybrano pliku.";
-
-            return;
-        }
-
-        selectedFile = file;
-
-        message.textContent =
-            "✓ Wybrano: " +
-            file.name;
-
-    }
+scene.add(
+    dot1,
+    dot2
 );
 
 
 /* =====================================================
-   ŁADOWANIE PLIKU
+   RAYCASTER
 ===================================================== */
 
-async function loadFile(file){
-
-    const name =
-        file.name.toLowerCase();
-
-    const ext =
-        name.split(".").pop();
-
-    const url =
-        URL.createObjectURL(file);
-
-    try{
-
-        /* IMAGE */
-
-        if([
-            "jpg",
-            "jpeg",
-            "png",
-            "webp",
-            "bmp",
-            "gif"
-        ].includes(ext)){
-
-            return await loadImage(url);
-        }
-
-
-        /* GLB / GLTF */
-
-        if(
-            ext === "glb" ||
-            ext === "gltf"
-        ){
-
-            const loader =
-                new GLTFLoader();
-
-            return await new Promise(
-                (resolve,reject)=>{
-
-                    loader.load(
-                        url,
-
-                        result => {
-
-                            result.scene.userData.kind =
-                                "model";
-
-                            resolve(
-                                result.scene
-                            );
-
-                        },
-
-                        undefined,
-
-                        reject
-                    );
-
-                }
-            );
-        }
-
-
-        /* STL */
-
-        if(ext === "stl"){
-
-            const loader =
-                new STLLoader();
-
-            return await new Promise(
-                (resolve,reject)=>{
-
-                    loader.load(
-
-                        url,
-
-                        geometry => {
-
-                            geometry.computeVertexNormals();
-
-                            const material =
-                                new THREE.MeshStandardMaterial({
-                                    color:0xd8d8d8,
-                                    roughness:.55,
-                                    metalness:.15
-                                });
-
-                            const mesh =
-                                new THREE.Mesh(
-                                    geometry,
-                                    material
-                                );
-
-                            mesh.userData.kind =
-                                "model";
-
-                            resolve(mesh);
-
-                        },
-
-                        undefined,
-
-                        reject
-                    );
-
-                }
-            );
-        }
-
-
-        /* OBJ */
-
-        if(ext === "obj"){
-
-            const loader =
-                new OBJLoader();
-
-            return await new Promise(
-                (resolve,reject)=>{
-
-                    loader.load(
-
-                        url,
-
-                        object => {
-
-                            object.traverse(
-                                child => {
-
-                                    if(
-                                        child.isMesh &&
-                                        !child.material
-                                    ){
-
-                                        child.material =
-                                            new THREE.MeshStandardMaterial({
-                                                color:0xd8d8d8
-                                            });
-
-                                    }
-
-                                }
-                            );
-
-                            object.userData.kind =
-                                "model";
-
-                            resolve(object);
-
-                        },
-
-                        undefined,
-
-                        reject
-                    );
-
-                }
-            );
-        }
-
-
-        /* FBX */
-
-        if(ext === "fbx"){
-
-            const loader =
-                new FBXLoader();
-
-            return await new Promise(
-                (resolve,reject)=>{
-
-                    loader.load(
-
-                        url,
-
-                        object => {
-
-                            object.userData.kind =
-                                "model";
-
-                            resolve(object);
-
-                        },
-
-                        undefined,
-
-                        reject
-                    );
-
-                }
-            );
-        }
-
-
-        /* PLY */
-
-        if(ext === "ply"){
-
-            const loader =
-                new PLYLoader();
-
-            return await new Promise(
-                (resolve,reject)=>{
-
-                    loader.load(
-
-                        url,
-
-                        geometry => {
-
-                            geometry.computeVertexNormals();
-
-                            const material =
-                                new THREE.MeshStandardMaterial({
-                                    color:0xd8d8d8,
-                                    roughness:.5
-                                });
-
-                            const mesh =
-                                new THREE.Mesh(
-                                    geometry,
-                                    material
-                                );
-
-                            mesh.userData.kind =
-                                "model";
-
-                            resolve(mesh);
-
-                        },
-
-                        undefined,
-
-                        reject
-                    );
-
-                }
-            );
-        }
-
-
-        /* 3MF */
-
-        if(ext === "3mf"){
-
-            const loader =
-                new ThreeMFLoader();
-
-            return await new Promise(
-                (resolve,reject)=>{
-
-                    loader.load(
-
-                        url,
-
-                        object => {
-
-                            object.userData.kind =
-                                "model";
-
-                            resolve(object);
-
-                        },
-
-                        undefined,
-
-                        reject
-                    );
-
-                }
-            );
-        }
-
-
-        /* DAE */
-
-        if(ext === "dae"){
-
-            const loader =
-                new ColladaLoader();
-
-            return await new Promise(
-                (resolve,reject)=>{
-
-                    loader.load(
-
-                        url,
-
-                        result => {
-
-                            result.scene.userData.kind =
-                                "model";
-
-                            resolve(
-                                result.scene
-                            );
-
-                        },
-
-                        undefined,
-
-                        reject
-                    );
-
-                }
-            );
-        }
-
-
-        /* 3DS */
-
-        if(ext === "3ds"){
-
-            const loader =
-                new TDSLoader();
-
-            return await new Promise(
-                (resolve,reject)=>{
-
-                    loader.load(
-
-                        url,
-
-                        object => {
-
-                            object.userData.kind =
-                                "model";
-
-                            resolve(object);
-
-                        },
-
-                        undefined,
-
-                        reject
-                    );
-
-                }
-            );
-        }
-
-
-        throw new Error(
-            "Nieobsługiwany format: ." +
-            ext
-        );
-
-    }
-    finally{
-
-        setTimeout(
-            () => {
-                URL.revokeObjectURL(url);
-            },
-            1000
-        );
-
-    }
-}
-
-
-/* =====================================================
-   OBRAZ
-===================================================== */
-
-async function loadImage(url){
-
-    return new Promise(
-        (resolve,reject)=>{
-
-            const img =
-                new Image();
-
-            img.onload = () => {
-
-                const texture =
-                    new THREE.Texture(img);
-
-                texture.colorSpace =
-                    THREE.SRGBColorSpace;
-
-                texture.needsUpdate =
-                    true;
-
-                const aspect =
-                    img.naturalWidth /
-                    img.naturalHeight;
-
-                const geometry =
-                    new THREE.PlaneGeometry(
-                        aspect,
-                        1
-                    );
-
-                const material =
-                    new THREE.MeshBasicMaterial({
-                        map:texture,
-                        transparent:true,
-                        depthWrite:false,
-                        side:THREE.DoubleSide
-                    });
-
-                const mesh =
-                    new THREE.Mesh(
-                        geometry,
-                        material
-                    );
-
-                mesh.userData.kind =
-                    "image";
-
-                resolve(mesh);
-            };
-
-            img.onerror = () => {
-
-                reject(
-                    new Error(
-                        "Nie można odczytać obrazu."
-                    )
-                );
-
-            };
-
-            img.src = url;
-
-        }
-    );
-}
-
-
-/* =====================================================
-   NORMALIZACJA MODELU
-===================================================== */
-
-function normalizeObject(object){
-
-    const box =
-        new THREE.Box3()
-        .setFromObject(object);
-
-    if(box.isEmpty())
-        return;
-
-    const size =
-        box.getSize(
-            new THREE.Vector3()
-        );
-
-    const max =
-        Math.max(
-            size.x,
-            size.y,
-            size.z
-        );
-
-    if(
-        !Number.isFinite(max) ||
-        max <= 0
-    )
-        return;
-
-    object.scale.setScalar(
-        1 / max
-    );
-
-    const newBox =
-        new THREE.Box3()
-        .setFromObject(object);
-
-    const center =
-        newBox.getCenter(
-            new THREE.Vector3()
-        );
-
-    object.position.sub(center);
-}
-
-
-/* =====================================================
-   DODAJ OBIEKT
-===================================================== */
-
-function addObject(
-    object,
-    filename
-){
-
-    objectCounter++;
-
-    object.userData.id =
-        objectCounter;
-
-    object.userData.filename =
-        filename;
-
-    normalizeObject(object);
-
-    object.position.set(
-        0,
-        1.4,
-        -2
-    );
-
-    scene.add(object);
-
-    objects.push(object);
-
-    selectedObject =
-        object;
-
-    updateStatus(filename);
-}
-
-
-/* =====================================================
-   TEKST DO MENU
-===================================================== */
-
-function textTexture(
-    text,
-    size=38
-){
-
-    const canvas =
-        document.createElement(
-            "canvas"
-        );
-
-    canvas.width = 1024;
-    canvas.height = 180;
-
-    const ctx =
-        canvas.getContext("2d");
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    ctx.font =
-        "bold " +
-        size +
-        "px Arial";
-
-    ctx.textAlign =
-        "center";
-
-    ctx.textBaseline =
-        "middle";
-
-    ctx.fillStyle =
-        "#ffffff";
-
-    ctx.shadowColor =
-        "#00ffff";
-
-    ctx.shadowBlur =
-        20;
-
-    ctx.fillText(
-        text,
-        512,
-        90
-    );
-
-    const texture =
-        new THREE.CanvasTexture(
-            canvas
-        );
-
-    texture.colorSpace =
-        THREE.SRGBColorSpace;
-
-    return texture;
-}
-
-
-/* =====================================================
-   PRZYCISK MENU
-===================================================== */
-
-function makeButton(
-    label,
-    action,
-    x,
-    y
-){
-
-    const group =
-        new THREE.Group();
-
-    group.position.set(
-        x,
-        y,
-        .06
-    );
-
-    const geometry =
-        new THREE.PlaneGeometry(
-            .47,
-            .19
-        );
-
-    const material =
-        new THREE.MeshBasicMaterial({
-            color:0x06171d,
-            transparent:true,
-            opacity:.98,
-            side:THREE.DoubleSide
-        });
-
-    const body =
-        new THREE.Mesh(
-            geometry,
-            material
-        );
-
-    body.userData.button =
-        true;
-
-    body.userData.action =
-        action;
-
-    group.add(body);
-
-    const border =
-        new THREE.LineSegments(
-
-            new THREE.EdgesGeometry(
-                geometry
-            ),
-
-            new THREE.LineBasicMaterial({
-                color:0x00ffff
-            })
-
-        );
-
-    border.position.z =
-        .008;
-
-    group.add(border);
-
-    const text =
-        new THREE.Mesh(
-
-            new THREE.PlaneGeometry(
-                .42,
-                .065
-            ),
-
-            new THREE.MeshBasicMaterial({
-                map:textTexture(
-                    label,
-                    35
-                ),
-                transparent:true,
-                side:THREE.DoubleSide
-            })
-
-        );
-
-    text.position.z =
-        .015;
-
-    group.add(text);
-
-    menu.add(group);
-
-    buttons.push(body);
-}
-
-
-/* =====================================================
-   MENU
-===================================================== */
-
-function createMenu(){
-
-    if(menu)
-        return;
-
-    menu =
-        new THREE.Group();
-
-    const panel =
-        new THREE.Mesh(
-
-            new THREE.PlaneGeometry(
-                3.2,
-                1.75
-            ),
-
-            new THREE.MeshBasicMaterial({
-                color:0x020a0f,
-                transparent:true,
-                opacity:.97,
-                side:THREE.DoubleSide
-            })
-
-        );
-
-    panel.position.z =
-        -.04;
-
-    menu.add(panel);
-
-    const outline =
-        new THREE.LineSegments(
-
-            new THREE.EdgesGeometry(
-                new THREE.PlaneGeometry(
-                    3.2,
-                    1.75
-                )
-            ),
-
-            new THREE.LineBasicMaterial({
-                color:0x00ffff
-            })
-
-        );
-
-    menu.add(outline);
-
-
-    const title =
-        new THREE.Mesh(
-
-            new THREE.PlaneGeometry(
-                3,
-                .18
-            ),
-
-            new THREE.MeshBasicMaterial({
-                map:textTexture(
-                    "PHOTO//SPACE",
-                    72
-                ),
-                transparent:true
-            })
-
-        );
-
-    title.position.y =
-        .70;
-
-    title.position.z =
-        .01;
-
-    menu.add(title);
-
-
-    const subtitle =
-        new THREE.Mesh(
-
-            new THREE.PlaneGeometry(
-                2.5,
-                .07
-            ),
-
-            new THREE.MeshBasicMaterial({
-                map:textTexture(
-                    "META QUEST 3 // MIXED REALITY",
-                    28
-                ),
-                transparent:true
-            })
-
-        );
-
-    subtitle.position.y =
-        .54;
-
-    subtitle.position.z =
-        .01;
-
-    menu.add(subtitle);
-
-
-    const rows = [
-
-        [
-            ["MOVE",()=>mode="MOVE"],
-            ["ROTATE",()=>mode="ROTATE"],
-            ["SCALE",()=>mode="SCALE"],
-            ["LOCK",toggleLock],
-            ["CENTER",centerObject],
-            ["FIT",fitObject]
-        ],
-
-        [
-            ["ADD",chooseAnotherFile],
-            ["NEXT",nextObject],
-            ["AUTO",toggleAutoRotate],
-            ["ZOOM +",()=>scaleObject(1.15)],
-            ["ZOOM -",()=>scaleObject(.87)],
-            ["DELETE",deleteObject]
-        ],
-
-        [
-            ["X ROT",()=>rotateAxis("x")],
-            ["Y ROT",()=>rotateAxis("y")],
-            ["Z ROT",()=>rotateAxis("z")],
-            ["RESET",resetObject],
-            ["GRID",toggleGrid],
-            ["HIDE",toggleMenu]
-        ]
-
-    ];
-
-
-    rows.forEach(
-        (row,r)=>{
-
-            row.forEach(
-                (item,i)=>{
-
-                    makeButton(
-                        item[0],
-                        item[1],
-
-                        -1.35 +
-                        i*.54,
-
-                        .29 -
-                        r*.29
-                    );
-
-                }
-            );
-
-        }
-    );
-
-
-    const footer =
-        new THREE.Mesh(
-
-            new THREE.PlaneGeometry(
-                2.9,
-                .08
-            ),
-
-            new THREE.MeshBasicMaterial({
-                map:textTexture(
-                    "TRIGGER: SELECT / GRAB  •  JOYSTICK: ZOOM",
-                    23
-                ),
-                transparent:true
-            })
-
-        );
-
-    footer.position.y =
-        -.68;
-
-    footer.position.z =
-        .01;
-
-    menu.add(footer);
-
-    scene.add(menu);
-}
-
-
-/* =====================================================
-   MINI MENU
-===================================================== */
-
-function createMiniMenu(){
-
-    if(miniMenu)
-        return;
-
-    miniMenu =
-        new THREE.Group();
-
-    miniMenu.visible =
-        false;
-
-    const circle =
-        new THREE.Mesh(
-
-            new THREE.CircleGeometry(
-                .13,
-                32
-            ),
-
-            new THREE.MeshBasicMaterial({
-                color:0x03151a,
-                side:THREE.DoubleSide
-            })
-
-        );
-
-    circle.userData.mini =
-        true;
-
-    circle.userData.action =
-        toggleMenu;
-
-    miniMenu.add(circle);
-
-
-    const ring =
-        new THREE.Mesh(
-
-            new THREE.RingGeometry(
-                .13,
-                .145,
-                32
-            ),
-
-            new THREE.MeshBasicMaterial({
-                color:0x00ffff,
-                side:THREE.DoubleSide
-            })
-
-        );
-
-    miniMenu.add(ring);
-
-
-    const text =
-        new THREE.Mesh(
-
-            new THREE.PlaneGeometry(
-                .13,
-                .06
-            ),
-
-            new THREE.MeshBasicMaterial({
-                map:textTexture(
-                    "MENU",
-                    30
-                ),
-                transparent:true
-            })
-
-        );
-
-    text.position.z =
-        .01;
-
-    miniMenu.add(text);
-
-    scene.add(miniMenu);
-}
-
-
-/* =====================================================
-   POZYCJA MENU
-===================================================== */
-
-function placeMenu(){
-
-    if(!menu)
-        return;
-
-    const direction =
-        new THREE.Vector3(
-            0,
-            0,
-            -1
-        );
-
-    direction.applyQuaternion(
-        camera.quaternion
-    );
-
-    menu.position.copy(
-        camera.position
-    );
-
-    menu.position.add(
-        direction.multiplyScalar(1.35)
-    );
-
-    menu.lookAt(
-        camera.position
-    );
-}
-
-
-function placeMiniMenu(){
-
-    if(!miniMenu)
-        return;
-
-    const direction =
-        new THREE.Vector3(
-            0,
-            0,
-            -1
-        );
-
-    direction.applyQuaternion(
-        camera.quaternion
-    );
-
-    miniMenu.position.copy(
-        camera.position
-    );
-
-    miniMenu.position.add(
-        direction.multiplyScalar(1)
-    );
-
-    miniMenu.lookAt(
-        camera.position
-    );
-}
-
-
-/* =====================================================
-   MENU
-===================================================== */
-
-function toggleMenu(){
-
-    menuOpen =
-        !menuOpen;
-
-    menu.visible =
-        menuOpen;
-
-    miniMenu.visible =
-        !menuOpen;
-
-    if(!menuOpen)
-        placeMiniMenu();
-}
-
-
-/* =====================================================
-   NOWY PLIK
-===================================================== */
-
-function chooseAnotherFile(){
-
-    fileInput.click();
-}
-
-
-/* =====================================================
-   FUNKCJE OBIEKTU
-===================================================== */
-
-function toggleLock(){
-
-    locked =
-        !locked;
-
-    updateStatus(
-        locked
-            ? "OBIEKT ZABLOKOWANY"
-            : "OBIEKT ODBLOKOWANY"
-    );
-}
-
-
-function toggleAutoRotate(){
-
-    autoRotate =
-        !autoRotate;
-}
-
-
-function scaleObject(
-    factor
-){
-
-    if(
-        !selectedObject ||
-        locked
-    )
-        return;
-
-    const value =
-        THREE.MathUtils.clamp(
-            selectedObject.scale.x *
-            factor,
-            .01,
-            50
-        );
-
-    selectedObject.scale.setScalar(
-        value
-    );
-}
-
-
-function rotateAxis(
-    axis
-){
-
-    if(
-        !selectedObject ||
-        locked
-    )
-        return;
-
-    selectedObject.rotation[axis] +=
-        THREE.MathUtils.degToRad(15);
-}
-
-
-function centerObject(){
-
-    if(
-        !selectedObject ||
-        locked
-    )
-        return;
-
-    const direction =
-        new THREE.Vector3(
-            0,
-            0,
-            -1
-        );
-
-    direction.applyQuaternion(
-        camera.quaternion
-    );
-
-    selectedObject.position.copy(
-        camera.position
-    );
-
-    selectedObject.position.add(
-        direction.multiplyScalar(2)
-    );
-}
-
-
-function fitObject(){
-
-    if(!selectedObject)
-        return;
-
-    const box =
-        new THREE.Box3()
-        .setFromObject(
-            selectedObject
-        );
-
-    const size =
-        box.getSize(
-            new THREE.Vector3()
-        );
-
-    const max =
-        Math.max(
-            size.x,
-            size.y,
-            size.z
-        );
-
-    if(
-        max > 0 &&
-        Number.isFinite(max)
-    ){
-
-        selectedObject.scale.multiplyScalar(
-            1/max
-        );
-
-    }
-}
-
-
-function resetObject(){
-
-    if(
-        !selectedObject ||
-        locked
-    )
-        return;
-
-    selectedObject.position.set(
-        0,
-        1.4,
-        -2
-    );
-
-    selectedObject.rotation.set(
-        0,
-        0,
-        0
-    );
-
-    selectedObject.scale.setScalar(
-        1
-    );
-
-    fitObject();
-}
-
-
-function nextObject(){
-
-    if(objects.length===0)
-        return;
-
-    const index =
-        objects.indexOf(
-            selectedObject
-        );
-
-    const next =
-        (index+1)%objects.length;
-
-    selectedObject =
-        objects[next];
-
-    updateStatus(
-        selectedObject.userData.filename
-    );
-}
-
-
-function deleteObject(){
-
-    if(!selectedObject)
-        return;
-
-    const index =
-        objects.indexOf(
-            selectedObject
-        );
-
-    if(index>=0)
-        objects.splice(
-            index,
-            1
-        );
-
-    scene.remove(
-        selectedObject
-    );
-
-    selectedObject =
-        objects.length
-            ? objects[0]
-            : null;
-}
-
-
-function toggleGrid(){
-
-    if(!grid){
-
-        grid =
-            new THREE.GridHelper(
-                10,
-                20,
-                0x00ffff,
-                0x003344
-            );
-
-        scene.add(grid);
-
-    }
-    else{
-
-        grid.visible =
-            !grid.visible;
-
-    }
-}
-
-
-/* =====================================================
-   RAYCAST
-===================================================== */
-
-const raycaster =
+const raycaster=
     new THREE.Raycaster();
 
-const rayMatrix =
+const tempMatrix=
     new THREE.Matrix4();
 
 
-function setRay(controller){
+function controllerRay(
+    controller
+){
 
-    rayMatrix
+    tempMatrix
         .identity()
         .extractRotation(
             controller.matrixWorld
@@ -1898,441 +485,1391 @@ function setRay(controller){
         );
 
     raycaster.ray.direction
-        .set(
-            0,
-            0,
-            -1
-        )
+        .set(0,0,-1)
         .applyMatrix4(
-            rayMatrix
+            tempMatrix
         );
+
 }
 
 
 /* =====================================================
-   KLIK CONTROLLERA
+   IMAGE LOADING
 ===================================================== */
 
-function controllerSelect(
-    controller
-){
+fileInput.addEventListener(
+    "change",
+    ()=>{
 
-    setRay(controller);
+        const file=
+            fileInput.files?.[0];
 
+        if(!file)
+            return;
 
-    /* MINI MENU */
+        const url=
+            URL.createObjectURL(file);
 
-    if(
-        miniMenu &&
-        miniMenu.visible
-    ){
+        const img=
+            new Image();
 
-        const hits =
-            raycaster.intersectObjects(
-                miniMenu.children,
-                true
+        img.onload=()=>{
+
+            addPhoto(
+                img,
+                file.name
             );
 
-        if(hits.length){
-
-            let obj =
-                hits[0].object;
-
-            while(
-                obj &&
-                !obj.userData.mini
-            ){
-
-                obj =
-                    obj.parent;
-
-            }
+            URL.revokeObjectURL(
+                url
+            );
 
             if(
-                obj &&
-                obj.userData.mini
+                !renderer.xr.isPresenting
             ){
 
-                obj.userData.action();
+                arButton.click();
 
-                return;
             }
-        }
+
+        };
+
+        img.src=url;
+
     }
+);
 
 
-    /* PEŁNE MENU */
+/* =====================================================
+   CREATE PHOTO
+===================================================== */
 
-    if(
-        menu &&
-        menu.visible
-    ){
+function addPhoto(
+    img,
+    name
+){
 
-        const hits =
-            raycaster.intersectObjects(
-                buttons,
-                false
-            );
+    const tex=
+        new THREE.Texture(img);
 
-        if(hits.length){
+    tex.colorSpace=
+        THREE.SRGBColorSpace;
 
-            hits[0]
-                .object
-                .userData
-                .action();
-
-            return;
-        }
-    }
+    tex.needsUpdate=true;
 
 
-    /* OBIEKT */
+    const aspect=
+        img.naturalWidth/
+        img.naturalHeight;
 
-    const hits =
-        raycaster.intersectObjects(
-            objects,
-            true
+
+    const h=1;
+
+    const w=h*aspect;
+
+
+    const geometry=
+        new THREE.PlaneGeometry(
+            w,
+            h
         );
 
-    if(!hits.length)
-        return;
 
-    let object =
-        hits[0].object;
+    const material=
+        new THREE.MeshBasicMaterial({
 
-    while(
-        object.parent &&
-        !objects.includes(object)
-    ){
+            map:tex,
 
-        object =
-            object.parent;
-    }
+            transparent:true,
 
-    if(
-        !objects.includes(object)
-    )
-        return;
+            opacity:1,
 
-    selectedObject =
-        object;
+            depthWrite:false,
 
-    updateStatus(
-        object.userData.filename
+            side:THREE.DoubleSide
+
+        });
+
+
+    const mesh=
+        new THREE.Mesh(
+            geometry,
+            material
+        );
+
+
+    mesh.position.set(
+        0,
+        1.5,
+        -2
     );
 
-    if(locked)
-        return;
 
-    grabbed =
-        true;
+    mesh.userData.name=
+        name || "PHOTO";
 
-    grabbedController =
-        controller;
 
-    grabDistance =
-        controller.position.distanceTo(
-            object.position
-        );
+    scene.add(mesh);
 
-    grabScale =
-        object.scale.x;
+    photos.push(mesh);
+
+    currentPhotoIndex=
+        photos.length-1;
+
+    selectPhoto(mesh);
+
 }
 
 
-function controllerRelease(
+/* =====================================================
+   SELECT PHOTO
+===================================================== */
+
+function selectPhoto(
+    mesh
+){
+
+    photo=mesh;
+
+    updateFrame();
+
+}
+
+
+/* =====================================================
+   TEXTURE TEXT
+===================================================== */
+
+function textTexture(
+    text,
+    width=1024,
+    height=256,
+    fontSize=60
+){
+
+    const canvas=
+        document.createElement(
+            "canvas"
+        );
+
+    canvas.width=width;
+    canvas.height=height;
+
+    const ctx=
+        canvas.getContext("2d");
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+    ctx.fillStyle="#ffffff";
+
+    ctx.font=
+        "bold "+
+        fontSize+
+        "px Arial";
+
+    ctx.textAlign="center";
+
+    ctx.textBaseline="middle";
+
+    ctx.shadowColor=
+        "rgba(0,255,255,.9)";
+
+    ctx.shadowBlur=15;
+
+    ctx.fillText(
+        text,
+        width/2,
+        height/2
+    );
+
+    const texture=
+        new THREE.CanvasTexture(
+            canvas
+        );
+
+    texture.colorSpace=
+        THREE.SRGBColorSpace;
+
+    return texture;
+
+}
+
+
+/* =====================================================
+   MENU BUTTON
+===================================================== */
+
+function createButton(
+    label,
+    action,
+    x,
+    y
+){
+
+    const group=
+        new THREE.Group();
+
+    group.position.set(
+        x,
+        y,
+        .03
+    );
+
+
+    const body=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                .49,
+                .23
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                color:0x06151b,
+
+                transparent:true,
+
+                opacity:.95,
+
+                side:THREE.DoubleSide
+
+            })
+
+        );
+
+
+    body.userData.button=true;
+
+    body.userData.action=
+        action;
+
+    body.userData.normal=
+        0x06151b;
+
+    body.userData.hover=
+        0x00dfff;
+
+
+    group.add(body);
+
+
+    const border=
+        new THREE.LineSegments(
+
+            new THREE.EdgesGeometry(
+                new THREE.PlaneGeometry(
+                    .49,
+                    .23
+                )
+            ),
+
+            new THREE.LineBasicMaterial({
+
+                color:0x00ffff,
+
+                transparent:true,
+
+                opacity:.6
+
+            })
+
+        );
+
+
+    border.position.z=.006;
+
+    group.add(border);
+
+
+    const text=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                .45,
+                .09
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                map:
+                    textTexture(
+                        label,
+                        512,
+                        128,
+                        42
+                    ),
+
+                transparent:true,
+
+                side:THREE.DoubleSide
+
+            })
+
+        );
+
+
+    text.position.z=.012;
+
+    text.position.y=-.055;
+
+    group.add(text);
+
+
+    body.userData.border=
+        border;
+
+    body.userData.group=
+        group;
+
+
+    menu.add(group);
+
+    menuButtons.push(
+        body
+    );
+
+
+    return body;
+
+}
+
+
+/* =====================================================
+   CREATE MAIN MENU
+===================================================== */
+
+function createMenu(){
+
+    menu=
+        new THREE.Group();
+
+
+    /* BACKGROUND */
+
+    const bg=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                3.15,
+                1.65
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                color:0x02090d,
+
+                transparent:true,
+
+                opacity:.96,
+
+                side:THREE.DoubleSide
+
+            })
+
+        );
+
+
+    bg.position.z=-.03;
+
+    bg.userData.menuBackground=
+        true;
+
+    menu.add(bg);
+
+
+    /* BORDER */
+
+    const border=
+        new THREE.LineSegments(
+
+            new THREE.EdgesGeometry(
+                new THREE.PlaneGeometry(
+                    3.15,
+                    1.65
+                )
+            ),
+
+            new THREE.LineBasicMaterial({
+
+                color:0x00ffff,
+
+                transparent:true,
+
+                opacity:.9
+
+            })
+
+        );
+
+
+    border.position.z=.01;
+
+    menu.add(border);
+
+
+    /* TITLE */
+
+    const title=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                2.9,
+                .16
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                map:
+                    textTexture(
+                        "PHOTO//SPACE",
+                        1024,
+                        128,
+                        72
+                    ),
+
+                transparent:true
+
+            })
+
+        );
+
+
+    title.position.set(
+        0,
+        .68,
+        .02
+    );
+
+    menu.add(title);
+
+
+    /* SUBTITLE */
+
+    const subtitle=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                2.8,
+                .08
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                map:
+                    textTexture(
+                        "QUEST 3 // MIXED REALITY CONTROL",
+                        1024,
+                        128,
+                        32
+                    ),
+
+                transparent:true
+
+            })
+
+        );
+
+
+    subtitle.position.set(
+        0,
+        .54,
+        .02
+    );
+
+    menu.add(subtitle);
+
+
+    /* =================================================
+       ROW 1
+    ================================================= */
+
+    const row1=[
+
+        ["MOVE",()=>{
+            mode="MOVE";
+        }],
+
+        ["SCALE",()=>{
+            mode="SCALE";
+        }],
+
+        ["ROTATE",()=>{
+            mode="ROTATE";
+        }],
+
+        ["ANCHOR",()=>{
+            locked=true;
+        }],
+
+        ["LOCK",()=>{
+            locked=!locked;
+        }],
+
+        ["MOVE UI",()=>{
+            mode="MENU";
+        }]
+
+    ];
+
+
+    for(
+        let i=0;
+        i<row1.length;
+        i++
+    ){
+
+        createButton(
+            row1[i][0],
+            row1[i][1],
+            -1.35+i*.54,
+            .30
+        );
+
+    }
+
+
+    /* =================================================
+       ROW 2
+    ================================================= */
+
+    const row2=[
+
+        ["PHOTOS",nextPhoto],
+
+        ["ADD PHOTO",addPhotoVR],
+
+        ["FRAME",toggleFrame],
+
+        ["OPACITY",cycleOpacity],
+
+        ["GRID",toggleGrid],
+
+        ["CENTER",centerPhoto]
+
+    ];
+
+
+    for(
+        let i=0;
+        i<row2.length;
+        i++
+    ){
+
+        createButton(
+            row2[i][0],
+            row2[i][1],
+            -1.35+i*.54,
+            -.01
+        );
+
+    }
+
+
+    /* =================================================
+       ROW 3
+    ================================================= */
+
+    const row3=[
+
+        ["RESET",resetPhoto],
+
+        ["HIDE",hidePhoto],
+
+        ["DELETE",deletePhoto],
+
+        ["MENU",toggleMenu],
+
+        ["MINI",toggleMini],
+
+        ["ZOOM 1:1",resetZoom]
+
+    ];
+
+
+    for(
+        let i=0;
+        i<row3.length;
+        i++
+    ){
+
+        createButton(
+            row3[i][0],
+            row3[i][1],
+            -1.35+i*.54,
+            -.32
+        );
+
+    }
+
+
+    /* STATUS */
+
+    const status=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                2.8,
+                .10
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                map:
+                    textTexture(
+                        "● SYSTEM ONLINE   //   JOYSTICK = ZOOM",
+                        1024,
+                        128,
+                        30
+                    ),
+
+                transparent:true
+
+            })
+
+        );
+
+
+    status.position.set(
+        0,
+        -.62,
+        .02
+    );
+
+    menu.add(status);
+
+
+    scene.add(menu);
+
+}
+
+
+/* =====================================================
+   MINI MENU
+===================================================== */
+
+function createMiniMenu(){
+
+    miniMenu=
+        new THREE.Group();
+
+
+    miniMenu.visible=false;
+
+
+    const bg=
+        new THREE.Mesh(
+
+            new THREE.CircleGeometry(
+                .115,
+                32
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                color:0x04141a,
+
+                transparent:true,
+
+                opacity:.96,
+
+                side:THREE.DoubleSide
+
+            })
+
+        );
+
+
+    bg.userData.miniButton=true;
+
+    bg.userData.action=
+        toggleMenu;
+
+
+    miniMenu.add(bg);
+
+
+    const ring=
+        new THREE.Mesh(
+
+            new THREE.RingGeometry(
+                .115,
+                .13,
+                32
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                color:0x00ffff,
+
+                side:THREE.DoubleSide
+
+            })
+
+        );
+
+
+    ring.position.z=.005;
+
+    miniMenu.add(ring);
+
+
+    const icon=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                .14,
+                .08
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                map:
+                    textTexture(
+                        "MENU",
+                        256,
+                        128,
+                        38
+                    ),
+
+                transparent:true
+
+            })
+
+        );
+
+
+    icon.position.z=.01;
+
+    miniMenu.add(icon);
+
+
+    scene.add(
+        miniMenu
+    );
+
+}
+
+
+/* =====================================================
+   PLACE MENU IN FRONT
+===================================================== */
+
+function placeMenu(){
+
+    if(!menu)
+        return;
+
+
+    const direction=
+        new THREE.Vector3(
+            0,0,-1
+        );
+
+
+    direction.applyQuaternion(
+        camera.quaternion
+    );
+
+
+    const pos=
+        camera.position.clone();
+
+
+    pos.add(
+        direction.multiplyScalar(
+            1.25
+        )
+    );
+
+
+    pos.y=
+        camera.position.y;
+
+
+    menu.position.copy(pos);
+
+
+    const look=
+        camera.position.clone();
+
+
+    look.y=
+        menu.position.y;
+
+
+    menu.lookAt(
+        look
+    );
+
+}
+
+
+/* =====================================================
+   MINI POSITION
+===================================================== */
+
+function placeMini(){
+
+    if(!miniMenu)
+        return;
+
+
+    const direction=
+        new THREE.Vector3(
+            0,0,-1
+        );
+
+
+    direction.applyQuaternion(
+        camera.quaternion
+    );
+
+
+    const pos=
+        camera.position.clone();
+
+
+    pos.add(
+        direction.multiplyScalar(
+            1.0
+        )
+    );
+
+
+    pos.y=
+        camera.position.y;
+
+
+    miniMenu.position.copy(
+        pos
+    );
+
+
+    const look=
+        camera.position.clone();
+
+
+    look.y=
+        miniMenu.position.y;
+
+
+    miniMenu.lookAt(
+        look
+    );
+
+}
+
+
+/* =====================================================
+   MENU TOGGLE
+===================================================== */
+
+function toggleMenu(){
+
+    if(!menu)
+        return;
+
+
+    menuVisible=
+        !menuVisible;
+
+
+    menu.visible=
+        menuVisible;
+
+
+    if(miniMenu){
+
+        miniMenu.visible=
+            !menuVisible;
+
+        if(
+            !menuVisible
+        ){
+
+            placeMini();
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   MINI TOGGLE
+===================================================== */
+
+function toggleMini(){
+
+    toggleMenu();
+
+}
+
+
+/* =====================================================
+   MENU MOVEMENT
+===================================================== */
+
+function startMenuMove(
     controller
 ){
 
-    if(
-        grabbedController ===
-        controller
-    ){
+    menuMoving=true;
 
-        grabbed = false;
+    menuMoveController=
+        controller;
 
-        grabbedController =
-            null;
-    }
-}
-
-
-/* =====================================================
-   CONTROLLERY
-===================================================== */
-
-controller1.addEventListener(
-    "selectstart",
-    () => controllerSelect(
-        controller1
-    )
-);
-
-controller2.addEventListener(
-    "selectstart",
-    () => controllerSelect(
-        controller2
-    )
-);
-
-controller1.addEventListener(
-    "selectend",
-    () => controllerRelease(
-        controller1
-    )
-);
-
-controller2.addEventListener(
-    "selectend",
-    () => controllerRelease(
-        controller2
-    )
-);
-
-
-/* =====================================================
-   JOYSTICK
-===================================================== */
-
-function getJoystick(){
-
-    if(!session)
-        return {
-            x:0,
-            y:0
-        };
-
-    for(
-        const source of
-        session.inputSources
-    ){
-
-        if(!source.gamepad)
-            continue;
-
-        const axes =
-            source.gamepad.axes;
-
-        let x=0;
-        let y=0;
-
-        if(axes.length>=4){
-
-            x =
-                axes[2] || 0;
-
-            y =
-                axes[3] || 0;
-
-        }
-        else if(axes.length>=2){
-
-            x =
-                axes[0] || 0;
-
-            y =
-                axes[1] || 0;
-
-        }
-
-        if(
-            Math.abs(x)>.12 ||
-            Math.abs(y)>.12
-        ){
-
-            return {x,y};
-
-        }
-    }
-
-    return {
-        x:0,
-        y:0
-    };
-}
-
-
-/* =====================================================
-   UPDATE OBIEKTU
-===================================================== */
-
-function updateObject(){
-
-    if(!selectedObject)
-        return;
-
-
-    if(
-        autoRotate &&
-        !locked
-    ){
-
-        selectedObject.rotation.y +=
-            .006;
-
-    }
-
-
-    const stick =
-        getJoystick();
-
-
-    /* JOYSTICK = ZOOM */
-
-    if(
-        Math.abs(stick.y)>.12 &&
-        !locked
-    ){
-
-        scaleObject(
-            1 -
-            stick.y*.025
-        );
-
-    }
-
-
-    /* ROTACJA */
-
-    if(
-        mode==="ROTATE" &&
-        Math.abs(stick.x)>.12 &&
-        !locked
-    ){
-
-        selectedObject.rotation.y +=
-            stick.x*.035;
-
-    }
-
-
-    /* PRZESUWANIE */
-
-    if(
-        grabbed &&
-        grabbedController &&
-        !locked &&
-        mode==="MOVE"
-    ){
-
-        setRay(
-            grabbedController
-        );
-
-        const position =
-            raycaster.ray.origin
-            .clone()
-            .add(
-                raycaster.ray.direction
-                .clone()
-                .multiplyScalar(
-                    grabDistance
-                )
-            );
-
-        selectedObject.position.lerp(
-            position,
-            .25
-        );
-    }
-
-
-    /* SKALOWANIE */
-
-    if(
-        grabbed &&
-        grabbedController &&
-        !locked &&
-        mode==="SCALE"
-    ){
-
-        const distance =
-            grabbedController.position
-            .distanceTo(
-                selectedObject.position
-            );
-
-        const scale =
-            THREE.MathUtils.clamp(
-                grabScale *
-                distance /
-                Math.max(
-                    .01,
-                    grabDistance
-                ),
-                .01,
-                50
-            );
-
-        selectedObject.scale.setScalar(
-            scale
-        );
-    }
-}
-
-
-/* =====================================================
-   DWIE RĘCE
-===================================================== */
-
-function updateTwoHands(){
-
-    if(
-        !selectedObject ||
-        locked ||
-        mode!=="SCALE"
-    ){
-
-        twoHandStart =
-            null;
-
-        return;
-    }
-
-
-    const distance =
-        controller1.position
+    menuMoveDistance=
+        controller.position
         .distanceTo(
-            controller2.position
+            menu.position
+        );
+
+}
+
+
+function updateMenuMove(){
+
+    if(
+        !menuMoving ||
+        !menuMoveController ||
+        !menu
+    )
+        return;
+
+
+    controllerRay(
+        menuMoveController
+    );
+
+
+    const target=
+        raycaster.ray.origin.clone()
+        .add(
+            raycaster.ray.direction
+            .clone()
+            .multiplyScalar(
+                menuMoveDistance
+            )
         );
 
 
-    if(distance<.1){
-
-        twoHandStart =
-            null;
-
-        return;
-    }
-
-
-    if(!twoHandStart){
-
-        twoHandStart = {
-            distance,
-            scale:
-                selectedObject.scale.x
-        };
-
-        return;
-    }
-
-
-    const factor =
-        distance /
-        twoHandStart.distance;
-
-
-    selectedObject.scale.setScalar(
-
-        THREE.MathUtils.clamp(
-            twoHandStart.scale *
-            factor,
-            .01,
-            50
-        )
-
+    menu.position.lerp(
+        target,
+        .2
     );
+
+
+    const look=
+        camera.position.clone();
+
+
+    look.y=
+        menu.position.y;
+
+
+    menu.lookAt(
+        look
+    );
+
+}
+
+
+/* =====================================================
+   PHOTO FUNCTIONS
+===================================================== */
+
+function resetPhoto(){
+
+    if(!photo)
+        return;
+
+
+    photo.position.set(
+        0,
+        camera.position.y,
+        -2
+    );
+
+    photo.rotation.set(
+        0,0,0
+    );
+
+    photo.scale.setScalar(
+        1
+    );
+
+    photo.material.opacity=1;
+
+    locked=false;
+
+    photoOpacity=1;
+
+}
+
+
+function resetZoom(){
+
+    if(photo)
+        photo.scale.setScalar(
+            1
+        );
+
+}
+
+
+function centerPhoto(){
+
+    if(!photo)
+        return;
+
+
+    const dir=
+        new THREE.Vector3(
+            0,0,-1
+        );
+
+    dir.applyQuaternion(
+        camera.quaternion
+    );
+
+
+    photo.position=
+        camera.position.clone()
+        .add(
+            dir.multiplyScalar(
+                2
+            )
+        );
+
+}
+
+
+function hidePhoto(){
+
+    if(photo)
+        photo.visible=
+            !photo.visible;
+
+}
+
+
+function nextPhoto(){
+
+    if(
+        photos.length===0
+    )
+        return;
+
+
+    currentPhotoIndex++;
+
+    if(
+        currentPhotoIndex>=
+        photos.length
+    )
+        currentPhotoIndex=0;
+
+
+    selectPhoto(
+        photos[
+            currentPhotoIndex
+        ]
+    );
+
+}
+
+
+function deletePhoto(){
+
+    if(!photo)
+        return;
+
+
+    const index=
+        photos.indexOf(
+            photo
+        );
+
+
+    scene.remove(
+        photo
+    );
+
+
+    photo.geometry.dispose();
+
+    photo.material.map?.dispose();
+
+    photo.material.dispose();
+
+
+    photos.splice(
+        index,
+        1
+    );
+
+
+    if(
+        photos.length
+    ){
+
+        currentPhotoIndex=
+            Math.max(
+                0,
+                index-1
+            );
+
+        selectPhoto(
+            photos[
+                currentPhotoIndex
+            ]
+        );
+
+    }
+    else{
+
+        photo=null;
+
+    }
+
+}
+
+
+function toggleFrame(){
+
+    frameEnabled=
+        !frameEnabled;
+
+    updateFrame();
+
+}
+
+
+function updateFrame(){
+
+    if(frameMesh){
+
+        scene.remove(
+            frameMesh
+        );
+
+        frameMesh.geometry.dispose();
+
+        frameMesh.material.dispose();
+
+        frameMesh=null;
+
+    }
+
+
+    if(
+        !photo ||
+        !frameEnabled
+    )
+        return;
+
+
+    const width=
+        photo.geometry.parameters.width;
+
+    const height=
+        photo.geometry.parameters.height;
+
+
+    const geometry=
+        new THREE.EdgesGeometry(
+
+            new THREE.PlaneGeometry(
+                width+.06,
+                height+.06
+            )
+
+        );
+
+
+    const material=
+        new THREE.LineBasicMaterial({
+
+            color:0x00ffff,
+
+            transparent:true,
+
+            opacity:.9
+
+        });
+
+
+    frameMesh=
+        new THREE.LineSegments(
+            geometry,
+            material
+        );
+
+
+    frameMesh.position.copy(
+        photo.position
+    );
+
+    frameMesh.rotation.copy(
+        photo.rotation
+    );
+
+    frameMesh.scale.copy(
+        photo.scale
+    );
+
+
+    scene.add(
+        frameMesh
+    );
+
+}
+
+
+function cycleOpacity(){
+
+    if(!photo)
+        return;
+
+
+    photoOpacity-=.2;
+
+
+    if(
+        photoOpacity<.2
+    )
+        photoOpacity=1;
+
+
+    photo.material.opacity=
+        photoOpacity;
+
+}
+
+
+function toggleGrid(){
+
+    if(gridMesh){
+
+        scene.remove(
+            gridMesh
+        );
+
+        gridMesh.geometry.dispose();
+
+        gridMesh.material.dispose();
+
+        gridMesh=null;
+
+        return;
+
+    }
+
+
+    gridMesh=
+        new THREE.GridHelper(
+            10,
+            20,
+            0x00ffff,
+            0x004455
+        );
+
+
+    gridMesh.position.y=.01;
+
+    scene.add(
+        gridMesh
+    );
+
+}
+
+
+/* =====================================================
+   ADD PHOTO FROM VR
+===================================================== */
+
+async function addPhotoVR(){
+
+    if(session){
+
+        await session.end();
+
+    }
+
+
+    setTimeout(
+        ()=>{
+            fileInput.click();
+        },
+        400
+    );
+
+}
+
+
+/* =====================================================
+   HOVER
+===================================================== */
+
+function clearHover(){
+
+    if(!selectedButton)
+        return;
+
+
+    if(
+        selectedButton.userData.button
+    ){
+
+        selectedButton.material.color
+            .setHex(
+                selectedButton.userData.normal
+            );
+
+    }
+
+
+    selectedButton=null;
+
+}
+
+
+function setHover(
+    button
+){
+
+    if(
+        selectedButton===button
+    )
+        return;
+
+
+    clearHover();
+
+
+    selectedButton=
+        button;
+
+
+    if(
+        button.userData.button
+    ){
+
+        button.material.color
+            .setHex(
+                button.userData.hover
+            );
+
+    }
+
 }
 
 
@@ -2342,25 +1879,24 @@ function updateTwoHands(){
 
 function updateLaser(
     controller,
-    laser
+    laser,
+    dot
 ){
 
-    if(
-        !renderer.xr.isPresenting
-    ){
-
-        laser.visible=false;
-
-        return;
-    }
+    controllerRay(
+        controller
+    );
 
 
-    laser.visible=true;
+    laser.visible=
+        renderer.xr.isPresenting;
 
-    setRay(controller);
+
+    dot.visible=
+        renderer.xr.isPresenting;
 
 
-    const menuObjects=[];
+    const targets=[];
 
 
     if(
@@ -2368,9 +1904,10 @@ function updateLaser(
         menu.visible
     ){
 
-        menuObjects.push(
-            ...buttons
+        targets.push(
+            ...menuButtons
         );
+
     }
 
 
@@ -2379,317 +1916,831 @@ function updateLaser(
         miniMenu.visible
     ){
 
-        menuObjects.push(
+        targets.push(
             ...miniMenu.children
+                .filter(
+                    x =>
+                        x.userData
+                        .miniButton
+                )
         );
+
     }
 
 
-    const hits =
+    if(photo)
+        targets.push(photo);
+
+
+    const hits=
         raycaster.intersectObjects(
-            menuObjects,
-            true
+            targets,
+            false
         );
 
 
     if(hits.length){
 
-        laser.scale.z =
-            Math.max(
-                .1,
-                hits[0].distance
+        const point=
+            hits[0].point;
+
+
+        dot.position.copy(
+            point
+        );
+
+
+        const local=
+            controller.worldToLocal(
+                point.clone()
             );
+
+
+        laser.scale.z=
+            Math.max(
+                .15,
+                Math.abs(local.z)
+            );
+
+
+        if(
+            hits[0].object.userData.button
+        ){
+
+            setHover(
+                hits[0].object
+            );
+
+        }
+        else if(
+            hits[0].object.userData.miniButton
+        ){
+
+            clearHover();
+
+        }
 
     }
     else{
 
+        const far=
+            raycaster.ray.origin.clone()
+            .add(
+                raycaster.ray.direction
+                .clone()
+                .multiplyScalar(
+                    8
+                )
+            );
+
+
+        dot.position.copy(
+            far
+        );
+
         laser.scale.z=8;
 
+        clearHover();
+
     }
+
 }
 
 
 /* =====================================================
-   STATUS
+   CONTROLLER CLICK
 ===================================================== */
 
-function updateStatus(text){
+function controllerSelect(
+    controller
+){
 
-    xrStatus.textContent =
-        text || "";
-
-    xrStatus.classList.add(
-        "show"
+    controllerRay(
+        controller
     );
 
-    clearTimeout(
-        updateStatus.timer
-    );
 
-    updateStatus.timer =
-        setTimeout(
-            () => {
+    /* MINI MENU */
 
-                xrStatus.classList.remove(
-                    "show"
-                );
+    if(
+        miniMenu &&
+        miniMenu.visible
+    ){
 
-            },
-            1800
-        );
-}
-
-
-/* =====================================================
-   ERROR
-===================================================== */
-
-function showError(text){
-
-    errorText.textContent =
-        text;
-
-    errorBox.style.display =
-        "block";
-
-    setTimeout(
-        () => {
-
-            errorBox.style.display =
-                "none";
-
-        },
-        8000
-    );
-}
-
-
-/* =====================================================
-   START XR
-===================================================== */
-
-async function enterAR(){
-
-    /*
-       NAJWAŻNIEJSZE:
-
-       Przycisk zawsze działa.
-       Dopiero tutaj sprawdzamy plik.
-    */
-
-    if(!selectedFile){
-
-        message.textContent =
-            "⚠ Najpierw wybierz zdjęcie lub model 3D.";
-
-        return;
-    }
-
-
-    if(!navigator.xr){
-
-        showError(
-            "WebXR nie jest dostępny."
-        );
-
-        return;
-    }
-
-
-    try{
-
-        message.textContent =
-            "Sprawdzanie WebXR...";
-
-
-        const supported =
-            await navigator.xr
-            .isSessionSupported(
-                "immersive-ar"
+        const hits=
+            raycaster.intersectObjects(
+                miniMenu.children,
+                false
             );
 
 
-        if(!supported){
+        if(hits.length){
 
-            showError(
-                "immersive-ar nie jest obsługiwane."
-            );
-
-            return;
-        }
+            const obj=
+                hits[0].object;
 
 
-        message.textContent =
-            "Uruchamianie Passthrough...";
+            if(
+                obj.userData.miniButton
+            ){
 
+                obj.userData.action();
 
-        session =
-            await navigator.xr.requestSession(
-                "immersive-ar",
-                {
-
-                    requiredFeatures:[
-                        "local"
-                    ],
-
-                    optionalFeatures:[
-                        "local-floor",
-                        "bounded-floor",
-                        "hand-tracking",
-                        "anchors",
-                        "hit-test",
-                        "dom-overlay"
-                    ],
-
-                    domOverlay:{
-                        root:
-                            document.getElementById(
-                                "xrOverlay"
-                            )
-                    }
-
-                }
-            );
-
-
-        await renderer.xr.setSession(
-            session
-        );
-
-
-        desktopUI.style.display =
-            "none";
-
-
-        createMenu();
-
-        createMiniMenu();
-
-
-        /* ŁADOWANIE PLIKU DOPIERO TERAZ */
-
-        updateStatus(
-            "Wczytywanie " +
-            selectedFile.name
-        );
-
-
-        try{
-
-            const object =
-                await loadFile(
-                    selectedFile
-                );
-
-            addObject(
-                object,
-                selectedFile.name
-            );
-
-            updateStatus(
-                "GOTOWE"
-            );
-
-        }
-        catch(error){
-
-            console.error(error);
-
-            showError(
-                "Nie udało się wczytać pliku:\n\n" +
-                error.message
-            );
-
-        }
-
-
-        setTimeout(
-            () => {
-                placeMenu();
-            },
-            100
-        );
-
-
-        session.addEventListener(
-            "end",
-            () => {
-
-                desktopUI.style.display =
-                    "flex";
-
-                session =
-                    null;
-
-                if(menu)
-                    menu.visible=false;
-
-                if(miniMenu)
-                    miniMenu.visible=false;
+                return;
 
             }
-        );
+
+        }
 
     }
-    catch(error){
 
-        console.error(error);
 
-        showError(
-            "Nie udało się uruchomić Passthrough:\n\n" +
-            error.name +
-            "\n" +
-            error.message
-        );
+    /* MAIN MENU */
+
+    if(
+        menu &&
+        menu.visible
+    ){
+
+        const hits=
+            raycaster.intersectObjects(
+                menuButtons,
+                false
+            );
+
+
+        if(hits.length){
+
+            const button=
+                hits[0].object;
+
+
+            button.userData.action();
+
+            return;
+
+        }
+
+
+        /*
+           Jeśli tryb MOVE UI,
+           kliknięcie w panel chwyta panel.
+        */
+
+        if(
+            mode==="MENU"
+        ){
+
+            const all=
+                raycaster.intersectObject(
+                    menu,
+                    true
+                );
+
+
+            if(all.length){
+
+                startMenuMove(
+                    controller
+                );
+
+                return;
+
+            }
+
+        }
 
     }
+
+
+    /* PHOTO */
+
+    if(
+        !photo ||
+        locked
+    )
+        return;
+
+
+    const hits=
+        raycaster.intersectObject(
+            photo,
+            false
+        );
+
+
+    if(!hits.length)
+        return;
+
+
+    dragging=true;
+
+    activeController=
+        controller;
+
+
+    dragDistance=
+        controller.position
+        .distanceTo(
+            photo.position
+        );
+
+
+    startScale=
+        photo.scale.x;
+
 }
 
 
 /* =====================================================
-   PRZYCISK
+   CONTROLLER SELECT EVENTS
 ===================================================== */
 
-enterXR.addEventListener(
-    "click",
-    enterAR
+controller1.addEventListener(
+    "selectstart",
+    ()=>{
+        controllerSelect(
+            controller1
+        );
+    }
+);
+
+
+controller2.addEventListener(
+    "selectstart",
+    ()=>{
+        controllerSelect(
+            controller2
+        );
+    }
+);
+
+
+controller1.addEventListener(
+    "selectend",
+    ()=>{
+        if(
+            activeController===
+            controller1
+        ){
+
+            dragging=false;
+
+            activeController=null;
+
+        }
+
+
+        if(
+            menuMoveController===
+            controller1
+        ){
+
+            menuMoving=false;
+
+            menuMoveController=null;
+
+        }
+
+    }
+);
+
+
+controller2.addEventListener(
+    "selectend",
+    ()=>{
+        if(
+            activeController===
+            controller2
+        ){
+
+            dragging=false;
+
+            activeController=null;
+
+        }
+
+
+        if(
+            menuMoveController===
+            controller2
+        ){
+
+            menuMoving=false;
+
+            menuMoveController=null;
+
+        }
+
+    }
 );
 
 
 /* =====================================================
-   RENDER
+   QUEST JOYSTICKS
 ===================================================== */
 
-renderer.setAnimationLoop(
-    () => {
+function getThumbstickY(
+    controller
+){
+
+    const inputSources=
+        renderer.xr
+            .getSession()
+            ?.inputSources;
+
+
+    if(!inputSources)
+        return 0;
+
+
+    for(
+        const source
+        of inputSources
+    ){
 
         if(
-            renderer.xr.isPresenting
+            source.targetRayMode!==
+            "tracked-pointer"
+        )
+            continue;
+
+
+        const gamepad=
+            source.gamepad;
+
+
+        if(!gamepad)
+            continue;
+
+
+        /*
+           Quest Touch Plus zwykle udostępnia
+           stick jako axes[2] / axes[3].
+        */
+
+        if(
+            gamepad.axes.length>=4
         ){
 
-            updateLaser(
-                controller1,
-                laser1
-            );
+            const x=
+                gamepad.axes[2];
 
-            updateLaser(
-                controller2,
-                laser2
-            );
+            const y=
+                gamepad.axes[3];
 
-            updateObject();
 
-            updateTwoHands();
+            if(
+                Math.abs(y)>.15
+            )
+                return y;
 
         }
 
 
-        renderer.render(
-            scene,
-            camera
+        /*
+           Fallback dla innych mappingów.
+        */
+
+        if(
+            gamepad.axes.length>=2
+        ){
+
+            const y=
+                gamepad.axes[1];
+
+
+            if(
+                Math.abs(y)>.15
+            )
+                return y;
+
+        }
+
+    }
+
+
+    return 0;
+
+}
+
+
+/* =====================================================
+   JOYSTICK ZOOM
+===================================================== */
+
+function updateJoystickZoom(){
+
+    if(
+        !photo ||
+        locked
+    )
+        return;
+
+
+    const y=
+        getThumbstickY();
+
+
+    if(
+        Math.abs(y)<.12
+    )
+        return;
+
+
+    /*
+       W dół = oddalenie
+       W górę = przybliżenie
+    */
+
+    const speed=.018;
+
+
+    const factor=
+        1 -
+        y*speed;
+
+
+    const next=
+        THREE.MathUtils.clamp(
+            photo.scale.x *
+            factor,
+            .05,
+            20
+        );
+
+
+    photo.scale.setScalar(
+        next
+    );
+
+
+    if(frameMesh){
+
+        frameMesh.scale.copy(
+            photo.scale
         );
 
     }
+
+}
+
+
+/* =====================================================
+   PHOTO MOVEMENT
+===================================================== */
+
+function updatePhotoMovement(){
+
+    if(
+        !photo ||
+        locked
+    )
+        return;
+
+
+    updateJoystickZoom();
+
+
+    /*
+       TWO CONTROLLER SCALE
+    */
+
+    const distance=
+        controller1.position
+        .distanceTo(
+            controller2.position
+        );
+
+
+    if(
+        distance>.08 &&
+        mode==="SCALE"
+    ){
+
+        if(!twoHandStart){
+
+            twoHandStart={
+                distance,
+                scale:photo.scale.x
+            };
+
+        }
+        else{
+
+            const factor=
+                distance/
+                twoHandStart.distance;
+
+
+            const scale=
+                THREE.MathUtils.clamp(
+                    twoHandStart.scale*
+                    factor,
+                    .05,
+                    20
+                );
+
+
+            photo.scale.setScalar(
+                scale
+            );
+
+        }
+
+    }
+    else{
+
+        twoHandStart=null;
+
+    }
+
+
+    /*
+       MENU MOVEMENT
+    */
+
+    updateMenuMove();
+
+
+    /*
+       PHOTO DRAG
+    */
+
+    if(
+        !dragging ||
+        !activeController
+    )
+        return;
+
+
+    if(mode==="MOVE"){
+
+        controllerRay(
+            activeController
+        );
+
+
+        const target=
+            raycaster.ray.origin.clone()
+            .add(
+                raycaster.ray.direction
+                .clone()
+                .multiplyScalar(
+                    dragDistance
+                )
+            );
+
+
+        photo.position.lerp(
+            target,
+            .28
+        );
+
+    }
+
+
+    if(mode==="SCALE"){
+
+        const d=
+            activeController.position
+            .distanceTo(
+                photo.position
+            );
+
+
+        const scale=
+            THREE.MathUtils.clamp(
+
+                startScale*
+                (
+                    d/
+                    Math.max(
+                        .01,
+                        dragDistance
+                    )
+                ),
+
+                .05,
+                20
+
+            );
+
+
+        photo.scale.setScalar(
+            scale
+        );
+
+    }
+
+
+    if(mode==="ROTATE"){
+
+        const dx=
+            activeController.position.x-
+            photo.position.x;
+
+
+        const dz=
+            activeController.position.z-
+            photo.position.z;
+
+
+        photo.rotation.y=
+            Math.atan2(
+                dx,
+                dz
+            );
+
+    }
+
+
+    if(frameMesh){
+
+        frameMesh.position.copy(
+            photo.position
+        );
+
+        frameMesh.rotation.copy(
+            photo.rotation
+        );
+
+        frameMesh.scale.copy(
+            photo.scale
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   START VR
+===================================================== */
+
+startVR.onclick=()=>{
+
+    if(!photo){
+
+        alert(
+            "Najpierw wybierz zdjęcie."
+        );
+
+        return;
+
+    }
+
+
+    arButton.click();
+
+};
+
+
+/* =====================================================
+   XR START
+===================================================== */
+
+renderer.xr.addEventListener(
+    "sessionstart",
+    ()=>{
+
+        session=
+            renderer.xr.getSession();
+
+
+        startScreen.style.display=
+            "none";
+
+
+        info.style.display=
+            "block";
+
+
+        if(!menu)
+            createMenu();
+
+
+        if(!miniMenu)
+            createMiniMenu();
+
+
+        menu.visible=true;
+
+        menuVisible=true;
+
+        miniMenu.visible=false;
+
+
+        setTimeout(
+            ()=>{
+                placeMenu();
+                placeMini();
+            },
+            200
+        );
+
+
+        setTimeout(
+            ()=>{
+                info.style.display=
+                    "none";
+            },
+            5000
+        );
+
+    }
+);
+
+
+/* =====================================================
+   XR END
+===================================================== */
+
+renderer.xr.addEventListener(
+    "sessionend",
+    ()=>{
+
+        session=null;
+
+        if(menu){
+
+            scene.remove(menu);
+
+            menu=null;
+
+            menuButtons=[];
+
+        }
+
+
+        if(miniMenu){
+
+            scene.remove(
+                miniMenu
+            );
+
+            miniMenu=null;
+
+        }
+
+
+        selectedButton=null;
+
+        dragging=false;
+
+        menuMoving=false;
+
+        activeController=null;
+
+        menuMoveController=null;
+
+
+        startScreen.style.display=
+            "flex";
+
+    }
+);
+
+
+/* =====================================================
+   RENDER LOOP
+===================================================== */
+
+function render(){
+
+    if(
+        renderer.xr.isPresenting
+    ){
+
+        updateLaser(
+            controller1,
+            laser1,
+            dot1
+        );
+
+
+        updateLaser(
+            controller2,
+            laser2,
+            dot2
+        );
+
+
+        updatePhotoMovement();
+
+    }
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+
+renderer.setAnimationLoop(
+    render
 );
 
 
@@ -2699,13 +2750,15 @@ renderer.setAnimationLoop(
 
 window.addEventListener(
     "resize",
-    () => {
+    ()=>{
 
-        camera.aspect =
-            innerWidth /
+        camera.aspect=
+            innerWidth/
             innerHeight;
 
+
         camera.updateProjectionMatrix();
+
 
         renderer.setSize(
             innerWidth,
@@ -2714,18 +2767,6 @@ window.addEventListener(
 
     }
 );
-
-
-/* =====================================================
-   START
-===================================================== */
-
-if(!window.isSecureContext){
-
-    message.textContent =
-        "⚠ Strona musi działać przez HTTPS.";
-
-}
 
 </script>
 
