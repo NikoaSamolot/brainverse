@@ -36,7 +36,7 @@ canvas {
     top: 15px;
     left: 15px;
     width: 310px;
-    background: rgba(15,15,15,.92);
+    background: rgba(15, 15, 15, 0.92);
     border: 1px solid #333;
     border-radius: 14px;
     padding: 16px;
@@ -98,11 +98,13 @@ button:hover {
     margin-top: 10px;
     font-size: 12px;
     color: #999;
+    transition: 0.2s;
 }
 
 #drop.drag {
     border-color: white;
     color: white;
+    background: rgba(255,255,255,0.05);
 }
 
 #info {
@@ -114,6 +116,7 @@ button:hover {
     border-radius: 8px;
     font-size: 11px;
     color: #aaa;
+    z-index: 5;
 }
 
 .value {
@@ -131,7 +134,11 @@ button:hover {
 
         <h1>IMAGE → 3D MODEL</h1>
 
-        <input id="file" type="file" accept="image/*">
+        <input
+            id="file"
+            type="file"
+            accept="image/*"
+        >
 
         <div id="drop">
             Przeciągnij tutaj zdjęcie
@@ -205,13 +212,27 @@ button:hover {
 
 </div>
 
-<!-- THREE.JS -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
-<!-- ORBIT CONTROLS -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+<script type="module">
 
-<script>
+/*
+=========================================================
+ THREE.JS
+=========================================================
+*/
+
+import * as THREE from
+    "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+import { OrbitControls } from
+    "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+
+
+/*
+=========================================================
+ ZMIENNE
+=========================================================
+*/
 
 let scene;
 let camera;
@@ -220,7 +241,6 @@ let controls;
 
 let model = null;
 let texture = null;
-
 let image = null;
 
 let depthAmount = 2;
@@ -230,23 +250,70 @@ let smooth = 1;
 let wireframe = false;
 
 
-/* =========================================================
-   INIT
-========================================================= */
+/*
+=========================================================
+ ELEMENTY UI
+=========================================================
+*/
+
+const fileInput =
+    document.getElementById("file");
+
+const drop =
+    document.getElementById("drop");
+
+const generateButton =
+    document.getElementById("generate");
+
+const resetButton =
+    document.getElementById("reset");
+
+const wireframeButton =
+    document.getElementById("wireframe");
+
+
+/*
+=========================================================
+ STATUS
+=========================================================
+*/
+
+function setStatus(text) {
+
+    document.getElementById("status").textContent = text;
+}
+
+
+/*
+=========================================================
+ INIT
+=========================================================
+*/
 
 function init() {
 
+    /*
+    SCENE
+    */
+
     scene = new THREE.Scene();
 
-    scene.background = new THREE.Color(0x080808);
+    scene.background =
+        new THREE.Color(0x080808);
 
 
-    camera = new THREE.PerspectiveCamera(
-        45,
-        window.innerWidth / window.innerHeight,
-        0.01,
-        1000
-    );
+    /*
+    CAMERA
+    */
+
+    camera =
+        new THREE.PerspectiveCamera(
+            45,
+            window.innerWidth /
+            window.innerHeight,
+            0.01,
+            1000
+        );
 
     camera.position.set(
         0,
@@ -255,12 +322,20 @@ function init() {
     );
 
 
-    renderer = new THREE.WebGLRenderer({
-        antialias: true
-    });
+    /*
+    RENDERER
+    */
+
+    renderer =
+        new THREE.WebGLRenderer({
+            antialias: true
+        });
 
     renderer.setPixelRatio(
-        Math.min(window.devicePixelRatio, 2)
+        Math.min(
+            window.devicePixelRatio,
+            2
+        )
     );
 
     renderer.setSize(
@@ -268,17 +343,28 @@ function init() {
         window.innerHeight
     );
 
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.outputColorSpace =
+        THREE.SRGBColorSpace;
+
+    renderer.shadowMap.enabled = true;
+
 
     document
         .getElementById("app")
-        .appendChild(renderer.domElement);
+        .appendChild(
+            renderer.domElement
+        );
 
 
-    controls = new THREE.OrbitControls(
-        camera,
-        renderer.domElement
-    );
+    /*
+    ORBIT CONTROLS
+    */
+
+    controls =
+        new OrbitControls(
+            camera,
+            renderer.domElement
+        );
 
     controls.enableDamping = true;
 
@@ -288,21 +374,27 @@ function init() {
 
     controls.maxDistance = 50;
 
+    controls.enablePan = true;
 
-    /* ŚWIATŁO */
 
-    const ambient = new THREE.AmbientLight(
-        0xffffff,
-        1.8
-    );
+    /*
+    ŚWIATŁO
+    */
+
+    const ambient =
+        new THREE.AmbientLight(
+            0xffffff,
+            1.8
+        );
 
     scene.add(ambient);
 
 
-    const light = new THREE.DirectionalLight(
-        0xffffff,
-        2
-    );
+    const light =
+        new THREE.DirectionalLight(
+            0xffffff,
+            2
+        );
 
     light.position.set(
         4,
@@ -310,13 +402,16 @@ function init() {
         8
     );
 
+    light.castShadow = true;
+
     scene.add(light);
 
 
-    const light2 = new THREE.DirectionalLight(
-        0xffffff,
-        1
-    );
+    const light2 =
+        new THREE.DirectionalLight(
+            0xffffff,
+            1
+        );
 
     light2.position.set(
         -5,
@@ -327,21 +422,26 @@ function init() {
     scene.add(light2);
 
 
-    /* PŁASZCZYZNA PODGLĄDOWA */
+    /*
+    GRID
+    */
 
-    const grid = new THREE.GridHelper(
-        20,
-        20,
-        0x333333,
-        0x181818
-    );
-
-    grid.rotation.x = 0;
+    const grid =
+        new THREE.GridHelper(
+            20,
+            20,
+            0x333333,
+            0x181818
+        );
 
     grid.position.y = -3;
 
     scene.add(grid);
 
+
+    /*
+    RESIZE
+    */
 
     window.addEventListener(
         "resize",
@@ -349,13 +449,19 @@ function init() {
     );
 
 
+    /*
+    START ANIMATION
+    */
+
     animate();
 }
 
 
-/* =========================================================
-   RESIZE
-========================================================= */
+/*
+=========================================================
+ RESIZE
+=========================================================
+*/
 
 function resize() {
 
@@ -372,44 +478,59 @@ function resize() {
 }
 
 
-/* =========================================================
-   FILE
-========================================================= */
-
-const fileInput =
-    document.getElementById("file");
+/*
+=========================================================
+ FILE INPUT
+=========================================================
+*/
 
 fileInput.addEventListener(
     "change",
-    function(e) {
+    function(event) {
 
-        const file = e.target.files[0];
+        const file =
+            event.target.files[0];
 
-        if (!file) return;
+        if (!file) {
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+
+            setStatus(
+                "Wybrany plik nie jest obrazem."
+            );
+
+            return;
+        }
 
         loadImage(file);
     }
 );
 
 
-/* =========================================================
-   DRAG & DROP
-========================================================= */
-
-const drop =
-    document.getElementById("drop");
-
+/*
+=========================================================
+ DRAG OVER
+=========================================================
+*/
 
 drop.addEventListener(
     "dragover",
-    function(e) {
+    function(event) {
 
-        e.preventDefault();
+        event.preventDefault();
 
         drop.classList.add("drag");
     }
 );
 
+
+/*
+=========================================================
+ DRAG LEAVE
+=========================================================
+*/
 
 drop.addEventListener(
     "dragleave",
@@ -420,18 +541,26 @@ drop.addEventListener(
 );
 
 
+/*
+=========================================================
+ DROP
+=========================================================
+*/
+
 drop.addEventListener(
     "drop",
-    function(e) {
+    function(event) {
 
-        e.preventDefault();
+        event.preventDefault();
 
         drop.classList.remove("drag");
 
         const file =
-            e.dataTransfer.files[0];
+            event.dataTransfer.files[0];
 
-        if (!file) return;
+        if (!file) {
+            return;
+        }
 
         if (!file.type.startsWith("image/")) {
 
@@ -447,9 +576,11 @@ drop.addEventListener(
 );
 
 
-/* =========================================================
-   LOAD IMAGE
-========================================================= */
+/*
+=========================================================
+ LOAD IMAGE
+=========================================================
+*/
 
 function loadImage(file) {
 
@@ -460,38 +591,64 @@ function loadImage(file) {
     const reader =
         new FileReader();
 
+    reader.onload =
+        function(event) {
 
-    reader.onload = function(e) {
+            const newImage =
+                new Image();
 
-        image = new Image();
+            newImage.onload =
+                function() {
 
-        image.onload = function() {
+                    image = newImage;
 
-            setStatus(
-                "Zdjęcie załadowane. Gotowe do generowania."
-            );
+                    setStatus(
+                        "Zdjęcie załadowane. " +
+                        "Gotowe do generowania."
+                    );
+                };
+
+            newImage.onerror =
+                function() {
+
+                    setStatus(
+                        "Nie udało się odczytać zdjęcia."
+                    );
+                };
+
+            newImage.src =
+                event.target.result;
         };
 
-        image.src =
-            e.target.result;
-    };
+    reader.onerror =
+        function() {
 
+            setStatus(
+                "Błąd podczas odczytu pliku."
+            );
+        };
 
     reader.readAsDataURL(file);
 }
 
 
-/* =========================================================
-   GENERATE
-========================================================= */
+/*
+=========================================================
+ GENERATE BUTTON
+=========================================================
+*/
 
-document
-    .getElementById("generate")
-    .addEventListener(
-        "click",
-        generateModel
-    );
+generateButton.addEventListener(
+    "click",
+    generateModel
+);
 
+
+/*
+=========================================================
+ GENERATE MODEL
+=========================================================
+*/
 
 function generateModel() {
 
@@ -510,37 +667,64 @@ function generateModel() {
     );
 
 
-    /* USUŃ STARY MODEL */
+    /*
+    USUWANIE STAREGO MODELU
+    */
 
     if (model) {
 
         scene.remove(model);
 
-        model.geometry.dispose();
+        if (model.geometry) {
+            model.geometry.dispose();
+        }
 
-        model.material.dispose();
+        if (model.material) {
+
+            if (model.material.map) {
+                model.material.map.dispose();
+            }
+
+            model.material.dispose();
+        }
 
         model = null;
     }
 
 
-    /* =====================================================
-       CANVAS Z OBRAZEM
-    ===================================================== */
+    /*
+    CANVAS
+    */
 
     const canvas =
         document.createElement("canvas");
 
     const ctx =
-        canvas.getContext("2d");
+        canvas.getContext(
+            "2d",
+            {
+                willReadFrequently: true
+            }
+        );
+
+
+    if (!ctx) {
+
+        setStatus(
+            "Przeglądarka nie obsługuje Canvas 2D."
+        );
+
+        return;
+    }
 
 
     /*
-       Zachowujemy proporcje zdjęcia.
+    PROPORCJE
     */
 
     const aspect =
-        image.width / image.height;
+        image.width /
+        image.height;
 
 
     let width =
@@ -548,18 +732,28 @@ function generateModel() {
 
     let height =
         Math.round(
-            resolution / aspect
+            resolution /
+            aspect
         );
 
 
-    if (height < 2)
-        height = 2;
+    height =
+        Math.max(
+            2,
+            height
+        );
 
 
-    canvas.width = width;
+    canvas.width =
+        width;
 
-    canvas.height = height;
+    canvas.height =
+        height;
 
+
+    /*
+    RYSOWANIE OBRAZU
+    */
 
     ctx.drawImage(
         image,
@@ -570,18 +764,42 @@ function generateModel() {
     );
 
 
-    const pixels =
-        ctx.getImageData(
-            0,
-            0,
-            width,
-            height
-        ).data;
+    /*
+    PIKSELE
+    */
+
+    let pixels;
+
+    try {
+
+        pixels =
+            ctx.getImageData(
+                0,
+                0,
+                width,
+                height
+            ).data;
+
+    } catch (error) {
+
+        console.error(error);
+
+        setStatus(
+            "Nie można odczytać pikseli obrazu."
+        );
+
+        return;
+    }
 
 
-    /* =====================================================
-       TEXTURE
-    ===================================================== */
+    /*
+    TEXTURE
+    */
+
+    if (texture) {
+        texture.dispose();
+    }
+
 
     texture =
         new THREE.Texture(image);
@@ -591,17 +809,22 @@ function generateModel() {
     texture.colorSpace =
         THREE.SRGBColorSpace;
 
-
     texture.minFilter =
         THREE.LinearFilter;
 
     texture.magFilter =
         THREE.LinearFilter;
 
+    texture.wrapS =
+        THREE.ClampToEdgeWrapping;
 
-    /* =====================================================
-       VERTICES
-    ===================================================== */
+    texture.wrapT =
+        THREE.ClampToEdgeWrapping;
+
+
+    /*
+    VERTICES
+    */
 
     const vertices = [];
 
@@ -613,30 +836,27 @@ function generateModel() {
     const modelWidth = 5;
 
     const modelHeight =
-        modelWidth / aspect;
+        modelWidth /
+        aspect;
 
 
     /*
-       Pobiera jasność piksela.
+    BRIGHTNESS
     */
 
     function getBrightness(x, y) {
 
-        const i =
+        const index =
             (y * width + x) * 4;
 
         const r =
-            pixels[i];
+            pixels[index];
 
         const g =
-            pixels[i + 1];
+            pixels[index + 1];
 
         const b =
-            pixels[i + 2];
-
-        /*
-           Luminancja.
-        */
+            pixels[index + 2];
 
         return (
             0.299 * r +
@@ -646,23 +866,98 @@ function generateModel() {
     }
 
 
-    /* =====================================================
-       VERTICES
-    ===================================================== */
+    /*
+    WYGŁADZANIE
+    */
 
-    for (let y = 0; y < height; y++) {
+    function getSmoothedBrightness(x, y) {
 
-        for (let x = 0; x < width; x++) {
+        if (smooth <= 0) {
+
+            return getBrightness(
+                x,
+                y
+            );
+        }
+
+
+        let total = 0;
+
+        let count = 0;
+
+
+        for (
+            let sy = -smooth;
+            sy <= smooth;
+            sy++
+        ) {
+
+            for (
+                let sx = -smooth;
+                sx <= smooth;
+                sx++
+            ) {
+
+                const nx =
+                    Math.max(
+                        0,
+                        Math.min(
+                            width - 1,
+                            x + sx
+                        )
+                    );
+
+                const ny =
+                    Math.max(
+                        0,
+                        Math.min(
+                            height - 1,
+                            y + sy
+                        )
+                    );
+
+                total +=
+                    getBrightness(
+                        nx,
+                        ny
+                    );
+
+                count++;
+            }
+        }
+
+
+        return total / count;
+    }
+
+
+    /*
+    TWORZENIE WIERZCHOŁKÓW
+    */
+
+    for (
+        let y = 0;
+        y < height;
+        y++
+    ) {
+
+        for (
+            let x = 0;
+            x < width;
+            x++
+        ) {
 
             const px =
-                x / (width - 1);
+                x /
+                (width - 1);
 
             const py =
-                y / (height - 1);
+                y /
+                (height - 1);
 
 
             /*
-               Normalizacja do środka.
+            POZYCJA X
             */
 
             const worldX =
@@ -670,82 +965,36 @@ function generateModel() {
                 modelWidth;
 
 
+            /*
+            POZYCJA Y
+            */
+
             const worldY =
                 (0.5 - py) *
                 modelHeight;
 
 
-            let brightness =
-                getBrightness(x, y);
+            /*
+            JASNOŚĆ
+            */
+
+            const brightness =
+                getSmoothedBrightness(
+                    x,
+                    y
+                );
 
 
             /*
-               Ciemniejsze miejsca
-               są bliżej użytkownika.
+            GŁĘBOKOŚĆ
+
+            Jasne = dalej
+            Ciemne = bliżej
             */
 
-            let z =
+            const z =
                 (brightness - 0.5) *
                 depthAmount;
-
-
-            /*
-               Opcjonalne wygładzenie.
-            */
-
-            if (smooth > 0) {
-
-                let total = 0;
-
-                let count = 0;
-
-                for (
-                    let sy = -smooth;
-                    sy <= smooth;
-                    sy++
-                ) {
-
-                    for (
-                        let sx = -smooth;
-                        sx <= smooth;
-                        sx++
-                    ) {
-
-                        const nx =
-                            Math.max(
-                                0,
-                                Math.min(
-                                    width - 1,
-                                    x + sx
-                                )
-                            );
-
-                        const ny =
-                            Math.max(
-                                0,
-                                Math.min(
-                                    height - 1,
-                                    y + sy
-                                )
-                            );
-
-                        total +=
-                            getBrightness(
-                                nx,
-                                ny
-                            );
-
-                        count++;
-                    }
-                }
-
-                brightness =
-                    total / count;
-
-                z =
-                    (brightness - 0.5) *
-                    depthAmount;
-            }
 
 
             vertices.push(
@@ -756,7 +1005,7 @@ function generateModel() {
 
 
             /*
-               UV
+            UV
             */
 
             uvs.push(
@@ -767,9 +1016,9 @@ function generateModel() {
     }
 
 
-    /* =====================================================
-       TRIANGLES
-    ===================================================== */
+    /*
+    TRIANGLES
+    */
 
     for (
         let y = 0;
@@ -796,20 +1045,11 @@ function generateModel() {
                 (y + 1) * width + x + 1;
 
 
-            /*
-               Triangle 1
-            */
-
             indices.push(
                 a,
                 c,
                 b
             );
-
-
-            /*
-               Triangle 2
-            */
 
             indices.push(
                 b,
@@ -820,9 +1060,9 @@ function generateModel() {
     }
 
 
-    /* =====================================================
-       GEOMETRY
-    ===================================================== */
+    /*
+    GEOMETRY
+    */
 
     const geometry =
         new THREE.BufferGeometry();
@@ -846,15 +1086,19 @@ function generateModel() {
     );
 
 
-    geometry.setIndex(indices);
+    geometry.setIndex(
+        indices
+    );
 
 
     geometry.computeVertexNormals();
 
+    geometry.computeBoundingSphere();
 
-    /* =====================================================
-       MATERIAL
-    ===================================================== */
+
+    /*
+    MATERIAL
+    */
 
     const material =
         new THREE.MeshStandardMaterial({
@@ -865,15 +1109,15 @@ function generateModel() {
 
             roughness: 0.75,
 
-            metalness: 0.0,
+            metalness: 0,
 
             wireframe: wireframe
         });
 
 
-    /* =====================================================
-       MODEL
-    ===================================================== */
+    /*
+    MODEL
+    */
 
     model =
         new THREE.Mesh(
@@ -882,18 +1126,30 @@ function generateModel() {
         );
 
 
-    model.rotation.x = 0;
+    model.position.set(
+        0,
+        0,
+        0
+    );
 
-    model.rotation.y = 0;
 
-    model.rotation.z = 0;
+    model.rotation.set(
+        0,
+        0,
+        0
+    );
+
+
+    model.castShadow = true;
+
+    model.receiveShadow = true;
 
 
     scene.add(model);
 
 
     /*
-       Kamera
+    KAMERA
     */
 
     camera.position.set(
@@ -902,24 +1158,33 @@ function generateModel() {
         6
     );
 
+
     controls.target.set(
         0,
         0,
         0
     );
 
+
     controls.update();
 
 
+    /*
+    STATUS
+    */
+
     setStatus(
-        "Model 3D wygenerowany. Obracaj go myszką."
+        "Model 3D wygenerowany. " +
+        "Obracaj go myszką."
     );
 }
 
 
-/* =========================================================
-   DEPTH
-========================================================= */
+/*
+=========================================================
+ DEPTH
+=========================================================
+*/
 
 document
     .getElementById("depth")
@@ -928,19 +1193,25 @@ document
         function() {
 
             depthAmount =
-                parseFloat(this.value);
+                parseFloat(
+                    this.value
+                );
 
             document
-                .getElementById("depthValue")
+                .getElementById(
+                    "depthValue"
+                )
                 .textContent =
                 depthAmount.toFixed(1);
         }
     );
 
 
-/* =========================================================
-   RESOLUTION
-========================================================= */
+/*
+=========================================================
+ RESOLUTION
+=========================================================
+*/
 
 document
     .getElementById("resolution")
@@ -949,19 +1220,26 @@ document
         function() {
 
             resolution =
-                parseInt(this.value);
+                parseInt(
+                    this.value,
+                    10
+                );
 
             document
-                .getElementById("resValue")
+                .getElementById(
+                    "resValue"
+                )
                 .textContent =
                 resolution;
         }
     );
 
 
-/* =========================================================
-   SMOOTH
-========================================================= */
+/*
+=========================================================
+ SMOOTH
+=========================================================
+*/
 
 document
     .getElementById("smooth")
@@ -970,87 +1248,85 @@ document
         function() {
 
             smooth =
-                parseInt(this.value);
+                parseInt(
+                    this.value,
+                    10
+                );
 
             document
-                .getElementById("smoothValue")
+                .getElementById(
+                    "smoothValue"
+                )
                 .textContent =
                 smooth;
         }
     );
 
 
-/* =========================================================
-   WIREFRAME
-========================================================= */
+/*
+=========================================================
+ WIREFRAME
+=========================================================
+*/
 
-document
-    .getElementById("wireframe")
-    .addEventListener(
-        "click",
-        function() {
+wireframeButton.addEventListener(
+    "click",
+    function() {
 
-            wireframe =
-                !wireframe;
-
-            this.textContent =
-                wireframe
-                    ? "SIATKA: ON"
-                    : "SIATKA: OFF";
+        wireframe =
+            !wireframe;
 
 
-            if (model) {
+        this.textContent =
+            wireframe
+                ? "SIATKA: ON"
+                : "SIATKA: OFF";
 
-                model.material.wireframe =
-                    wireframe;
-            }
+
+        if (model) {
+
+            model.material.wireframe =
+                wireframe;
+
+            model.material.needsUpdate =
+                true;
         }
-    );
+    }
+);
 
 
-/* =========================================================
-   RESET
-========================================================= */
+/*
+=========================================================
+ RESET CAMERA
+=========================================================
+*/
 
-document
-    .getElementById("reset")
-    .addEventListener(
-        "click",
-        function() {
+resetButton.addEventListener(
+    "click",
+    function() {
 
-            camera.position.set(
-                0,
-                0,
-                6
-            );
+        camera.position.set(
+            0,
+            0,
+            6
+        );
 
-            controls.target.set(
-                0,
-                0,
-                0
-            );
+        controls.target.set(
+            0,
+            0,
+            0
+        );
 
-            controls.update();
-        }
-    );
-
-
-/* =========================================================
-   STATUS
-========================================================= */
-
-function setStatus(text) {
-
-    document
-        .getElementById("status")
-        .textContent =
-        text;
-}
+        controls.update();
+    }
+);
 
 
-/* =========================================================
-   ANIMATION
-========================================================= */
+/*
+=========================================================
+ ANIMATION
+=========================================================
+*/
 
 function animate() {
 
@@ -1067,9 +1343,11 @@ function animate() {
 }
 
 
-/* =========================================================
-   START
-========================================================= */
+/*
+=========================================================
+ START
+=========================================================
+*/
 
 init();
 
