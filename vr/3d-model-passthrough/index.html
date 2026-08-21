@@ -1,0 +1,3311 @@
+```html
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1,
+      maximum-scale=1,
+      user-scalable=no">
+
+<title>MODEL//SPACE — Quest 3</title>
+
+<style>
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+    font-family:Arial,system-ui,sans-serif;
+}
+
+canvas{
+    display:block;
+}
+
+#start{
+    position:fixed;
+    inset:0;
+    z-index:100;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        radial-gradient(
+            circle at 50% 40%,
+            #12343d,
+            #061016 40%,
+            #010304 85%
+        );
+
+    color:white;
+}
+
+.startBox{
+    width:min(90vw,560px);
+    padding:35px;
+
+    box-sizing:border-box;
+
+    border:1px solid
+        rgba(0,255,255,.4);
+
+    border-radius:28px;
+
+    background:
+        rgba(5,15,20,.94);
+
+    box-shadow:
+        0 0 60px
+        rgba(0,255,255,.15);
+
+    text-align:center;
+}
+
+.startBox h1{
+    margin:0;
+
+    font-size:34px;
+
+    letter-spacing:5px;
+
+    text-shadow:
+        0 0 15px
+        rgba(0,255,255,.8);
+}
+
+.startBox p{
+    color:#9ab5bc;
+    line-height:1.5;
+}
+
+#file{
+    width:100%;
+    margin:25px 0;
+    color:white;
+}
+
+#startVR{
+    padding:16px 30px;
+
+    border:1px solid
+        #00ffff;
+
+    border-radius:15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eaffff,
+            #55eaff
+        );
+
+    color:#001016;
+
+    font-weight:900;
+
+    font-size:16px;
+
+    letter-spacing:2px;
+
+    box-shadow:
+        0 0 25px
+        rgba(0,255,255,.35);
+
+    cursor:pointer;
+}
+
+#info{
+    position:fixed;
+
+    left:50%;
+    bottom:20px;
+
+    transform:translateX(-50%);
+
+    display:none;
+
+    z-index:20;
+
+    padding:10px 18px;
+
+    border-radius:30px;
+
+    color:#bfffff;
+
+    background:
+        rgba(0,10,15,.85);
+
+    border:
+        1px solid
+        rgba(0,255,255,.4);
+
+    font-size:13px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="start">
+
+    <div class="startBox">
+
+        <h1>MODEL//SPACE</h1>
+
+        <p>
+            FUTURISTIC MIXED REALITY
+            3D MODEL WORKSPACE
+        </p>
+
+        <input
+            id="file"
+            type="file"
+            accept=".glb,.gltf,.obj,.fbx,model/gltf-binary,model/gltf+json,model/obj">
+
+        <br>
+
+        <button id="startVR">
+            ENTER XR
+        </button>
+
+        <p style="font-size:12px">
+            Optimized for Meta Quest 3
+        </p>
+
+        <p style="font-size:11px">
+            GLB / GLTF / OBJ / FBX
+        </p>
+
+    </div>
+
+</div>
+
+<div id="info">
+    Laserem wskaż element i naciśnij Trigger.
+</div>
+
+
+<script type="module">
+
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
+
+import { ARButton } from
+"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/webxr/ARButton.js";
+
+import { GLTFLoader } from
+"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/GLTFLoader.js";
+
+import { OBJLoader } from
+"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/OBJLoader.js";
+
+import { FBXLoader } from
+"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/FBXLoader.js";
+
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+let renderer;
+let scene;
+let camera;
+
+let controller1;
+let controller2;
+
+let session=null;
+
+let model=null;
+
+let models=[];
+
+let currentModelIndex=-1;
+
+
+/* LOADERS */
+
+const gltfLoader=
+    new GLTFLoader();
+
+const objLoader=
+    new OBJLoader();
+
+const fbxLoader=
+    new FBXLoader();
+
+
+/* MENU */
+
+let menu=null;
+
+let miniMenu=null;
+
+let menuButtons=[];
+
+let selectedButton=null;
+
+let menuVisible=true;
+
+let menuMoving=false;
+
+let menuMoveController=null;
+
+let menuMoveDistance=1.2;
+
+
+/* MODEL */
+
+let mode="MOVE";
+
+let locked=false;
+
+let dragging=false;
+
+let activeController=null;
+
+let dragDistance=2;
+
+let startScale=1;
+
+let twoHandStart=null;
+
+let frameEnabled=false;
+
+let frameMesh=null;
+
+let gridMesh=null;
+
+let modelOpacity=1;
+
+
+/* MODEL CENTER / SIZE */
+
+let modelSize=1;
+
+
+/* =====================================================
+   DOM
+===================================================== */
+
+const startScreen =
+document.getElementById("start");
+
+const fileInput =
+document.getElementById("file");
+
+const startVR =
+document.getElementById("startVR");
+
+const info =
+document.getElementById("info");
+
+
+/* =====================================================
+   THREE
+===================================================== */
+
+scene=new THREE.Scene();
+
+camera=
+new THREE.PerspectiveCamera(
+    70,
+    innerWidth/innerHeight,
+    .01,
+    100
+);
+
+
+renderer=
+new THREE.WebGLRenderer({
+
+    antialias:true,
+
+    alpha:true,
+
+    powerPreference:
+        "high-performance"
+
+});
+
+
+renderer.setPixelRatio(
+    Math.min(
+        devicePixelRatio,
+        2
+    )
+);
+
+renderer.setSize(
+    innerWidth,
+    innerHeight
+);
+
+renderer.xr.enabled=true;
+
+renderer.outputColorSpace=
+    THREE.SRGBColorSpace;
+
+renderer.setClearColor(
+    0x000000,
+    0
+);
+
+document.body.appendChild(
+    renderer.domElement
+);
+
+
+/* =====================================================
+   LIGHTING
+===================================================== */
+
+const ambientLight=
+    new THREE.HemisphereLight(
+        0xffffff,
+        0x223344,
+        2
+    );
+
+scene.add(
+    ambientLight
+);
+
+
+const directionalLight=
+    new THREE.DirectionalLight(
+        0xffffff,
+        3
+    );
+
+directionalLight.position.set(
+    3,
+    5,
+    3
+);
+
+scene.add(
+    directionalLight
+);
+
+
+/* =====================================================
+   WEBXR
+===================================================== */
+
+const arButton=
+ARButton.createButton(
+    renderer,
+    {
+
+        requiredFeatures:[
+            "local-floor"
+        ],
+
+        optionalFeatures:[
+            "hand-tracking",
+            "anchors",
+            "hit-test",
+            "bounded-floor"
+        ]
+
+    }
+);
+
+arButton.style.display="none";
+
+document.body.appendChild(
+    arButton
+);
+
+
+/* =====================================================
+   CONTROLLERS
+===================================================== */
+
+controller1=
+renderer.xr.getController(0);
+
+controller2=
+renderer.xr.getController(1);
+
+scene.add(
+    controller1,
+    controller2
+);
+
+
+/* =====================================================
+   LASERS
+===================================================== */
+
+function createLaser(){
+
+    const geometry=
+        new THREE.BufferGeometry();
+
+    geometry.setFromPoints([
+
+        new THREE.Vector3(0,0,0),
+
+        new THREE.Vector3(0,0,-1)
+
+    ]);
+
+    const material=
+        new THREE.LineBasicMaterial({
+
+            color:0x00ffff,
+
+            transparent:true,
+
+            opacity:.95
+
+        });
+
+    const line=
+        new THREE.Line(
+            geometry,
+            material
+        );
+
+    line.scale.z=8;
+
+    return line;
+
+}
+
+
+const laser1=createLaser();
+const laser2=createLaser();
+
+controller1.add(laser1);
+controller2.add(laser2);
+
+
+/* =====================================================
+   LASER DOTS
+===================================================== */
+
+function createDot(){
+
+    return new THREE.Mesh(
+
+        new THREE.SphereGeometry(
+            .018,
+            12,
+            12
+        ),
+
+        new THREE.MeshBasicMaterial({
+            color:0x00ffff
+        })
+
+    );
+
+}
+
+const dot1=createDot();
+const dot2=createDot();
+
+scene.add(
+    dot1,
+    dot2
+);
+
+
+/* =====================================================
+   RAYCASTER
+===================================================== */
+
+const raycaster=
+    new THREE.Raycaster();
+
+const tempMatrix=
+    new THREE.Matrix4();
+
+
+function controllerRay(
+    controller
+){
+
+    tempMatrix
+        .identity()
+        .extractRotation(
+            controller.matrixWorld
+        );
+
+    raycaster.ray.origin
+        .setFromMatrixPosition(
+            controller.matrixWorld
+        );
+
+    raycaster.ray.direction
+        .set(0,0,-1)
+        .applyMatrix4(
+            tempMatrix
+        );
+
+}
+
+
+/* =====================================================
+   MODEL FILE LOADING
+===================================================== */
+
+fileInput.addEventListener(
+    "change",
+    async ()=>{
+
+        const file=
+            fileInput.files?.[0];
+
+        if(!file)
+            return;
+
+        try{
+
+            await loadModel(
+                file
+            );
+
+        }
+        catch(error){
+
+            console.error(error);
+
+            alert(
+                "Nie udało się wczytać modelu 3D.\n\n"+
+                "Najlepiej użyj pliku .GLB."
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   LOAD MODEL
+===================================================== */
+
+async function loadModel(file){
+
+    const extension=
+        file.name
+        .split(".")
+        .pop()
+        .toLowerCase();
+
+
+    const url=
+        URL.createObjectURL(
+            file
+        );
+
+
+    let object=null;
+
+
+    try{
+
+        /* =============================================
+           GLB / GLTF
+        ============================================= */
+
+        if(
+            extension==="glb" ||
+            extension==="gltf"
+        ){
+
+            object=
+                await new Promise(
+                    (resolve,reject)=>{
+
+                        gltfLoader.load(
+                            url,
+
+                            gltf=>{
+                                resolve(
+                                    gltf.scene
+                                );
+                            },
+
+                            undefined,
+
+                            reject
+                        );
+
+                    }
+                );
+
+        }
+
+
+        /* =============================================
+           OBJ
+        ============================================= */
+
+        else if(
+            extension==="obj"
+        ){
+
+            object=
+                await new Promise(
+                    (resolve,reject)=>{
+
+                        objLoader.load(
+                            url,
+
+                            resolve,
+
+                            undefined,
+
+                            reject
+                        );
+
+                    }
+                );
+
+        }
+
+
+        /* =============================================
+           FBX
+        ============================================= */
+
+        else if(
+            extension==="fbx"
+        ){
+
+            object=
+                await new Promise(
+                    (resolve,reject)=>{
+
+                        fbxLoader.load(
+                            url,
+
+                            resolve,
+
+                            undefined,
+
+                            reject
+                        );
+
+                    }
+                );
+
+        }
+
+
+        else{
+
+            throw new Error(
+                "Unsupported 3D format"
+            );
+
+        }
+
+
+        /* =============================================
+           PREPARE MODEL
+        ============================================= */
+
+        prepareModel(
+            object,
+            file.name
+        );
+
+    }
+    finally{
+
+        URL.revokeObjectURL(
+            url
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PREPARE MODEL
+===================================================== */
+
+function prepareModel(
+    object,
+    name
+){
+
+    object.userData.name=
+        name || "3D MODEL";
+
+
+    object.traverse(
+        child=>{
+
+            if(
+                child.isMesh
+            ){
+
+                child.castShadow=true;
+
+                child.receiveShadow=true;
+
+
+                if(
+                    child.material
+                ){
+
+                    if(
+                        Array.isArray(
+                            child.material
+                        )
+                    ){
+
+                        child.material=
+                            child.material.map(
+                                material=>{
+
+                                    material=
+                                        material.clone();
+
+                                    material.transparent=true;
+
+                                    return material;
+
+                                }
+                            );
+
+                    }
+                    else{
+
+                        child.material=
+                            child.material.clone();
+
+                        child.material.transparent=true;
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+    /*
+       Obliczamy bounding box.
+    */
+
+    const box=
+        new THREE.Box3()
+        .setFromObject(
+            object
+        );
+
+
+    const size=
+        new THREE.Vector3();
+
+    box.getSize(
+        size
+    );
+
+
+    const maxDimension=
+        Math.max(
+            size.x,
+            size.y,
+            size.z
+        );
+
+
+    if(
+        maxDimension>0
+    ){
+
+        /*
+           Normalizujemy model,
+           żeby każdy model miał
+           sensowny rozmiar w VR.
+        */
+
+        const targetSize=1;
+
+        const scale=
+            targetSize/
+            maxDimension;
+
+        object.scale.setScalar(
+            scale
+        );
+
+    }
+
+
+    /*
+       Ponownie obliczamy box
+       po skalowaniu.
+    */
+
+    const normalizedBox=
+        new THREE.Box3()
+        .setFromObject(
+            object
+        );
+
+
+    const center=
+        new THREE.Vector3();
+
+    normalizedBox.getCenter(
+        center
+    );
+
+
+    /*
+       Przenosimy środek modelu
+       do jego lokalnego centrum.
+    */
+
+    object.position.sub(
+        center
+    );
+
+
+    /*
+       Model pojawia się
+       2 metry przed użytkownikiem.
+    */
+
+    const direction=
+        new THREE.Vector3(
+            0,0,-1
+        );
+
+    direction.applyQuaternion(
+        camera.quaternion
+    );
+
+
+    object.position=
+        camera.position.clone()
+        .add(
+            direction.multiplyScalar(
+                2
+            )
+        );
+
+
+    object.position.y=
+        camera.position.y;
+
+
+    scene.add(
+        object
+    );
+
+
+    models.push(
+        object
+    );
+
+
+    currentModelIndex=
+        models.length-1;
+
+
+    modelOpacity=1;
+
+    locked=false;
+
+
+    selectModel(
+        object
+    );
+
+
+    if(
+        renderer.xr.isPresenting
+    ){
+
+        return;
+
+    }
+
+
+    /*
+       Jeżeli jesteśmy poza XR,
+       automatycznie uruchamiamy AR.
+    */
+
+    arButton.click();
+
+}
+
+
+/* =====================================================
+   SELECT MODEL
+===================================================== */
+
+function selectModel(
+    object
+){
+
+    model=
+        object;
+
+    modelOpacity=1;
+
+    updateFrame();
+
+}
+
+
+/* =====================================================
+   TEXTURE TEXT
+===================================================== */
+
+function textTexture(
+    text,
+    width=1024,
+    height=256,
+    fontSize=60
+){
+
+    const canvas=
+        document.createElement(
+            "canvas"
+        );
+
+    canvas.width=width;
+    canvas.height=height;
+
+    const ctx=
+        canvas.getContext("2d");
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+    ctx.fillStyle="#ffffff";
+
+    ctx.font=
+        "bold "+
+        fontSize+
+        "px Arial";
+
+    ctx.textAlign="center";
+
+    ctx.textBaseline="middle";
+
+    ctx.shadowColor=
+        "rgba(0,255,255,.9)";
+
+    ctx.shadowBlur=15;
+
+    ctx.fillText(
+        text,
+        width/2,
+        height/2
+    );
+
+    const texture=
+        new THREE.CanvasTexture(
+            canvas
+        );
+
+    texture.colorSpace=
+        THREE.SRGBColorSpace;
+
+    return texture;
+
+}
+
+
+/* =====================================================
+   MENU BUTTON
+===================================================== */
+
+function createButton(
+    label,
+    action,
+    x,
+    y
+){
+
+    const group=
+        new THREE.Group();
+
+    group.position.set(
+        x,
+        y,
+        .03
+    );
+
+
+    const body=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                .49,
+                .23
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                color:0x06151b,
+
+                transparent:true,
+
+                opacity:.95,
+
+                side:THREE.DoubleSide
+
+            })
+
+        );
+
+
+    body.userData.button=true;
+
+    body.userData.action=
+        action;
+
+    body.userData.normal=
+        0x06151b;
+
+    body.userData.hover=
+        0x00dfff;
+
+
+    group.add(body);
+
+
+    const border=
+        new THREE.LineSegments(
+
+            new THREE.EdgesGeometry(
+                new THREE.PlaneGeometry(
+                    .49,
+                    .23
+                )
+            ),
+
+            new THREE.LineBasicMaterial({
+
+                color:0x00ffff,
+
+                transparent:true,
+
+                opacity:.6
+
+            })
+
+        );
+
+
+    border.position.z=.006;
+
+    group.add(border);
+
+
+    const text=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                .45,
+                .09
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                map:
+                    textTexture(
+                        label,
+                        512,
+                        128,
+                        42
+                    ),
+
+                transparent:true,
+
+                side:THREE.DoubleSide
+
+            })
+
+        );
+
+
+    text.position.z=.012;
+
+    text.position.y=-.055;
+
+    group.add(text);
+
+
+    body.userData.border=
+        border;
+
+    body.userData.group=
+        group;
+
+
+    menu.add(group);
+
+    menuButtons.push(
+        body
+    );
+
+
+    return body;
+
+}
+
+
+/* =====================================================
+   CREATE MAIN MENU
+===================================================== */
+
+function createMenu(){
+
+    menu=
+        new THREE.Group();
+
+
+    const bg=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                3.15,
+                1.65
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                color:0x02090d,
+
+                transparent:true,
+
+                opacity:.96,
+
+                side:THREE.DoubleSide
+
+            })
+
+        );
+
+
+    bg.position.z=-.03;
+
+    bg.userData.menuBackground=
+        true;
+
+    menu.add(bg);
+
+
+    const border=
+        new THREE.LineSegments(
+
+            new THREE.EdgesGeometry(
+                new THREE.PlaneGeometry(
+                    3.15,
+                    1.65
+                )
+            ),
+
+            new THREE.LineBasicMaterial({
+
+                color:0x00ffff,
+
+                transparent:true,
+
+                opacity:.9
+
+            })
+
+        );
+
+
+    border.position.z=.01;
+
+    menu.add(border);
+
+
+    const title=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                2.9,
+                .16
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                map:
+                    textTexture(
+                        "MODEL//SPACE",
+                        1024,
+                        128,
+                        72
+                    ),
+
+                transparent:true
+
+            })
+
+        );
+
+
+    title.position.set(
+        0,
+        .68,
+        .02
+    );
+
+    menu.add(title);
+
+
+    const subtitle=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                2.8,
+                .08
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                map:
+                    textTexture(
+                        "QUEST 3 // 3D MODEL CONTROL",
+                        1024,
+                        128,
+                        32
+                    ),
+
+                transparent:true
+
+            })
+
+        );
+
+
+    subtitle.position.set(
+        0,
+        .54,
+        .02
+    );
+
+    menu.add(subtitle);
+
+
+    /* ROW 1 */
+
+    const row1=[
+
+        ["MOVE",()=>{
+            mode="MOVE";
+        }],
+
+        ["SCALE",()=>{
+            mode="SCALE";
+        }],
+
+        ["ROTATE",()=>{
+            mode="ROTATE";
+        }],
+
+        ["ANCHOR",()=>{
+            locked=true;
+        }],
+
+        ["LOCK",()=>{
+            locked=!locked;
+        }],
+
+        ["MOVE UI",()=>{
+            mode="MENU";
+        }]
+
+    ];
+
+
+    for(
+        let i=0;
+        i<row1.length;
+        i++
+    ){
+
+        createButton(
+            row1[i][0],
+            row1[i][1],
+            -1.35+i*.54,
+            .30
+        );
+
+    }
+
+
+    /* ROW 2 */
+
+    const row2=[
+
+        ["MODELS",nextModel],
+
+        ["ADD MODEL",addModelVR],
+
+        ["FRAME",toggleFrame],
+
+        ["OPACITY",cycleOpacity],
+
+        ["GRID",toggleGrid],
+
+        ["CENTER",centerModel]
+
+    ];
+
+
+    for(
+        let i=0;
+        i<row2.length;
+        i++
+    ){
+
+        createButton(
+            row2[i][0],
+            row2[i][1],
+            -1.35+i*.54,
+            -.01
+        );
+
+    }
+
+
+    /* ROW 3 */
+
+    const row3=[
+
+        ["RESET",resetModel],
+
+        ["HIDE",hideModel],
+
+        ["DELETE",deleteModel],
+
+        ["MENU",toggleMenu],
+
+        ["MINI",toggleMini],
+
+        ["ZOOM 1:1",resetZoom]
+
+    ];
+
+
+    for(
+        let i=0;
+        i<row3.length;
+        i++
+    ){
+
+        createButton(
+            row3[i][0],
+            row3[i][1],
+            -1.35+i*.54,
+            -.32
+        );
+
+    }
+
+
+    const status=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                2.8,
+                .10
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                map:
+                    textTexture(
+                        "● SYSTEM ONLINE   //   JOYSTICK = ZOOM",
+                        1024,
+                        128,
+                        30
+                    ),
+
+                transparent:true
+
+            })
+
+        );
+
+
+    status.position.set(
+        0,
+        -.62,
+        .02
+    );
+
+    menu.add(status);
+
+
+    scene.add(menu);
+
+}
+
+
+/* =====================================================
+   MINI MENU
+===================================================== */
+
+function createMiniMenu(){
+
+    miniMenu=
+        new THREE.Group();
+
+
+    miniMenu.visible=false;
+
+
+    const bg=
+        new THREE.Mesh(
+
+            new THREE.CircleGeometry(
+                .115,
+                32
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                color:0x04141a,
+
+                transparent:true,
+
+                opacity:.96,
+
+                side:THREE.DoubleSide
+
+            })
+
+        );
+
+
+    bg.userData.miniButton=true;
+
+    bg.userData.action=
+        toggleMenu;
+
+
+    miniMenu.add(bg);
+
+
+    const ring=
+        new THREE.Mesh(
+
+            new THREE.RingGeometry(
+                .115,
+                .13,
+                32
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                color:0x00ffff,
+
+                side:THREE.DoubleSide
+
+            })
+
+        );
+
+
+    ring.position.z=.005;
+
+    miniMenu.add(ring);
+
+
+    const icon=
+        new THREE.Mesh(
+
+            new THREE.PlaneGeometry(
+                .14,
+                .08
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                map:
+                    textTexture(
+                        "MENU",
+                        256,
+                        128,
+                        38
+                    ),
+
+                transparent:true
+
+            })
+
+        );
+
+
+    icon.position.z=.01;
+
+    miniMenu.add(icon);
+
+
+    scene.add(
+        miniMenu
+    );
+
+}
+
+
+/* =====================================================
+   PLACE MENU
+===================================================== */
+
+function placeMenu(){
+
+    if(!menu)
+        return;
+
+
+    const direction=
+        new THREE.Vector3(
+            0,0,-1
+        );
+
+
+    direction.applyQuaternion(
+        camera.quaternion
+    );
+
+
+    const pos=
+        camera.position.clone();
+
+
+    pos.add(
+        direction.multiplyScalar(
+            1.25
+        )
+    );
+
+
+    pos.y=
+        camera.position.y;
+
+
+    menu.position.copy(
+        pos
+    );
+
+
+    const look=
+        camera.position.clone();
+
+
+    look.y=
+        menu.position.y;
+
+
+    menu.lookAt(
+        look
+    );
+
+}
+
+
+/* =====================================================
+   PLACE MINI
+===================================================== */
+
+function placeMini(){
+
+    if(!miniMenu)
+        return;
+
+
+    const direction=
+        new THREE.Vector3(
+            0,0,-1
+        );
+
+
+    direction.applyQuaternion(
+        camera.quaternion
+    );
+
+
+    const pos=
+        camera.position.clone();
+
+
+    pos.add(
+        direction.multiplyScalar(
+            1
+        )
+    );
+
+
+    pos.y=
+        camera.position.y;
+
+
+    miniMenu.position.copy(
+        pos
+    );
+
+
+    const look=
+        camera.position.clone();
+
+
+    look.y=
+        miniMenu.position.y;
+
+
+    miniMenu.lookAt(
+        look
+    );
+
+}
+
+
+/* =====================================================
+   MENU TOGGLE
+===================================================== */
+
+function toggleMenu(){
+
+    if(!menu)
+        return;
+
+
+    menuVisible=
+        !menuVisible;
+
+
+    menu.visible=
+        menuVisible;
+
+
+    if(miniMenu){
+
+        miniMenu.visible=
+            !menuVisible;
+
+
+        if(!menuVisible){
+
+            placeMini();
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   MINI TOGGLE
+===================================================== */
+
+function toggleMini(){
+
+    toggleMenu();
+
+}
+
+
+/* =====================================================
+   MENU MOVEMENT
+===================================================== */
+
+function startMenuMove(
+    controller
+){
+
+    menuMoving=true;
+
+    menuMoveController=
+        controller;
+
+    menuMoveDistance=
+        controller.position
+        .distanceTo(
+            menu.position
+        );
+
+}
+
+
+function updateMenuMove(){
+
+    if(
+        !menuMoving ||
+        !menuMoveController ||
+        !menu
+    )
+        return;
+
+
+    controllerRay(
+        menuMoveController
+    );
+
+
+    const target=
+        raycaster.ray.origin.clone()
+        .add(
+            raycaster.ray.direction
+            .clone()
+            .multiplyScalar(
+                menuMoveDistance
+            )
+        );
+
+
+    menu.position.lerp(
+        target,
+        .2
+    );
+
+
+    const look=
+        camera.position.clone();
+
+
+    look.y=
+        menu.position.y;
+
+
+    menu.lookAt(
+        look
+    );
+
+}
+
+
+/* =====================================================
+   MODEL RESET
+===================================================== */
+
+function resetModel(){
+
+    if(!model)
+        return;
+
+
+    model.scale.setScalar(
+        1
+    );
+
+
+    model.rotation.set(
+        0,
+        0,
+        0
+    );
+
+
+    const direction=
+        new THREE.Vector3(
+            0,0,-1
+        );
+
+
+    direction.applyQuaternion(
+        camera.quaternion
+    );
+
+
+    model.position=
+        camera.position.clone()
+        .add(
+            direction.multiplyScalar(
+                2
+            )
+        );
+
+
+    model.position.y=
+        camera.position.y;
+
+
+    modelOpacity=1;
+
+    setModelOpacity(
+        1
+    );
+
+
+    locked=false;
+
+    updateFrame();
+
+}
+
+
+/* =====================================================
+   RESET ZOOM
+===================================================== */
+
+function resetZoom(){
+
+    if(model){
+
+        model.scale.setScalar(
+            1
+        );
+
+        updateFrame();
+
+    }
+
+}
+
+
+/* =====================================================
+   CENTER MODEL
+===================================================== */
+
+function centerModel(){
+
+    if(!model)
+        return;
+
+
+    const dir=
+        new THREE.Vector3(
+            0,0,-1
+        );
+
+
+    dir.applyQuaternion(
+        camera.quaternion
+    );
+
+
+    model.position=
+        camera.position.clone()
+        .add(
+            dir.multiplyScalar(
+                2
+            )
+        );
+
+
+    model.position.y=
+        camera.position.y;
+
+
+    updateFrame();
+
+}
+
+
+/* =====================================================
+   HIDE MODEL
+===================================================== */
+
+function hideModel(){
+
+    if(model){
+
+        model.visible=
+            !model.visible;
+
+    }
+
+}
+
+
+/* =====================================================
+   NEXT MODEL
+===================================================== */
+
+function nextModel(){
+
+    if(
+        models.length===0
+    )
+        return;
+
+
+    currentModelIndex++;
+
+
+    if(
+        currentModelIndex>=
+        models.length
+    ){
+
+        currentModelIndex=0;
+
+    }
+
+
+    selectModel(
+        models[
+            currentModelIndex
+        ]
+    );
+
+}
+
+
+/* =====================================================
+   DELETE MODEL
+===================================================== */
+
+function deleteModel(){
+
+    if(!model)
+        return;
+
+
+    const index=
+        models.indexOf(
+            model
+        );
+
+
+    scene.remove(
+        model
+    );
+
+
+    model.traverse(
+        child=>{
+
+            if(
+                child.isMesh
+            ){
+
+                child.geometry?.dispose();
+
+
+                if(
+                    child.material
+                ){
+
+                    if(
+                        Array.isArray(
+                            child.material
+                        )
+                    ){
+
+                        child.material.forEach(
+                            material=>{
+                                material.dispose();
+                            }
+                        );
+
+                    }
+                    else{
+
+                        child.material.dispose();
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+    models.splice(
+        index,
+        1
+    );
+
+
+    if(
+        models.length
+    ){
+
+        currentModelIndex=
+            Math.max(
+                0,
+                index-1
+            );
+
+
+        selectModel(
+            models[
+                currentModelIndex
+            ]
+        );
+
+    }
+    else{
+
+        model=null;
+
+    }
+
+
+    updateFrame();
+
+}
+
+
+/* =====================================================
+   MODEL OPACITY
+===================================================== */
+
+function setModelOpacity(
+    opacity
+){
+
+    if(!model)
+        return;
+
+
+    model.traverse(
+        child=>{
+
+            if(
+                !child.isMesh ||
+                !child.material
+            )
+                return;
+
+
+            const materials=
+                Array.isArray(
+                    child.material
+                )
+                ?
+                child.material
+                :
+                [child.material];
+
+
+            materials.forEach(
+                material=>{
+
+                    material.transparent=true;
+
+                    material.opacity=
+                        opacity;
+
+                    material.needsUpdate=
+                        true;
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+function cycleOpacity(){
+
+    if(!model)
+        return;
+
+
+    modelOpacity-=.2;
+
+
+    if(
+        modelOpacity<.2
+    )
+        modelOpacity=1;
+
+
+    setModelOpacity(
+        modelOpacity
+    );
+
+}
+
+
+/* =====================================================
+   MODEL FRAME
+===================================================== */
+
+function toggleFrame(){
+
+    frameEnabled=
+        !frameEnabled;
+
+    updateFrame();
+
+}
+
+
+function updateFrame(){
+
+    if(frameMesh){
+
+        scene.remove(
+            frameMesh
+        );
+
+
+        frameMesh.geometry.dispose();
+
+        frameMesh.material.dispose();
+
+        frameMesh=null;
+
+    }
+
+
+    if(
+        !model ||
+        !frameEnabled
+    )
+        return;
+
+
+    const box=
+        new THREE.Box3()
+        .setFromObject(
+            model
+        );
+
+
+    const size=
+        new THREE.Vector3();
+
+
+    box.getSize(
+        size
+    );
+
+
+    const center=
+        new THREE.Vector3();
+
+
+    box.getCenter(
+        center
+    );
+
+
+    const geometry=
+        new THREE.BoxGeometry(
+            size.x+.06,
+            size.y+.06,
+            size.z+.06
+        );
+
+
+    const edges=
+        new THREE.EdgesGeometry(
+            geometry
+        );
+
+
+    geometry.dispose();
+
+
+    const material=
+        new THREE.LineBasicMaterial({
+
+            color:0x00ffff,
+
+            transparent:true,
+
+            opacity:.9
+
+        });
+
+
+    frameMesh=
+        new THREE.LineSegments(
+            edges,
+            material
+        );
+
+
+    frameMesh.position.copy(
+        center
+    );
+
+
+    scene.add(
+        frameMesh
+    );
+
+}
+
+
+/* =====================================================
+   GRID
+===================================================== */
+
+function toggleGrid(){
+
+    if(gridMesh){
+
+        scene.remove(
+            gridMesh
+        );
+
+
+        gridMesh.geometry.dispose();
+
+        gridMesh.material.dispose();
+
+        gridMesh=null;
+
+        return;
+
+    }
+
+
+    gridMesh=
+        new THREE.GridHelper(
+            10,
+            20,
+            0x00ffff,
+            0x004455
+        );
+
+
+    gridMesh.position.y=.01;
+
+    scene.add(
+        gridMesh
+    );
+
+}
+
+
+/* =====================================================
+   ADD MODEL FROM VR
+===================================================== */
+
+async function addModelVR(){
+
+    if(session){
+
+        await session.end();
+
+    }
+
+
+    setTimeout(
+        ()=>{
+
+            fileInput.click();
+
+        },
+        400
+    );
+
+}
+
+
+/* =====================================================
+   HOVER
+===================================================== */
+
+function clearHover(){
+
+    if(!selectedButton)
+        return;
+
+
+    if(
+        selectedButton.userData.button
+    ){
+
+        selectedButton.material.color
+            .setHex(
+                selectedButton.userData.normal
+            );
+
+    }
+
+
+    selectedButton=null;
+
+}
+
+
+function setHover(
+    button
+){
+
+    if(
+        selectedButton===button
+    )
+        return;
+
+
+    clearHover();
+
+
+    selectedButton=
+        button;
+
+
+    if(
+        button.userData.button
+    ){
+
+        button.material.color
+            .setHex(
+                button.userData.hover
+            );
+
+    }
+
+}
+
+
+/* =====================================================
+   LASER
+===================================================== */
+
+function updateLaser(
+    controller,
+    laser,
+    dot
+){
+
+    controllerRay(
+        controller
+    );
+
+
+    laser.visible=
+        renderer.xr.isPresenting;
+
+
+    dot.visible=
+        renderer.xr.isPresenting;
+
+
+    const targets=[];
+
+
+    if(
+        menu &&
+        menu.visible
+    ){
+
+        targets.push(
+            ...menuButtons
+        );
+
+    }
+
+
+    if(
+        miniMenu &&
+        miniMenu.visible
+    ){
+
+        targets.push(
+            ...miniMenu.children
+                .filter(
+                    x =>
+                        x.userData
+                        .miniButton
+                )
+        );
+
+    }
+
+
+    if(model){
+
+        model.traverse(
+            child=>{
+
+                if(
+                    child.isMesh &&
+                    child.visible
+                ){
+
+                    targets.push(
+                        child
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    const hits=
+        raycaster.intersectObjects(
+            targets,
+            false
+        );
+
+
+    if(hits.length){
+
+        const point=
+            hits[0].point;
+
+
+        dot.position.copy(
+            point
+        );
+
+
+        const local=
+            controller.worldToLocal(
+                point.clone()
+            );
+
+
+        laser.scale.z=
+            Math.max(
+                .15,
+                Math.abs(local.z)
+            );
+
+
+        if(
+            hits[0].object.userData.button
+        ){
+
+            setHover(
+                hits[0].object
+            );
+
+        }
+        else if(
+            hits[0].object.userData.miniButton
+        ){
+
+            clearHover();
+
+        }
+
+    }
+    else{
+
+        const far=
+            raycaster.ray.origin.clone()
+            .add(
+                raycaster.ray.direction
+                .clone()
+                .multiplyScalar(
+                    8
+                )
+            );
+
+
+        dot.position.copy(
+            far
+        );
+
+
+        laser.scale.z=8;
+
+        clearHover();
+
+    }
+
+}
+
+
+/* =====================================================
+   CONTROLLER CLICK
+===================================================== */
+
+function controllerSelect(
+    controller
+){
+
+    controllerRay(
+        controller
+    );
+
+
+    /* MINI MENU */
+
+    if(
+        miniMenu &&
+        miniMenu.visible
+    ){
+
+        const hits=
+            raycaster.intersectObjects(
+                miniMenu.children,
+                false
+            );
+
+
+        if(hits.length){
+
+            const obj=
+                hits[0].object;
+
+
+            if(
+                obj.userData.miniButton
+            ){
+
+                obj.userData.action();
+
+                return;
+
+            }
+
+        }
+
+    }
+
+
+    /* MAIN MENU */
+
+    if(
+        menu &&
+        menu.visible
+    ){
+
+        const hits=
+            raycaster.intersectObjects(
+                menuButtons,
+                false
+            );
+
+
+        if(hits.length){
+
+            const button=
+                hits[0].object;
+
+
+            button.userData.action();
+
+            return;
+
+        }
+
+
+        if(
+            mode==="MENU"
+        ){
+
+            const all=
+                raycaster.intersectObject(
+                    menu,
+                    true
+                );
+
+
+            if(all.length){
+
+                startMenuMove(
+                    controller
+                );
+
+                return;
+
+            }
+
+        }
+
+    }
+
+
+    /* MODEL */
+
+    if(
+        !model ||
+        locked
+    )
+        return;
+
+
+    const modelMeshes=[];
+
+
+    model.traverse(
+        child=>{
+
+            if(
+                child.isMesh
+            ){
+
+                modelMeshes.push(
+                    child
+                );
+
+            }
+
+        }
+    );
+
+
+    const hits=
+        raycaster.intersectObjects(
+            modelMeshes,
+            false
+        );
+
+
+    if(!hits.length)
+        return;
+
+
+    dragging=true;
+
+    activeController=
+        controller;
+
+
+    dragDistance=
+        controller.position
+        .distanceTo(
+            model.position
+        );
+
+
+    startScale=
+        model.scale.x;
+
+}
+
+
+/* =====================================================
+   CONTROLLER EVENTS
+===================================================== */
+
+controller1.addEventListener(
+    "selectstart",
+    ()=>{
+
+        controllerSelect(
+            controller1
+        );
+
+    }
+);
+
+
+controller2.addEventListener(
+    "selectstart",
+    ()=>{
+
+        controllerSelect(
+            controller2
+        );
+
+    }
+);
+
+
+controller1.addEventListener(
+    "selectend",
+    ()=>{
+
+        if(
+            activeController===
+            controller1
+        ){
+
+            dragging=false;
+
+            activeController=null;
+
+        }
+
+
+        if(
+            menuMoveController===
+            controller1
+        ){
+
+            menuMoving=false;
+
+            menuMoveController=null;
+
+        }
+
+    }
+);
+
+
+controller2.addEventListener(
+    "selectend",
+    ()=>{
+
+        if(
+            activeController===
+            controller2
+        ){
+
+            dragging=false;
+
+            activeController=null;
+
+        }
+
+
+        if(
+            menuMoveController===
+            controller2
+        ){
+
+            menuMoving=false;
+
+            menuMoveController=null;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   QUEST JOYSTICK
+===================================================== */
+
+function getThumbstickY(){
+
+    const inputSources=
+        renderer.xr
+            .getSession()
+            ?.inputSources;
+
+
+    if(!inputSources)
+        return 0;
+
+
+    for(
+        const source
+        of inputSources
+    ){
+
+        if(
+            source.targetRayMode!==
+            "tracked-pointer"
+        )
+            continue;
+
+
+        const gamepad=
+            source.gamepad;
+
+
+        if(!gamepad)
+            continue;
+
+
+        if(
+            gamepad.axes.length>=4
+        ){
+
+            const y=
+                gamepad.axes[3];
+
+
+            if(
+                Math.abs(y)>.15
+            )
+                return y;
+
+        }
+
+
+        if(
+            gamepad.axes.length>=2
+        ){
+
+            const y=
+                gamepad.axes[1];
+
+
+            if(
+                Math.abs(y)>.15
+            )
+                return y;
+
+        }
+
+    }
+
+
+    return 0;
+
+}
+
+
+/* =====================================================
+   JOYSTICK ZOOM
+===================================================== */
+
+function updateJoystickZoom(){
+
+    if(
+        !model ||
+        locked
+    )
+        return;
+
+
+    const y=
+        getThumbstickY();
+
+
+    if(
+        Math.abs(y)<.12
+    )
+        return;
+
+
+    const speed=.018;
+
+
+    const factor=
+        1-
+        y*speed;
+
+
+    const next=
+        THREE.MathUtils.clamp(
+
+            model.scale.x*
+            factor,
+
+            .02,
+            50
+
+        );
+
+
+    model.scale.setScalar(
+        next
+    );
+
+
+    updateFrame();
+
+}
+
+
+/* =====================================================
+   MODEL MOVEMENT
+===================================================== */
+
+function updateModelMovement(){
+
+    if(
+        !model ||
+        locked
+    )
+        return;
+
+
+    updateJoystickZoom();
+
+
+    /* TWO CONTROLLER SCALE */
+
+    const distance=
+        controller1.position
+        .distanceTo(
+            controller2.position
+        );
+
+
+    if(
+        distance>.08 &&
+        mode==="SCALE"
+    ){
+
+        if(!twoHandStart){
+
+            twoHandStart={
+
+                distance,
+
+                scale:model.scale.x
+
+            };
+
+        }
+        else{
+
+            const factor=
+                distance/
+                twoHandStart.distance;
+
+
+            const scale=
+                THREE.MathUtils.clamp(
+
+                    twoHandStart.scale*
+                    factor,
+
+                    .02,
+                    50
+
+                );
+
+
+            model.scale.setScalar(
+                scale
+            );
+
+
+            updateFrame();
+
+        }
+
+    }
+    else{
+
+        twoHandStart=null;
+
+    }
+
+
+    updateMenuMove();
+
+
+    /* DRAG */
+
+    if(
+        !dragging ||
+        !activeController
+    )
+        return;
+
+
+    if(
+        mode==="MOVE"
+    ){
+
+        controllerRay(
+            activeController
+        );
+
+
+        const target=
+            raycaster.ray.origin.clone()
+            .add(
+                raycaster.ray.direction
+                .clone()
+                .multiplyScalar(
+                    dragDistance
+                )
+            );
+
+
+        model.position.lerp(
+            target,
+            .28
+        );
+
+    }
+
+
+    if(
+        mode==="SCALE"
+    ){
+
+        const d=
+            activeController.position
+            .distanceTo(
+                model.position
+            );
+
+
+        const scale=
+            THREE.MathUtils.clamp(
+
+                startScale*
+                (
+                    d/
+                    Math.max(
+                        .01,
+                        dragDistance
+                    )
+                ),
+
+                .02,
+                50
+
+            );
+
+
+        model.scale.setScalar(
+            scale
+        );
+
+    }
+
+
+    if(
+        mode==="ROTATE"
+    ){
+
+        const dx=
+            activeController.position.x-
+            model.position.x;
+
+
+        const dz=
+            activeController.position.z-
+            model.position.z;
+
+
+        model.rotation.y=
+            Math.atan2(
+                dx,
+                dz
+            );
+
+    }
+
+
+    updateFrame();
+
+}
+
+
+/* =====================================================
+   START XR
+===================================================== */
+
+startVR.onclick=()=>{
+
+    /*
+       Celowo nie blokujemy przycisku.
+
+       Dopiero tutaj sprawdzamy,
+       czy użytkownik wybrał plik.
+    */
+
+    if(
+        !fileInput.files ||
+        !fileInput.files.length
+    ){
+
+        alert(
+            "Najpierw wybierz model 3D."
+        );
+
+        return;
+
+    }
+
+
+    arButton.click();
+
+};
+
+
+/* =====================================================
+   XR START
+===================================================== */
+
+renderer.xr.addEventListener(
+    "sessionstart",
+    ()=>{
+
+        session=
+            renderer.xr.getSession();
+
+
+        startScreen.style.display=
+            "none";
+
+
+        info.style.display=
+            "block";
+
+
+        if(!menu)
+            createMenu();
+
+
+        if(!miniMenu)
+            createMiniMenu();
+
+
+        menu.visible=true;
+
+        menuVisible=true;
+
+        miniMenu.visible=false;
+
+
+        setTimeout(
+            ()=>{
+
+                placeMenu();
+
+                placeMini();
+
+            },
+            200
+        );
+
+
+        setTimeout(
+            ()=>{
+
+                info.style.display=
+                    "none";
+
+            },
+            5000
+        );
+
+    }
+);
+
+
+/* =====================================================
+   XR END
+===================================================== */
+
+renderer.xr.addEventListener(
+    "sessionend",
+    ()=>{
+
+        session=null;
+
+
+        if(menu){
+
+            scene.remove(
+                menu
+            );
+
+            menu=null;
+
+            menuButtons=[];
+
+        }
+
+
+        if(miniMenu){
+
+            scene.remove(
+                miniMenu
+            );
+
+            miniMenu=null;
+
+        }
+
+
+        selectedButton=null;
+
+        dragging=false;
+
+        menuMoving=false;
+
+        activeController=null;
+
+        menuMoveController=null;
+
+
+        startScreen.style.display=
+            "flex";
+
+    }
+);
+
+
+/* =====================================================
+   RENDER LOOP
+===================================================== */
+
+function render(){
+
+    if(
+        renderer.xr.isPresenting
+    ){
+
+        updateLaser(
+            controller1,
+            laser1,
+            dot1
+        );
+
+
+        updateLaser(
+            controller2,
+            laser2,
+            dot2
+        );
+
+
+        updateModelMovement();
+
+    }
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+
+renderer.setAnimationLoop(
+    render
+);
+
+
+/* =====================================================
+   RESIZE
+===================================================== */
+
+window.addEventListener(
+    "resize",
+    ()=>{
+
+        camera.aspect=
+            innerWidth/
+            innerHeight;
+
+
+        camera.updateProjectionMatrix();
+
+
+        renderer.setSize(
+            innerWidth,
+            innerHeight
+        );
+
+    }
+);
+
+</script>
+
+</body>
+</html>
+```
