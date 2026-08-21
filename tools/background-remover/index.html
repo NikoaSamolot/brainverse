@@ -1,12 +1,14 @@
+```html
 <!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>AI Background Remover</title>
 
 <style>
+
 *{
     box-sizing:border-box;
 }
@@ -14,162 +16,182 @@
 body{
     margin:0;
     min-height:100vh;
-    font-family:Arial,sans-serif;
     background:#101114;
     color:white;
+    font-family:Arial,sans-serif;
     display:flex;
     justify-content:center;
     align-items:center;
+    padding:20px;
 }
 
 .app{
-    width:min(1100px,95vw);
+    width:min(1100px,100%);
     background:#191b20;
     border:1px solid #30333b;
     border-radius:20px;
     padding:25px;
-    box-shadow:0 20px 70px #0008;
 }
 
 h1{
-    margin:0 0 6px;
-    font-size:28px;
+    margin:0 0 8px;
 }
 
-.sub{
-    color:#9da1aa;
+.subtitle{
+    color:#999;
     margin-bottom:20px;
 }
 
-.top{
+.buttons{
     display:flex;
-    gap:10px;
     flex-wrap:wrap;
+    gap:10px;
     margin-bottom:20px;
 }
 
 button,
-.fileLabel{
+.fileButton{
     border:0;
     border-radius:10px;
-    padding:12px 17px;
+    padding:13px 18px;
+    background:#30343d;
+    color:white;
     font-size:15px;
     font-weight:bold;
     cursor:pointer;
-    background:#292d35;
-    color:white;
 }
 
 button:hover,
-.fileLabel:hover{
-    background:#383d48;
+.fileButton:hover{
+    background:#414651;
 }
 
-.primary{
+.fileButton{
     background:#635bff;
+    display:inline-block;
 }
 
-.primary:hover{
-    background:#756eff;
-}
-
-.danger{
-    background:#b83232;
-}
-
-.green{
-    background:#20884b;
+.fileButton:hover{
+    background:#746dff;
 }
 
 input[type=file]{
     display:none;
 }
 
+#aiButton{
+    background:#635bff;
+}
+
+#downloadButton{
+    background:#168545;
+}
+
+#removeButton{
+    background:#b52f37;
+}
+
+#restoreButton{
+    background:#2563a8;
+}
+
 .editor{
-    position:relative;
     width:100%;
     min-height:450px;
+
     display:flex;
     justify-content:center;
     align-items:center;
+
     overflow:hidden;
+
     border-radius:15px;
-    border:1px solid #343740;
+    border:1px solid #363942;
 
     background-color:#ddd;
+
     background-image:
         linear-gradient(45deg,#bbb 25%,transparent 25%),
         linear-gradient(-45deg,#bbb 25%,transparent 25%),
         linear-gradient(45deg,transparent 75%,#bbb 75%),
         linear-gradient(-45deg,transparent 75%,#bbb 75%);
+
     background-size:30px 30px;
-    background-position:0 0,0 15px,15px -15px,-15px 0;
+
+    background-position:
+        0 0,
+        0 15px,
+        15px -15px,
+        -15px 0;
 }
 
 #canvas{
+    display:none;
+
     max-width:100%;
     max-height:650px;
-    display:none;
+
+    touch-action:none;
     cursor:crosshair;
 }
 
-.empty{
-    color:#555;
-    background:#ffffffaa;
+.placeholder{
     padding:20px;
+    background:#ffffffcc;
+    color:#222;
     border-radius:12px;
     font-weight:bold;
 }
 
-.controls{
+.tools{
+    margin-top:15px;
+
     display:flex;
-    gap:10px;
-    align-items:center;
     flex-wrap:wrap;
-    margin-top:18px;
+    align-items:center;
+    gap:12px;
 }
 
-.controls label{
-    color:#bbb;
+.tools span{
+    color:#aaa;
 }
 
-#size{
+#brush{
     width:180px;
 }
 
 .status{
     margin-top:15px;
+
     padding:12px;
+
     border-radius:10px;
-    background:#111318;
+
+    background:#101216;
+
     color:#aaa;
 }
 
 .progress{
     width:100%;
-    height:7px;
-    background:#292c33;
+    height:6px;
+
+    margin-top:8px;
+
+    background:#292c32;
     border-radius:10px;
+
     overflow:hidden;
-    margin-top:10px;
 }
 
-.bar{
+.progressBar{
     width:0%;
     height:100%;
     background:#635bff;
-    transition:.2s;
+
+    transition:width .15s;
 }
 
-.info{
-    margin-top:12px;
-    color:#888;
-    font-size:13px;
-}
-
-.hidden{
-    display:none!important;
-}
 </style>
 </head>
 
@@ -178,105 +200,162 @@ input[type=file]{
 <div class="app">
 
     <h1>✂️ AI Background Remover</h1>
-    <div class="sub">
-        Usuń tło ze zdjęcia AI i pobierz gotowy PNG.
+
+    <div class="subtitle">
+        Wybierz zdjęcie, usuń tło AI i pobierz PNG.
     </div>
 
-    <div class="top">
 
-        <label class="fileLabel primary">
+    <div class="buttons">
+
+        <label class="fileButton">
             📁 Wybierz zdjęcie
-            <input id="file" type="file" accept="image/*">
+
+            <input
+                id="fileInput"
+                type="file"
+                accept="image/*"
+            >
         </label>
 
-        <button id="aiBtn">
+
+        <button id="aiButton">
             🤖 Usuń tło AI
         </button>
 
-        <button id="undoBtn">
-            ↶ Cofnij
+
+        <button id="removeButton">
+            🖌 Usuń ręcznie
         </button>
 
-        <button id="resetBtn">
+
+        <button id="restoreButton">
+            🖌 Przywróć
+        </button>
+
+
+        <button id="undoButton">
+            ↩ Cofnij
+        </button>
+
+
+        <button id="resetButton">
             ↻ Reset
         </button>
 
-        <button id="downloadBtn" class="green">
+
+        <button id="downloadButton">
             ⬇ Pobierz PNG
         </button>
 
     </div>
 
+
     <div class="editor">
 
-        <div id="empty" class="empty">
-            Wybierz zdjęcie
+        <div
+            id="placeholder"
+            class="placeholder"
+        >
+            Najpierw wybierz zdjęcie
         </div>
 
         <canvas id="canvas"></canvas>
 
     </div>
 
-    <div class="controls">
 
-        <button id="removeMode" class="danger">
-            🖌 Usuń zaznaczenie
-        </button>
+    <div class="tools">
 
-        <button id="restoreMode">
-            🖌 Przywróć
-        </button>
-
-        <label>
+        <span>
             Rozmiar pędzla:
-            <input id="size" type="range" min="5" max="300" value="80">
-        </label>
+        </span>
+
+        <input
+            id="brush"
+            type="range"
+            min="5"
+            max="300"
+            value="80"
+        >
+
+        <span id="brushValue">
+            80 px
+        </span>
 
     </div>
 
-    <div class="status" id="status">
-        Gotowe.
+
+    <div class="status">
+
+        <span id="statusText">
+            Gotowe.
+        </span>
+
         <div class="progress">
-            <div class="bar" id="bar"></div>
-        </div>
-    </div>
 
-    <div class="info">
-        AI działa lokalnie w przeglądarce. Przy pierwszym użyciu model AI może chwilę się pobierać.
+            <div
+                id="progressBar"
+                class="progressBar"
+            ></div>
+
+        </div>
+
     </div>
 
 </div>
 
 
-<script type="module">
+<script>
 
-import removeBackground from
-"https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm";
+const fileInput =
+    document.getElementById("fileInput");
 
+const canvas =
+    document.getElementById("canvas");
 
-const fileInput = document.getElementById("file");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d", {
-    willReadFrequently:true
-});
+const ctx =
+    canvas.getContext("2d", {
+        willReadFrequently:true
+    });
 
-const empty = document.getElementById("empty");
-const status = document.getElementById("status");
-const bar = document.getElementById("bar");
+const placeholder =
+    document.getElementById("placeholder");
 
-const aiBtn = document.getElementById("aiBtn");
-const undoBtn = document.getElementById("undoBtn");
-const resetBtn = document.getElementById("resetBtn");
-const downloadBtn = document.getElementById("downloadBtn");
+const aiButton =
+    document.getElementById("aiButton");
 
-const removeMode = document.getElementById("removeMode");
-const restoreMode = document.getElementById("restoreMode");
+const removeButton =
+    document.getElementById("removeButton");
 
-const brushSize = document.getElementById("size");
+const restoreButton =
+    document.getElementById("restoreButton");
+
+const undoButton =
+    document.getElementById("undoButton");
+
+const resetButton =
+    document.getElementById("resetButton");
+
+const downloadButton =
+    document.getElementById("downloadButton");
+
+const brush =
+    document.getElementById("brush");
+
+const brushValue =
+    document.getElementById("brushValue");
+
+const statusText =
+    document.getElementById("statusText");
+
+const progressBar =
+    document.getElementById("progressBar");
 
 
 let originalImage = null;
-let originalData = null;
+
+let originalPixels = null;
 
 let history = [];
 
@@ -285,83 +364,170 @@ let mode = "remove";
 let drawing = false;
 
 
-/* =========================
-   STATUS
-========================= */
+/*
+==================================================
+STATUS
+==================================================
+*/
 
-function setStatus(text, progress=null){
+function status(text, progress){
 
-    status.childNodes[0].nodeValue = text;
+    statusText.textContent = text;
 
-    if(progress !== null){
-        bar.style.width = progress + "%";
+    if(progress !== undefined){
+
+        progressBar.style.width =
+            progress + "%";
+
     }
+
 }
 
 
-/* =========================
-   LOAD IMAGE
-========================= */
+/*
+==================================================
+WYBÓR PLIKU
+==================================================
+*/
 
-fileInput.addEventListener("change", async e => {
+fileInput.addEventListener(
+    "change",
+    function(){
 
-    const file = e.target.files[0];
+        const file =
+            this.files[0];
 
-    if(!file) return;
+        if(!file){
 
-    const url = URL.createObjectURL(file);
+            return;
 
-    const img = new Image();
+        }
 
-    img.onload = () => {
 
-        originalImage = img;
+        if(!file.type.startsWith("image/")){
 
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
+            status(
+                "❌ To nie jest plik graficzny.",
+                0
+            );
 
-        ctx.clearRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
+            return;
+
+        }
+
+
+        status(
+            "⏳ Ładowanie zdjęcia...",
+            20
         );
 
-        ctx.drawImage(
-            img,
-            0,
-            0
-        );
 
-        originalData = ctx.getImageData(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-        history = [];
-
-        canvas.style.display = "block";
-        empty.classList.add("hidden");
-
-        setStatus(
-            "Zdjęcie załadowane.",
-            0
-        );
-
-    };
-
-    img.src = url;
-
-});
+        const reader =
+            new FileReader();
 
 
-/* =========================
-   SAVE HISTORY
-========================= */
+        reader.onload = function(event){
+
+            const img =
+                new Image();
+
+
+            img.onload = function(){
+
+                originalImage = img;
+
+
+                canvas.width =
+                    img.naturalWidth;
+
+                canvas.height =
+                    img.naturalHeight;
+
+
+                ctx.clearRect(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+
+                ctx.drawImage(
+                    img,
+                    0,
+                    0
+                );
+
+
+                originalPixels =
+                    ctx.getImageData(
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                    );
+
+
+                history = [];
+
+
+                canvas.style.display =
+                    "block";
+
+                placeholder.style.display =
+                    "none";
+
+
+                status(
+                    "✅ Zdjęcie załadowane.",
+                    100
+                );
+
+            };
+
+
+            img.onerror = function(){
+
+                status(
+                    "❌ Nie udało się otworzyć zdjęcia.",
+                    0
+                );
+
+            };
+
+
+            img.src =
+                event.target.result;
+
+        };
+
+
+        reader.onerror = function(){
+
+            status(
+                "❌ Nie udało się odczytać pliku.",
+                0
+            );
+
+        };
+
+
+        reader.readAsDataURL(file);
+
+    }
+);
+
+
+/*
+==================================================
+HISTORIA
+==================================================
+*/
 
 function saveHistory(){
+
+    if(!canvas.width) return;
+
 
     history.push(
         ctx.getImageData(
@@ -372,418 +538,382 @@ function saveHistory(){
         )
     );
 
-    if(history.length > 10){
+
+    if(history.length > 15){
+
         history.shift();
+
     }
 
 }
 
 
-/* =========================
-   UNDO
-========================= */
+/*
+==================================================
+COFANIE
+==================================================
+*/
 
-undoBtn.addEventListener("click", () => {
+undoButton.addEventListener(
+    "click",
+    function(){
 
-    if(history.length === 0){
-        setStatus("Nie ma czego cofnąć.",0);
-        return;
-    }
+        if(history.length === 0){
 
-    const data = history.pop();
+            status(
+                "Brak zmian do cofnięcia.",
+                0
+            );
 
-    ctx.putImageData(data,0,0);
+            return;
 
-    setStatus("Cofnięto.",0);
-
-});
-
-
-/* =========================
-   RESET
-========================= */
-
-resetBtn.addEventListener("click", () => {
-
-    if(!originalData){
-        setStatus("Najpierw wybierz zdjęcie.",0);
-        return;
-    }
-
-    saveHistory();
-
-    ctx.putImageData(
-        originalData,
-        0,
-        0
-    );
-
-    setStatus(
-        "Przywrócono oryginalne zdjęcie.",
-        0
-    );
-
-});
+        }
 
 
-/* =========================
-   AI BACKGROUND REMOVAL
-========================= */
+        const imageData =
+            history.pop();
 
-aiBtn.addEventListener("click", async () => {
 
-    if(!originalImage){
-
-        setStatus(
-            "Najpierw wybierz zdjęcie.",
+        ctx.putImageData(
+            imageData,
+            0,
             0
         );
 
-        return;
+
+        status(
+            "↩ Cofnięto.",
+            100
+        );
+
     }
+);
 
-    try{
 
-        aiBtn.disabled = true;
+/*
+==================================================
+RESET
+==================================================
+*/
 
-        setStatus(
-            "🤖 Uruchamiam AI...",
-            5
-        );
+resetButton.addEventListener(
+    "click",
+    function(){
 
-        const blob = await removeBackground(
-            originalImage,
-            {
-                output:{
-                    format:"image/png"
-                },
+        if(!originalPixels){
 
-                progress:(key,current,total)=>{
-
-                    const percent =
-                        Math.round(
-                            current / total * 100
-                        );
-
-                    setStatus(
-                        "🤖 AI: " + key,
-                        percent
-                    );
-
-                }
-            }
-        );
-
-        const url =
-            URL.createObjectURL(blob);
-
-        const img =
-            new Image();
-
-        img.onload = () => {
-
-            saveHistory();
-
-            ctx.clearRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
+            status(
+                "Najpierw wybierz zdjęcie.",
+                0
             );
 
-            ctx.drawImage(
-                img,
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
+            return;
 
-            URL.revokeObjectURL(url);
+        }
 
-            setStatus(
-                "✅ Tło zostało usunięte!",
-                100
-            );
 
-            aiBtn.disabled = false;
+        saveHistory();
 
-        };
 
-        img.src = url;
-
-    }catch(error){
-
-        console.error(error);
-
-        setStatus(
-            "❌ Błąd AI: " + error.message,
+        ctx.putImageData(
+            originalPixels,
+            0,
             0
         );
 
-        aiBtn.disabled = false;
+
+        status(
+            "↻ Przywrócono oryginał.",
+            100
+        );
 
     }
-
-});
-
-
-/* =========================
-   MODES
-========================= */
-
-removeMode.addEventListener("click", () => {
-
-    mode = "remove";
-
-    removeMode.classList.add("primary");
-    restoreMode.classList.remove("primary");
-
-    setStatus(
-        "Tryb: usuwanie fragmentów.",
-        0
-    );
-
-});
+);
 
 
-restoreMode.addEventListener("click", () => {
+/*
+==================================================
+TRYB USUWANIA
+==================================================
+*/
 
-    mode = "restore";
+removeButton.addEventListener(
+    "click",
+    function(){
 
-    restoreMode.classList.add("primary");
-    removeMode.classList.remove("primary");
+        mode = "remove";
 
-    setStatus(
-        "Tryb: przywracanie fragmentów.",
-        0
-    );
+        removeButton.style.outline =
+            "2px solid white";
 
-});
+        restoreButton.style.outline =
+            "none";
 
 
-/* =========================
-   BRUSH
-========================= */
+        status(
+            "🖌 Tryb usuwania. Maluj po tym, co chcesz usunąć.",
+            100
+        );
 
-function getPosition(e){
+    }
+);
+
+
+/*
+==================================================
+TRYB PRZYWRACANIA
+==================================================
+*/
+
+restoreButton.addEventListener(
+    "click",
+    function(){
+
+        mode = "restore";
+
+        restoreButton.style.outline =
+            "2px solid white";
+
+        removeButton.style.outline =
+            "none";
+
+
+        status(
+            "🖌 Tryb przywracania.",
+            100
+        );
+
+    }
+);
+
+
+/*
+==================================================
+ROZMIAR PĘDZLA
+==================================================
+*/
+
+brush.addEventListener(
+    "input",
+    function(){
+
+        brushValue.textContent =
+            this.value + " px";
+
+    }
+);
+
+
+/*
+==================================================
+POZYCJA MYSZKI
+==================================================
+*/
+
+function mousePosition(event){
 
     const rect =
         canvas.getBoundingClientRect();
 
-    const scaleX =
-        canvas.width / rect.width;
-
-    const scaleY =
-        canvas.height / rect.height;
 
     return {
 
-        x:(e.clientX - rect.left) * scaleX,
+        x:
+            (event.clientX - rect.left)
+            *
+            canvas.width /
+            rect.width,
 
-        y:(e.clientY - rect.top) * scaleY
+        y:
+            (event.clientY - rect.top)
+            *
+            canvas.height /
+            rect.height
 
     };
 
 }
 
 
-function drawBrush(x,y){
+/*
+==================================================
+RYSOWANIE
+==================================================
+*/
+
+function paint(x,y){
 
     const size =
-        Number(brushSize.value);
+        Number(brush.value);
+
+    const radius =
+        size / 2;
+
 
     if(mode === "remove"){
 
         ctx.save();
 
+
         ctx.globalCompositeOperation =
             "destination-out";
 
+
         ctx.beginPath();
+
 
         ctx.arc(
             x,
             y,
-            size / 2,
+            radius,
             0,
             Math.PI * 2
         );
 
+
         ctx.fill();
+
 
         ctx.restore();
 
-    }else{
+        return;
 
-        /*
-         * Przywracanie pobiera piksele
-         * z oryginalnego zdjęcia.
-         */
+    }
 
-        const radius = size / 2;
 
-        const sx =
-            Math.max(
-                0,
-                Math.floor(x-radius)
-            );
+    /*
+    ==============================================
+    PRZYWRACANIE ORYGINALNYCH PIKSELI
+    ==============================================
+    */
 
-        const sy =
-            Math.max(
-                0,
-                Math.floor(y-radius)
-            );
+    if(!originalPixels) return;
 
-        const ex =
-            Math.min(
-                canvas.width,
-                Math.ceil(x+radius)
-            );
 
-        const ey =
-            Math.min(
-                canvas.height,
-                Math.ceil(y+radius)
-            );
+    const left =
+        Math.max(
+            0,
+            Math.floor(x-radius)
+        );
 
-        const w = ex-sx;
-        const h = ey-sy;
+    const top =
+        Math.max(
+            0,
+            Math.floor(y-radius)
+        );
 
-        const original =
-            originalImageData(
-                sx,
-                sy,
-                w,
-                h
-            );
+    const right =
+        Math.min(
+            canvas.width,
+            Math.ceil(x+radius)
+        );
 
-        const current =
-            ctx.getImageData(
-                sx,
-                sy,
-                w,
-                h
-            );
+    const bottom =
+        Math.min(
+            canvas.height,
+            Math.ceil(y+radius)
+        );
 
-        for(let py=0;py<h;py++){
 
-            for(let px=0;px<w;px++){
+    const width =
+        right-left;
 
-                const dx =
-                    px + sx - x;
+    const height =
+        bottom-top;
 
-                const dy =
-                    py + sy - y;
 
-                if(
-                    dx*dx + dy*dy
-                    <= radius*radius
-                ){
+    const current =
+        ctx.getImageData(
+            left,
+            top,
+            width,
+            height
+        );
 
-                    const i =
-                        (py*w+px)*4;
 
-                    current.data[i] =
-                        original.data[i];
+    for(let py=0;py<height;py++){
 
-                    current.data[i+1] =
-                        original.data[i+1];
+        for(let px=0;px<width;px++){
 
-                    current.data[i+2] =
-                        original.data[i+2];
+            const dx =
+                left + px - x;
 
-                    current.data[i+3] =
-                        original.data[i+3];
+            const dy =
+                top + py - y;
 
-                }
+
+            if(
+                dx*dx + dy*dy
+                <= radius*radius
+            ){
+
+                const local =
+                    (py*width+px)*4;
+
+                const original =
+                    (
+                        (top+py)
+                        *
+                        canvas.width
+                        +
+                        (left+px)
+                    )
+                    *4;
+
+
+                current.data[local] =
+                    originalPixels.data[original];
+
+                current.data[local+1] =
+                    originalPixels.data[original+1];
+
+                current.data[local+2] =
+                    originalPixels.data[original+2];
+
+                current.data[local+3] =
+                    originalPixels.data[original+3];
 
             }
 
         }
 
-        ctx.putImageData(
-            current,
-            sx,
-            sy
-        );
-
     }
+
+
+    ctx.putImageData(
+        current,
+        left,
+        top
+    );
 
 }
 
 
-function originalImageData(
-    x,
-    y,
-    w,
-    h
-){
-
-    /*
-     * originalData jest pełnym
-     * ImageData oryginalnego zdjęcia.
-     */
-
-    const result =
-        new ImageData(w,h);
-
-    for(let py=0;py<h;py++){
-
-        for(let px=0;px<w;px++){
-
-            const src =
-                (
-                    (y+py)
-                    * canvas.width
-                    +
-                    (x+px)
-                ) * 4;
-
-            const dst =
-                (py*w+px)*4;
-
-            result.data[dst] =
-                originalData.data[src];
-
-            result.data[dst+1] =
-                originalData.data[src+1];
-
-            result.data[dst+2] =
-                originalData.data[src+2];
-
-            result.data[dst+3] =
-                originalData.data[src+3];
-
-        }
-
-    }
-
-    return result;
-
-}
-
-
-/* =========================
-   MOUSE
-========================= */
+/*
+==================================================
+MYSZKA
+==================================================
+*/
 
 canvas.addEventListener(
     "pointerdown",
-    e => {
+    function(event){
 
         drawing = true;
 
         canvas.setPointerCapture(
-            e.pointerId
+            event.pointerId
         );
+
 
         saveHistory();
 
-        const p =
-            getPosition(e);
 
-        drawBrush(
+        const p =
+            mousePosition(event);
+
+
+        paint(
             p.x,
             p.y
         );
@@ -794,14 +924,16 @@ canvas.addEventListener(
 
 canvas.addEventListener(
     "pointermove",
-    e => {
+    function(event){
 
         if(!drawing) return;
 
-        const p =
-            getPosition(e);
 
-        drawBrush(
+        const p =
+            mousePosition(event);
+
+
+        paint(
             p.x,
             p.y
         );
@@ -812,7 +944,7 @@ canvas.addEventListener(
 
 canvas.addEventListener(
     "pointerup",
-    () => {
+    function(){
 
         drawing = false;
 
@@ -822,7 +954,7 @@ canvas.addEventListener(
 
 canvas.addEventListener(
     "pointercancel",
-    () => {
+    function(){
 
         drawing = false;
 
@@ -830,62 +962,308 @@ canvas.addEventListener(
 );
 
 
-/* =========================
-   DOWNLOAD PNG
-========================= */
+/*
+==================================================
+AI
+==================================================
 
-downloadBtn.addEventListener("click", () => {
+WAŻNE:
 
-    if(!originalImage){
+Biblioteka nie jest ładowana przy starcie strony.
 
-        setStatus(
-            "Najpierw wybierz zdjęcie.",
-            0
-        );
+Dzięki temu wybieranie zdjęć działa nawet,
+gdy CDN AI chwilowo nie odpowiada.
+*/
 
-        return;
+aiButton.addEventListener(
+    "click",
+    async function(){
 
-    }
+        if(!originalImage){
 
-    canvas.toBlob(
-        blob => {
-
-            const url =
-                URL.createObjectURL(blob);
-
-            const a =
-                document.createElement("a");
-
-            a.href = url;
-
-            a.download =
-                "usuniete-tlo.png";
-
-            document.body.appendChild(a);
-
-            a.click();
-
-            a.remove();
-
-            URL.revokeObjectURL(url);
-
-            setStatus(
-                "✅ PNG został pobrany.",
-                100
+            status(
+                "❌ Najpierw wybierz zdjęcie.",
+                0
             );
 
-        },
-        "image/png"
-    );
+            return;
 
-});
+        }
 
 
-/* =========================
-   START
-========================= */
+        try{
 
-setStatus(
+            aiButton.disabled = true;
+
+
+            status(
+                "🤖 Ładowanie AI...",
+                5
+            );
+
+
+            /*
+            Dynamiczny import.
+            */
+
+            const module =
+                await import(
+                    "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm"
+                );
+
+
+            const removeBackground =
+                module.default;
+
+
+            status(
+                "🤖 AI analizuje zdjęcie...",
+                15
+            );
+
+
+            /*
+            Zamieniamy canvas na Blob.
+            */
+
+            const blob =
+                await new Promise(
+                    resolve =>
+                        canvas.toBlob(
+                            resolve,
+                            "image/png"
+                        )
+                );
+
+
+            if(!blob){
+
+                throw new Error(
+                    "Nie udało się przygotować zdjęcia."
+                );
+
+            }
+
+
+            /*
+            AI usuwa tło.
+            */
+
+            const result =
+                await removeBackground(
+                    blob,
+                    {
+
+                        model:"isnet",
+
+                        output:{
+                            format:"image/png"
+                        },
+
+                        progress:
+                            function(
+                                key,
+                                current,
+                                total
+                            ){
+
+                                let percent =
+                                    Math.round(
+                                        current /
+                                        total *
+                                        100
+                                    );
+
+
+                                status(
+                                    "🤖 AI: "
+                                    + key,
+                                    percent
+                                );
+
+                            }
+
+                    }
+                );
+
+
+            /*
+            Wczytujemy wynik.
+            */
+
+            const resultURL =
+                URL.createObjectURL(result);
+
+
+            const resultImage =
+                new Image();
+
+
+            resultImage.onload =
+                function(){
+
+                    saveHistory();
+
+
+                    ctx.clearRect(
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                    );
+
+
+                    ctx.drawImage(
+                        resultImage,
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                    );
+
+
+                    URL.revokeObjectURL(
+                        resultURL
+                    );
+
+
+                    status(
+                        "✅ Gotowe! Tło usunięte.",
+                        100
+                    );
+
+
+                    aiButton.disabled =
+                        false;
+
+                };
+
+
+            resultImage.onerror =
+                function(){
+
+                    throw new Error(
+                        "Nie udało się wyświetlić wyniku AI."
+                    );
+
+                };
+
+
+            resultImage.src =
+                resultURL;
+
+        }
+        catch(error){
+
+            console.error(error);
+
+
+            status(
+                "❌ AI nie działa: "
+                + error.message,
+                0
+            );
+
+
+            aiButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/*
+==================================================
+POBIERANIE PNG
+==================================================
+*/
+
+downloadButton.addEventListener(
+    "click",
+    function(){
+
+        if(!canvas.width){
+
+            status(
+                "❌ Najpierw wybierz zdjęcie.",
+                0
+            );
+
+            return;
+
+        }
+
+
+        canvas.toBlob(
+            function(blob){
+
+                if(!blob){
+
+                    status(
+                        "❌ Nie udało się utworzyć PNG.",
+                        0
+                    );
+
+                    return;
+
+                }
+
+
+                const url =
+                    URL.createObjectURL(blob);
+
+
+                const link =
+                    document.createElement("a");
+
+
+                link.href =
+                    url;
+
+
+                link.download =
+                    "usuniete-tlo.png";
+
+
+                document.body.appendChild(
+                    link
+                );
+
+
+                link.click();
+
+
+                link.remove();
+
+
+                URL.revokeObjectURL(
+                    url
+                );
+
+
+                status(
+                    "✅ PNG pobrany.",
+                    100
+                );
+
+            },
+
+            "image/png"
+        );
+
+    }
+);
+
+
+/*
+==================================================
+START
+==================================================
+*/
+
+status(
     "Gotowe. Wybierz zdjęcie.",
     0
 );
@@ -894,3 +1272,4 @@ setStatus(
 
 </body>
 </html>
+```
