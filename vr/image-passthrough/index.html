@@ -2,25 +2,18 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8">
-
-<meta
-    name="viewport"
-    content="width=device-width,
-             initial-scale=1,
-             maximum-scale=1,
-             user-scalable=no"
->
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,
+               maximum-scale=1,user-scalable=no">
 
 <title>PHOTO//SPACE XR</title>
 
 <style>
-
 *{
     box-sizing:border-box;
 }
 
-html,
-body{
+html,body{
     margin:0;
     width:100%;
     height:100%;
@@ -36,22 +29,17 @@ canvas{
     height:100%;
 }
 
-
-/* =====================================================
-   START SCREEN
-===================================================== */
+/* =========================
+   START
+========================= */
 
 #desktopUI{
-
     position:fixed;
     inset:0;
-
     z-index:100;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
     background:
         radial-gradient(
             circle at 50% 45%,
@@ -61,13 +49,9 @@ canvas{
         );
 }
 
-
 #card{
-
     width:min(92vw,620px);
-
     padding:35px;
-
     border-radius:28px;
 
     background:rgba(4,12,17,.96);
@@ -75,7 +59,6 @@ canvas{
     border:1px solid rgba(0,255,255,.5);
 
     color:white;
-
     text-align:center;
 
     box-shadow:
@@ -83,13 +66,9 @@ canvas{
         inset 0 0 40px rgba(0,255,255,.04);
 }
 
-
 #card h1{
-
     margin:0;
-
     font-size:34px;
-
     letter-spacing:6px;
 
     text-shadow:
@@ -97,48 +76,31 @@ canvas{
         0 0 35px #00ffff;
 }
 
-
 #card h2{
-
     margin:8px 0 25px;
-
     font-size:13px;
-
     font-weight:400;
-
     letter-spacing:4px;
-
     color:#65edff;
 }
 
-
 #card p{
-
     color:#9bb5bb;
-
     line-height:1.55;
 }
 
-
 #file{
-
     width:100%;
-
     margin:25px 0;
-
     color:white;
 }
 
-
 #enterXR{
-
     width:100%;
-
-    padding:17px;
+    padding:18px;
 
     border:0;
-
-    border-radius:15px;
+    border-radius:16px;
 
     background:
         linear-gradient(
@@ -150,56 +112,39 @@ canvas{
     color:#001016;
 
     font-size:16px;
-
     font-weight:900;
 
     letter-spacing:2px;
 
     cursor:pointer;
 
-    opacity:1;
-
     box-shadow:
         0 0 30px rgba(0,255,255,.35);
 
-    transition:.15s;
+    transition:
+        transform .12s,
+        box-shadow .12s;
 }
 
-
-#enterXR:disabled{
-
-    background:#182328;
-
-    color:#53666b;
-
-    cursor:not-allowed;
-
-    box-shadow:none;
-
-    opacity:1;
+#enterXR:hover{
+    box-shadow:
+        0 0 45px rgba(0,255,255,.65);
 }
 
-
-#enterXR:not(:disabled):active{
-
+#enterXR:active{
     transform:scale(.97);
 }
 
-
 #message{
-
     margin-top:18px;
+    min-height:20px;
 
     color:#70efff;
 
     font-size:13px;
-
-    min-height:20px;
 }
 
-
 #formats{
-
     margin-top:20px;
 
     color:#607b82;
@@ -209,15 +154,12 @@ canvas{
     line-height:1.5;
 }
 
-
-/* =====================================================
+/* =========================
    XR OVERLAY
-===================================================== */
+========================= */
 
 #xrOverlay{
-
     position:fixed;
-
     inset:0;
 
     pointer-events:none;
@@ -225,13 +167,10 @@ canvas{
     z-index:500;
 }
 
-
 #xrStatus{
-
     position:absolute;
 
     top:18px;
-
     left:50%;
 
     transform:translateX(-50%);
@@ -240,9 +179,9 @@ canvas{
 
     border-radius:30px;
 
-    background:rgba(0,5,8,.7);
+    background:rgba(0,5,8,.72);
 
-    border:1px solid rgba(0,255,255,.4);
+    border:1px solid rgba(0,255,255,.45);
 
     color:#c7ffff;
 
@@ -253,19 +192,15 @@ canvas{
     transition:.2s;
 }
 
-
 #xrStatus.show{
-
     opacity:1;
 }
 
-
-/* =====================================================
+/* =========================
    ERROR
-===================================================== */
+========================= */
 
 #errorBox{
-
     display:none;
 
     position:fixed;
@@ -295,32 +230,25 @@ canvas{
         0 0 60px rgba(255,0,60,.25);
 }
 
-
 #errorBox h2{
-
     color:#ff5574;
 }
 
-
 #errorText{
-
     color:#b9c7ca;
 
     line-height:1.5;
 
     white-space:pre-line;
 }
-
 </style>
 </head>
 
-
 <body>
 
-
-<!-- ===================================================
-     START
-=================================================== -->
+<!-- =====================================================
+     EKRAN STARTOWY
+===================================================== -->
 
 <div id="desktopUI">
 
@@ -353,19 +281,17 @@ canvas{
             "
         >
 
-        <button
-            id="enterXR"
-            disabled
-        >
+        <!-- ZAWSZE AKTYWNY -->
+        <button id="enterXR">
             URUCHOM PASSTHROUGH
         </button>
 
         <div id="message">
-            Wybierz plik.
+            Wybierz plik albo od razu spróbuj uruchomić XR.
         </div>
 
         <div id="formats">
-            OBRAZY: JPG • PNG • WEBP • BMP<br>
+            OBRAZY: JPG • JPEG • PNG • WEBP • BMP • GIF<br>
             3D: GLB • GLTF • STL • OBJ • FBX • PLY •
             3MF • DAE • 3DS
         </div>
@@ -374,10 +300,9 @@ canvas{
 
 </div>
 
-
-<!-- ===================================================
+<!-- =====================================================
      XR DOM OVERLAY
-=================================================== -->
+===================================================== -->
 
 <div id="xrOverlay">
 
@@ -385,10 +310,9 @@ canvas{
 
 </div>
 
-
-<!-- ===================================================
+<!-- =====================================================
      ERROR
-=================================================== -->
+===================================================== -->
 
 <div id="errorBox">
 
@@ -401,42 +325,33 @@ canvas{
 
 <script type="module">
 
-
 /* =====================================================
-   THREE
+   THREE.JS
 ===================================================== */
 
 import * as THREE from
 "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
 
-
 import {GLTFLoader} from
 "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/GLTFLoader.js";
-
 
 import {STLLoader} from
 "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/STLLoader.js";
 
-
 import {OBJLoader} from
 "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/OBJLoader.js";
-
 
 import {FBXLoader} from
 "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/FBXLoader.js";
 
-
 import {PLYLoader} from
 "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/PLYLoader.js";
-
 
 import {ThreeMFLoader} from
 "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/3MFLoader.js";
 
-
 import {ColladaLoader} from
 "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/ColladaLoader.js";
-
 
 import {TDSLoader} from
 "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/3DSLoader.js";
@@ -469,34 +384,26 @@ const errorText =
 
 
 /* =====================================================
-   THREE SETUP
+   THREE
 ===================================================== */
 
 const scene =
     new THREE.Scene();
 
-
 const camera =
     new THREE.PerspectiveCamera(
         70,
         innerWidth / innerHeight,
-        0.01,
+        .01,
         100
     );
 
-
 const renderer =
     new THREE.WebGLRenderer({
-
         antialias:true,
-
         alpha:true,
-
-        powerPreference:
-            "high-performance"
-
+        powerPreference:"high-performance"
     });
-
 
 renderer.xr.enabled = true;
 
@@ -520,14 +427,13 @@ renderer.setClearColor(
 renderer.outputColorSpace =
     THREE.SRGBColorSpace;
 
-
 document.body.appendChild(
     renderer.domElement
 );
 
 
 /* =====================================================
-   LIGHT
+   OŚWIETLENIE
 ===================================================== */
 
 scene.add(
@@ -538,26 +444,23 @@ scene.add(
     )
 );
 
-
-const directional =
+const light =
     new THREE.DirectionalLight(
         0xffffff,
         2
     );
 
-directional.position.set(
+light.position.set(
     3,
     5,
     3
 );
 
-scene.add(
-    directional
-);
+scene.add(light);
 
 
 /* =====================================================
-   CONTROLLERS
+   CONTROLLERY
 ===================================================== */
 
 const controller1 =
@@ -566,7 +469,6 @@ const controller1 =
 const controller2 =
     renderer.xr.getController(1);
 
-
 scene.add(
     controller1,
     controller2
@@ -574,7 +476,7 @@ scene.add(
 
 
 /* =====================================================
-   LASER
+   LASERY QUEST
 ===================================================== */
 
 function createLaser(){
@@ -583,29 +485,16 @@ function createLaser(){
         new THREE.BufferGeometry();
 
     geometry.setFromPoints([
-
-        new THREE.Vector3(
-            0,0,0
-        ),
-
-        new THREE.Vector3(
-            0,0,-1
-        )
-
+        new THREE.Vector3(0,0,0),
+        new THREE.Vector3(0,0,-1)
     ]);
-
 
     const material =
         new THREE.LineBasicMaterial({
-
             color:0x00ffff,
-
             transparent:true,
-
             opacity:.95
-
         });
-
 
     const line =
         new THREE.Line(
@@ -613,14 +502,10 @@ function createLaser(){
             material
         );
 
-
     line.scale.z = 8;
 
-
     return line;
-
 }
-
 
 const laser1 =
     createLaser();
@@ -628,18 +513,12 @@ const laser1 =
 const laser2 =
     createLaser();
 
-
-controller1.add(
-    laser1
-);
-
-controller2.add(
-    laser2
-);
+controller1.add(laser1);
+controller2.add(laser2);
 
 
 /* =====================================================
-   STATE
+   STAN
 ===================================================== */
 
 let selectedFile = null;
@@ -676,26 +555,12 @@ let grid = null;
 
 let objectCounter = 0;
 
-
-/* =====================================================
-   MENU BUTTON LIST
-===================================================== */
-
 const buttons = [];
 
 
 /* =====================================================
-   FILE PICKER
+   WYBÓR PLIKU
 ===================================================== */
-
-/*
-   WAŻNE:
-
-   Tutaj NIE wczytujemy jeszcze pliku.
-
-   Dzięki temu przycisk XR zostaje odblokowany
-   natychmiast po wyborze pliku.
-*/
 
 fileInput.addEventListener(
     "change",
@@ -704,29 +569,20 @@ fileInput.addEventListener(
         const file =
             fileInput.files?.[0];
 
-
         if(!file){
 
             selectedFile = null;
 
-            enterXR.disabled = true;
-
             message.textContent =
-                "Wybierz plik.";
+                "Nie wybrano pliku.";
 
             return;
-
         }
-
 
         selectedFile = file;
 
-
-        enterXR.disabled = false;
-
-
         message.textContent =
-            "Wybrano: " +
+            "✓ Wybrano: " +
             file.name;
 
     }
@@ -734,7 +590,7 @@ fileInput.addEventListener(
 
 
 /* =====================================================
-   LOAD FILE
+   ŁADOWANIE PLIKU
 ===================================================== */
 
 async function loadFile(file){
@@ -748,9 +604,7 @@ async function loadFile(file){
     const url =
         URL.createObjectURL(file);
 
-
     try{
-
 
         /* IMAGE */
 
@@ -763,10 +617,7 @@ async function loadFile(file){
             "gif"
         ].includes(ext)){
 
-            return await loadImage(
-                url
-            );
-
+            return await loadImage(url);
         }
 
 
@@ -780,12 +631,10 @@ async function loadFile(file){
             const loader =
                 new GLTFLoader();
 
-
             return await new Promise(
                 (resolve,reject)=>{
 
                     loader.load(
-
                         url,
 
                         result => {
@@ -802,12 +651,10 @@ async function loadFile(file){
                         undefined,
 
                         reject
-
                     );
 
                 }
             );
-
         }
 
 
@@ -817,7 +664,6 @@ async function loadFile(file){
 
             const loader =
                 new STLLoader();
-
 
             return await new Promise(
                 (resolve,reject)=>{
@@ -830,18 +676,12 @@ async function loadFile(file){
 
                             geometry.computeVertexNormals();
 
-
                             const material =
                                 new THREE.MeshStandardMaterial({
-
                                     color:0xd8d8d8,
-
                                     roughness:.55,
-
                                     metalness:.15
-
                                 });
-
 
                             const mesh =
                                 new THREE.Mesh(
@@ -849,10 +689,8 @@ async function loadFile(file){
                                     material
                                 );
 
-
                             mesh.userData.kind =
                                 "model";
-
 
                             resolve(mesh);
 
@@ -861,12 +699,10 @@ async function loadFile(file){
                         undefined,
 
                         reject
-
                     );
 
                 }
             );
-
         }
 
 
@@ -876,7 +712,6 @@ async function loadFile(file){
 
             const loader =
                 new OBJLoader();
-
 
             return await new Promise(
                 (resolve,reject)=>{
@@ -897,10 +732,7 @@ async function loadFile(file){
 
                                         child.material =
                                             new THREE.MeshStandardMaterial({
-
-                                                color:
-                                                    0xd8d8d8
-
+                                                color:0xd8d8d8
                                             });
 
                                     }
@@ -908,10 +740,8 @@ async function loadFile(file){
                                 }
                             );
 
-
                             object.userData.kind =
                                 "model";
-
 
                             resolve(object);
 
@@ -920,12 +750,10 @@ async function loadFile(file){
                         undefined,
 
                         reject
-
                     );
 
                 }
             );
-
         }
 
 
@@ -935,7 +763,6 @@ async function loadFile(file){
 
             const loader =
                 new FBXLoader();
-
 
             return await new Promise(
                 (resolve,reject)=>{
@@ -949,7 +776,6 @@ async function loadFile(file){
                             object.userData.kind =
                                 "model";
 
-
                             resolve(object);
 
                         },
@@ -957,12 +783,10 @@ async function loadFile(file){
                         undefined,
 
                         reject
-
                     );
 
                 }
             );
-
         }
 
 
@@ -972,7 +796,6 @@ async function loadFile(file){
 
             const loader =
                 new PLYLoader();
-
 
             return await new Promise(
                 (resolve,reject)=>{
@@ -985,16 +808,11 @@ async function loadFile(file){
 
                             geometry.computeVertexNormals();
 
-
                             const material =
                                 new THREE.MeshStandardMaterial({
-
                                     color:0xd8d8d8,
-
                                     roughness:.5
-
                                 });
-
 
                             const mesh =
                                 new THREE.Mesh(
@@ -1002,10 +820,8 @@ async function loadFile(file){
                                     material
                                 );
 
-
                             mesh.userData.kind =
                                 "model";
-
 
                             resolve(mesh);
 
@@ -1014,12 +830,10 @@ async function loadFile(file){
                         undefined,
 
                         reject
-
                     );
 
                 }
             );
-
         }
 
 
@@ -1029,7 +843,6 @@ async function loadFile(file){
 
             const loader =
                 new ThreeMFLoader();
-
 
             return await new Promise(
                 (resolve,reject)=>{
@@ -1043,7 +856,6 @@ async function loadFile(file){
                             object.userData.kind =
                                 "model";
 
-
                             resolve(object);
 
                         },
@@ -1051,12 +863,10 @@ async function loadFile(file){
                         undefined,
 
                         reject
-
                     );
 
                 }
             );
-
         }
 
 
@@ -1066,7 +876,6 @@ async function loadFile(file){
 
             const loader =
                 new ColladaLoader();
-
 
             return await new Promise(
                 (resolve,reject)=>{
@@ -1080,7 +889,6 @@ async function loadFile(file){
                             result.scene.userData.kind =
                                 "model";
 
-
                             resolve(
                                 result.scene
                             );
@@ -1090,12 +898,10 @@ async function loadFile(file){
                         undefined,
 
                         reject
-
                     );
 
                 }
             );
-
         }
 
 
@@ -1105,7 +911,6 @@ async function loadFile(file){
 
             const loader =
                 new TDSLoader();
-
 
             return await new Promise(
                 (resolve,reject)=>{
@@ -1119,7 +924,6 @@ async function loadFile(file){
                             object.userData.kind =
                                 "model";
 
-
                             resolve(object);
 
                         },
@@ -1127,12 +931,10 @@ async function loadFile(file){
                         undefined,
 
                         reject
-
                     );
 
                 }
             );
-
         }
 
 
@@ -1152,12 +954,11 @@ async function loadFile(file){
         );
 
     }
-
 }
 
 
 /* =====================================================
-   LOAD IMAGE
+   OBRAZ
 ===================================================== */
 
 async function loadImage(url){
@@ -1168,54 +969,34 @@ async function loadImage(url){
             const img =
                 new Image();
 
-
             img.onload = () => {
 
                 const texture =
-                    new THREE.Texture(
-                        img
-                    );
-
+                    new THREE.Texture(img);
 
                 texture.colorSpace =
                     THREE.SRGBColorSpace;
 
-
                 texture.needsUpdate =
                     true;
-
 
                 const aspect =
                     img.naturalWidth /
                     img.naturalHeight;
 
-
-                const h = 1;
-
-                const w =
-                    h * aspect;
-
-
                 const geometry =
                     new THREE.PlaneGeometry(
-                        w,
-                        h
+                        aspect,
+                        1
                     );
-
 
                 const material =
                     new THREE.MeshBasicMaterial({
-
                         map:texture,
-
                         transparent:true,
-
                         depthWrite:false,
-
                         side:THREE.DoubleSide
-
                     });
-
 
                 const mesh =
                     new THREE.Mesh(
@@ -1223,15 +1004,11 @@ async function loadImage(url){
                         material
                     );
 
-
                 mesh.userData.kind =
                     "image";
 
-
                 resolve(mesh);
-
             };
-
 
             img.onerror = () => {
 
@@ -1243,37 +1020,30 @@ async function loadImage(url){
 
             };
 
-
             img.src = url;
 
         }
     );
-
 }
 
 
 /* =====================================================
-   NORMALIZE MODEL
+   NORMALIZACJA MODELU
 ===================================================== */
 
 function normalizeObject(object){
 
     const box =
         new THREE.Box3()
-        .setFromObject(
-            object
-        );
-
+        .setFromObject(object);
 
     if(box.isEmpty())
         return;
-
 
     const size =
         box.getSize(
             new THREE.Vector3()
         );
-
 
     const max =
         Math.max(
@@ -1282,41 +1052,31 @@ function normalizeObject(object){
             size.z
         );
 
-
     if(
         !Number.isFinite(max) ||
         max <= 0
     )
         return;
 
-
     object.scale.setScalar(
         1 / max
     );
 
-
     const newBox =
         new THREE.Box3()
-        .setFromObject(
-            object
-        );
-
+        .setFromObject(object);
 
     const center =
         newBox.getCenter(
             new THREE.Vector3()
         );
 
-
-    object.position.sub(
-        center
-    );
-
+    object.position.sub(center);
 }
 
 
 /* =====================================================
-   ADD OBJECT
+   DODAJ OBIEKT
 ===================================================== */
 
 function addObject(
@@ -1326,19 +1086,13 @@ function addObject(
 
     objectCounter++;
 
-
     object.userData.id =
         objectCounter;
-
 
     object.userData.filename =
         filename;
 
-
-    normalizeObject(
-        object
-    );
-
+    normalizeObject(object);
 
     object.position.set(
         0,
@@ -1346,35 +1100,24 @@ function addObject(
         -2
     );
 
+    scene.add(object);
 
-    scene.add(
-        object
-    );
-
-
-    objects.push(
-        object
-    );
-
+    objects.push(object);
 
     selectedObject =
         object;
 
-
-    updateStatus(
-        filename
-    );
-
+    updateStatus(filename);
 }
 
 
 /* =====================================================
-   TEXTURE TEXT
+   TEKST DO MENU
 ===================================================== */
 
 function textTexture(
     text,
-    size = 38
+    size=38
 ){
 
     const canvas =
@@ -1382,16 +1125,11 @@ function textTexture(
             "canvas"
         );
 
-
     canvas.width = 1024;
     canvas.height = 180;
 
-
     const ctx =
-        canvas.getContext(
-            "2d"
-        );
-
+        canvas.getContext("2d");
 
     ctx.clearRect(
         0,
@@ -1400,32 +1138,25 @@ function textTexture(
         canvas.height
     );
 
-
     ctx.font =
         "bold " +
         size +
         "px Arial";
 
-
     ctx.textAlign =
         "center";
-
 
     ctx.textBaseline =
         "middle";
 
-
     ctx.fillStyle =
         "#ffffff";
-
 
     ctx.shadowColor =
         "#00ffff";
 
-
     ctx.shadowBlur =
         20;
-
 
     ctx.fillText(
         text,
@@ -1433,24 +1164,20 @@ function textTexture(
         90
     );
 
-
     const texture =
         new THREE.CanvasTexture(
             canvas
         );
 
-
     texture.colorSpace =
         THREE.SRGBColorSpace;
 
-
     return texture;
-
 }
 
 
 /* =====================================================
-   MENU BUTTON
+   PRZYCISK MENU
 ===================================================== */
 
 function makeButton(
@@ -1463,13 +1190,11 @@ function makeButton(
     const group =
         new THREE.Group();
 
-
     group.position.set(
         x,
         y,
         .06
     );
-
 
     const geometry =
         new THREE.PlaneGeometry(
@@ -1477,20 +1202,13 @@ function makeButton(
             .19
         );
 
-
     const material =
         new THREE.MeshBasicMaterial({
-
             color:0x06171d,
-
             transparent:true,
-
             opacity:.98,
-
             side:THREE.DoubleSide
-
         });
-
 
     const body =
         new THREE.Mesh(
@@ -1498,19 +1216,13 @@ function makeButton(
             material
         );
 
-
     body.userData.button =
         true;
-
 
     body.userData.action =
         action;
 
-
-    group.add(
-        body
-    );
-
+    group.add(body);
 
     const border =
         new THREE.LineSegments(
@@ -1525,15 +1237,10 @@ function makeButton(
 
         );
 
-
     border.position.z =
         .008;
 
-
-    group.add(
-        border
-    );
-
+    group.add(border);
 
     const text =
         new THREE.Mesh(
@@ -1544,44 +1251,29 @@ function makeButton(
             ),
 
             new THREE.MeshBasicMaterial({
-
                 map:textTexture(
                     label,
                     35
                 ),
-
                 transparent:true,
-
                 side:THREE.DoubleSide
-
             })
 
         );
 
-
     text.position.z =
         .015;
 
+    group.add(text);
 
-    group.add(
-        text
-    );
+    menu.add(group);
 
-
-    menu.add(
-        group
-    );
-
-
-    buttons.push(
-        body
-    );
-
+    buttons.push(body);
 }
 
 
 /* =====================================================
-   CREATE MENU
+   MENU
 ===================================================== */
 
 function createMenu(){
@@ -1589,10 +1281,8 @@ function createMenu(){
     if(menu)
         return;
 
-
     menu =
         new THREE.Group();
-
 
     const panel =
         new THREE.Mesh(
@@ -1603,28 +1293,18 @@ function createMenu(){
             ),
 
             new THREE.MeshBasicMaterial({
-
                 color:0x020a0f,
-
                 transparent:true,
-
                 opacity:.97,
-
                 side:THREE.DoubleSide
-
             })
 
         );
 
-
     panel.position.z =
         -.04;
 
-
-    menu.add(
-        panel
-    );
-
+    menu.add(panel);
 
     const outline =
         new THREE.LineSegments(
@@ -1642,10 +1322,7 @@ function createMenu(){
 
         );
 
-
-    menu.add(
-        outline
-    );
+    menu.add(outline);
 
 
     const title =
@@ -1657,30 +1334,22 @@ function createMenu(){
             ),
 
             new THREE.MeshBasicMaterial({
-
                 map:textTexture(
                     "PHOTO//SPACE",
                     72
                 ),
-
                 transparent:true
-
             })
 
         );
 
-
     title.position.y =
         .70;
-
 
     title.position.z =
         .01;
 
-
-    menu.add(
-        title
-    );
+    menu.add(title);
 
 
     const subtitle =
@@ -1692,82 +1361,71 @@ function createMenu(){
             ),
 
             new THREE.MeshBasicMaterial({
-
                 map:textTexture(
                     "META QUEST 3 // MIXED REALITY",
                     28
                 ),
-
                 transparent:true
-
             })
 
         );
 
-
     subtitle.position.y =
         .54;
-
 
     subtitle.position.z =
         .01;
 
-
-    menu.add(
-        subtitle
-    );
+    menu.add(subtitle);
 
 
     const rows = [
 
         [
-            ["MOVE", () => mode="MOVE"],
-            ["ROTATE", () => mode="ROTATE"],
-            ["SCALE", () => mode="SCALE"],
-            ["LOCK", toggleLock],
-            ["CENTER", centerObject],
-            ["FIT", fitObject]
+            ["MOVE",()=>mode="MOVE"],
+            ["ROTATE",()=>mode="ROTATE"],
+            ["SCALE",()=>mode="SCALE"],
+            ["LOCK",toggleLock],
+            ["CENTER",centerObject],
+            ["FIT",fitObject]
         ],
 
         [
-            ["ADD", chooseAnotherFile],
-            ["NEXT", nextObject],
-            ["AUTO", toggleAutoRotate],
-            ["ZOOM +", () => scaleObject(1.15)],
-            ["ZOOM -", () => scaleObject(.87)],
-            ["DELETE", deleteObject]
+            ["ADD",chooseAnotherFile],
+            ["NEXT",nextObject],
+            ["AUTO",toggleAutoRotate],
+            ["ZOOM +",()=>scaleObject(1.15)],
+            ["ZOOM -",()=>scaleObject(.87)],
+            ["DELETE",deleteObject]
         ],
 
         [
-            ["X ROT", () => rotateAxis("x")],
-            ["Y ROT", () => rotateAxis("y")],
-            ["Z ROT", () => rotateAxis("z")],
-            ["RESET", resetObject],
-            ["GRID", toggleGrid],
-            ["HIDE", toggleMenu]
+            ["X ROT",()=>rotateAxis("x")],
+            ["Y ROT",()=>rotateAxis("y")],
+            ["Z ROT",()=>rotateAxis("z")],
+            ["RESET",resetObject],
+            ["GRID",toggleGrid],
+            ["HIDE",toggleMenu]
         ]
 
     ];
 
 
     rows.forEach(
-        (row,r) => {
+        (row,r)=>{
 
             row.forEach(
-                (item,i) => {
+                (item,i)=>{
 
                     makeButton(
-
                         item[0],
-
                         item[1],
 
                         -1.35 +
-                        i * .54,
+                        i*.54,
 
                         .29 -
-                        r * .29
-
+                        r*.29
                     );
 
                 }
@@ -1786,36 +1444,24 @@ function createMenu(){
             ),
 
             new THREE.MeshBasicMaterial({
-
                 map:textTexture(
-                    "TRIGGER: SELECT / GRAB    •    JOYSTICK: ZOOM",
+                    "TRIGGER: SELECT / GRAB  •  JOYSTICK: ZOOM",
                     23
                 ),
-
                 transparent:true
-
             })
 
         );
 
-
     footer.position.y =
         -.68;
-
 
     footer.position.z =
         .01;
 
+    menu.add(footer);
 
-    menu.add(
-        footer
-    );
-
-
-    scene.add(
-        menu
-    );
-
+    scene.add(menu);
 }
 
 
@@ -1828,14 +1474,11 @@ function createMiniMenu(){
     if(miniMenu)
         return;
 
-
     miniMenu =
         new THREE.Group();
 
-
     miniMenu.visible =
         false;
-
 
     const circle =
         new THREE.Mesh(
@@ -1846,27 +1489,19 @@ function createMiniMenu(){
             ),
 
             new THREE.MeshBasicMaterial({
-
                 color:0x03151a,
-
                 side:THREE.DoubleSide
-
             })
 
         );
 
-
     circle.userData.mini =
         true;
-
 
     circle.userData.action =
         toggleMenu;
 
-
-    miniMenu.add(
-        circle
-    );
+    miniMenu.add(circle);
 
 
     const ring =
@@ -1879,19 +1514,13 @@ function createMiniMenu(){
             ),
 
             new THREE.MeshBasicMaterial({
-
                 color:0x00ffff,
-
                 side:THREE.DoubleSide
-
             })
 
         );
 
-
-    miniMenu.add(
-        ring
-    );
+    miniMenu.add(ring);
 
 
     const text =
@@ -1903,44 +1532,32 @@ function createMiniMenu(){
             ),
 
             new THREE.MeshBasicMaterial({
-
                 map:textTexture(
                     "MENU",
                     30
                 ),
-
                 transparent:true
-
             })
 
         );
 
-
     text.position.z =
         .01;
 
+    miniMenu.add(text);
 
-    miniMenu.add(
-        text
-    );
-
-
-    scene.add(
-        miniMenu
-    );
-
+    scene.add(miniMenu);
 }
 
 
 /* =====================================================
-   PLACE MENU
+   POZYCJA MENU
 ===================================================== */
 
 function placeMenu(){
 
     if(!menu)
         return;
-
 
     const direction =
         new THREE.Vector3(
@@ -1949,28 +1566,21 @@ function placeMenu(){
             -1
         );
 
-
     direction.applyQuaternion(
         camera.quaternion
     );
-
 
     menu.position.copy(
         camera.position
     );
 
-
     menu.position.add(
-        direction.multiplyScalar(
-            1.35
-        )
+        direction.multiplyScalar(1.35)
     );
-
 
     menu.lookAt(
         camera.position
     );
-
 }
 
 
@@ -1979,7 +1589,6 @@ function placeMiniMenu(){
     if(!miniMenu)
         return;
 
-
     const direction =
         new THREE.Vector3(
             0,
@@ -1987,81 +1596,56 @@ function placeMiniMenu(){
             -1
         );
 
-
     direction.applyQuaternion(
         camera.quaternion
     );
-
 
     miniMenu.position.copy(
         camera.position
     );
 
-
     miniMenu.position.add(
-        direction.multiplyScalar(
-            1
-        )
+        direction.multiplyScalar(1)
     );
-
 
     miniMenu.lookAt(
         camera.position
     );
-
 }
 
 
 /* =====================================================
-   TOGGLE MENU
+   MENU
 ===================================================== */
 
 function toggleMenu(){
 
-    if(!menu)
-        return;
-
-
     menuOpen =
         !menuOpen;
-
 
     menu.visible =
         menuOpen;
 
-
     miniMenu.visible =
         !menuOpen;
 
-
-    if(!menuOpen){
-
+    if(!menuOpen)
         placeMiniMenu();
-
-    }
-
 }
 
 
 /* =====================================================
-   ADD FILE
+   NOWY PLIK
 ===================================================== */
 
 function chooseAnotherFile(){
 
-    /*
-       DOM file picker.
-       Na Quest Browser powinien pojawić się
-       systemowy wybór pliku.
-    */
-
     fileInput.click();
-
 }
 
 
 /* =====================================================
-   OBJECT ACTIONS
+   FUNKCJE OBIEKTU
 ===================================================== */
 
 function toggleLock(){
@@ -2071,10 +1655,9 @@ function toggleLock(){
 
     updateStatus(
         locked
-        ? "OBIEKT ZABLOKOWANY"
-        : "OBIEKT ODBLOKOWANY"
+            ? "OBIEKT ZABLOKOWANY"
+            : "OBIEKT ODBLOKOWANY"
     );
-
 }
 
 
@@ -2082,7 +1665,6 @@ function toggleAutoRotate(){
 
     autoRotate =
         !autoRotate;
-
 }
 
 
@@ -2096,24 +1678,17 @@ function scaleObject(
     )
         return;
 
-
     const value =
         THREE.MathUtils.clamp(
-
             selectedObject.scale.x *
             factor,
-
             .01,
-
             50
-
         );
-
 
     selectedObject.scale.setScalar(
         value
     );
-
 }
 
 
@@ -2127,12 +1702,8 @@ function rotateAxis(
     )
         return;
 
-
     selectedObject.rotation[axis] +=
-        THREE.MathUtils.degToRad(
-            15
-        );
-
+        THREE.MathUtils.degToRad(15);
 }
 
 
@@ -2144,7 +1715,6 @@ function centerObject(){
     )
         return;
 
-
     const direction =
         new THREE.Vector3(
             0,
@@ -2152,23 +1722,17 @@ function centerObject(){
             -1
         );
 
-
     direction.applyQuaternion(
         camera.quaternion
     );
-
 
     selectedObject.position.copy(
         camera.position
     );
 
-
     selectedObject.position.add(
-        direction.multiplyScalar(
-            2
-        )
+        direction.multiplyScalar(2)
     );
-
 }
 
 
@@ -2177,19 +1741,16 @@ function fitObject(){
     if(!selectedObject)
         return;
 
-
     const box =
         new THREE.Box3()
         .setFromObject(
             selectedObject
         );
 
-
     const size =
         box.getSize(
             new THREE.Vector3()
         );
-
 
     const max =
         Math.max(
@@ -2198,18 +1759,16 @@ function fitObject(){
             size.z
         );
 
-
     if(
         max > 0 &&
         Number.isFinite(max)
     ){
 
         selectedObject.scale.multiplyScalar(
-            1 / max
+            1/max
         );
 
     }
-
 }
 
 
@@ -2221,13 +1780,11 @@ function resetObject(){
     )
         return;
 
-
     selectedObject.position.set(
         0,
         1.4,
         -2
     );
-
 
     selectedObject.rotation.set(
         0,
@@ -2235,120 +1792,60 @@ function resetObject(){
         0
     );
 
-
     selectedObject.scale.setScalar(
         1
     );
 
-
     fitObject();
-
 }
 
 
 function nextObject(){
 
-    if(
-        objects.length === 0
-    )
+    if(objects.length===0)
         return;
-
 
     const index =
         objects.indexOf(
             selectedObject
         );
 
-
     const next =
-        (index + 1) %
-        objects.length;
-
+        (index+1)%objects.length;
 
     selectedObject =
         objects[next];
 
-
     updateStatus(
         selectedObject.userData.filename
     );
-
 }
 
 
 function deleteObject(){
 
-    if(
-        !selectedObject
-    )
+    if(!selectedObject)
         return;
-
 
     const index =
         objects.indexOf(
             selectedObject
         );
 
-
-    if(index >= 0)
+    if(index>=0)
         objects.splice(
             index,
             1
         );
 
-
-    disposeObject(
-        selectedObject
-    );
-
-
     scene.remove(
         selectedObject
     );
 
-
     selectedObject =
         objects.length
-        ? objects[0]
-        : null;
-
-}
-
-
-function disposeObject(
-    object
-){
-
-    object.traverse(
-        child => {
-
-            if(!child.isMesh)
-                return;
-
-
-            child.geometry?.dispose();
-
-
-            if(
-                Array.isArray(
-                    child.material
-                )
-            ){
-
-                child.material.forEach(
-                    m => m.dispose()
-                );
-
-            }
-            else{
-
-                child.material?.dispose();
-
-            }
-
-        }
-    );
-
+            ? objects[0]
+            : null;
 }
 
 
@@ -2364,14 +1861,7 @@ function toggleGrid(){
                 0x003344
             );
 
-
-        grid.name =
-            "XR_GRID";
-
-
-        scene.add(
-            grid
-        );
+        scene.add(grid);
 
     }
     else{
@@ -2380,7 +1870,6 @@ function toggleGrid(){
             !grid.visible;
 
     }
-
 }
 
 
@@ -2391,14 +1880,11 @@ function toggleGrid(){
 const raycaster =
     new THREE.Raycaster();
 
-
 const rayMatrix =
     new THREE.Matrix4();
 
 
-function setRay(
-    controller
-){
+function setRay(controller){
 
     rayMatrix
         .identity()
@@ -2406,12 +1892,10 @@ function setRay(
             controller.matrixWorld
         );
 
-
     raycaster.ray.origin
         .setFromMatrixPosition(
             controller.matrixWorld
         );
-
 
     raycaster.ray.direction
         .set(
@@ -2422,21 +1906,18 @@ function setRay(
         .applyMatrix4(
             rayMatrix
         );
-
 }
 
 
 /* =====================================================
-   CONTROLLER SELECT
+   KLIK CONTROLLERA
 ===================================================== */
 
 function controllerSelect(
     controller
 ){
 
-    setRay(
-        controller
-    );
+    setRay(controller);
 
 
     /* MINI MENU */
@@ -2452,12 +1933,10 @@ function controllerSelect(
                 true
             );
 
-
         if(hits.length){
 
             let obj =
                 hits[0].object;
-
 
             while(
                 obj &&
@@ -2469,7 +1948,6 @@ function controllerSelect(
 
             }
 
-
             if(
                 obj &&
                 obj.userData.mini
@@ -2478,15 +1956,12 @@ function controllerSelect(
                 obj.userData.action();
 
                 return;
-
             }
-
         }
-
     }
 
 
-    /* FULL MENU */
+    /* PEŁNE MENU */
 
     if(
         menu &&
@@ -2499,7 +1974,6 @@ function controllerSelect(
                 false
             );
 
-
         if(hits.length){
 
             hits[0]
@@ -2507,15 +1981,12 @@ function controllerSelect(
                 .userData
                 .action();
 
-
             return;
-
         }
-
     }
 
 
-    /* OBJECT */
+    /* OBIEKT */
 
     const hits =
         raycaster.intersectObjects(
@@ -2523,14 +1994,11 @@ function controllerSelect(
             true
         );
 
-
     if(!hits.length)
         return;
 
-
     let object =
         hits[0].object;
-
 
     while(
         object.parent &&
@@ -2539,48 +2007,36 @@ function controllerSelect(
 
         object =
             object.parent;
-
     }
 
-
     if(
-        !objects.includes(
-            object
-        )
+        !objects.includes(object)
     )
         return;
 
-
     selectedObject =
         object;
-
 
     updateStatus(
         object.userData.filename
     );
 
-
     if(locked)
         return;
-
 
     grabbed =
         true;
 
-
     grabbedController =
         controller;
-
 
     grabDistance =
         controller.position.distanceTo(
             object.position
         );
 
-
     grabScale =
         object.scale.x;
-
 }
 
 
@@ -2593,19 +2049,16 @@ function controllerRelease(
         controller
     ){
 
-        grabbed =
-            false;
+        grabbed = false;
 
         grabbedController =
             null;
-
     }
-
 }
 
 
 /* =====================================================
-   CONTROLLER EVENTS
+   CONTROLLERY
 ===================================================== */
 
 controller1.addEventListener(
@@ -2615,7 +2068,6 @@ controller1.addEventListener(
     )
 );
 
-
 controller2.addEventListener(
     "selectstart",
     () => controllerSelect(
@@ -2623,14 +2075,12 @@ controller2.addEventListener(
     )
 );
 
-
 controller1.addEventListener(
     "selectend",
     () => controllerRelease(
         controller1
     )
 );
-
 
 controller2.addEventListener(
     "selectend",
@@ -2641,43 +2091,32 @@ controller2.addEventListener(
 
 
 /* =====================================================
-   JOYSTICKS
+   JOYSTICK
 ===================================================== */
 
 function getJoystick(){
 
-    if(!session){
-
+    if(!session)
         return {
             x:0,
             y:0
         };
 
-    }
-
-
     for(
-        const source
-        of session.inputSources
+        const source of
+        session.inputSources
     ){
 
-        if(
-            !source.gamepad
-        )
+        if(!source.gamepad)
             continue;
-
 
         const axes =
             source.gamepad.axes;
 
-
         let x=0;
         let y=0;
 
-
-        if(
-            axes.length >= 4
-        ){
+        if(axes.length>=4){
 
             x =
                 axes[2] || 0;
@@ -2686,9 +2125,7 @@ function getJoystick(){
                 axes[3] || 0;
 
         }
-        else if(
-            axes.length >= 2
-        ){
+        else if(axes.length>=2){
 
             x =
                 axes[0] || 0;
@@ -2698,39 +2135,30 @@ function getJoystick(){
 
         }
 
-
         if(
-            Math.abs(x) > .12 ||
-            Math.abs(y) > .12
+            Math.abs(x)>.12 ||
+            Math.abs(y)>.12
         ){
 
-            return {
-                x,
-                y
-            };
+            return {x,y};
 
         }
-
     }
-
 
     return {
         x:0,
         y:0
     };
-
 }
 
 
 /* =====================================================
-   OBJECT UPDATE
+   UPDATE OBIEKTU
 ===================================================== */
 
 function updateObject(){
 
-    if(
-        !selectedObject
-    )
+    if(!selectedObject)
         return;
 
 
@@ -2749,54 +2177,47 @@ function updateObject(){
         getJoystick();
 
 
-    /*
-       JOYSTICK GÓRA/DÓŁ
-       ZOOM
-    */
+    /* JOYSTICK = ZOOM */
 
     if(
-        Math.abs(stick.y) > .12 &&
+        Math.abs(stick.y)>.12 &&
         !locked
     ){
 
         scaleObject(
-            1 - stick.y * .025
+            1 -
+            stick.y*.025
         );
 
     }
 
 
-    /*
-       ROTATE MODE
-    */
+    /* ROTACJA */
 
     if(
-        mode === "ROTATE" &&
-        Math.abs(stick.x) > .12 &&
+        mode==="ROTATE" &&
+        Math.abs(stick.x)>.12 &&
         !locked
     ){
 
         selectedObject.rotation.y +=
-            stick.x * .035;
+            stick.x*.035;
 
     }
 
 
-    /*
-       MOVE
-    */
+    /* PRZESUWANIE */
 
     if(
         grabbed &&
         grabbedController &&
         !locked &&
-        mode === "MOVE"
+        mode==="MOVE"
     ){
 
         setRay(
             grabbedController
         );
-
 
         const position =
             raycaster.ray.origin
@@ -2809,42 +2230,20 @@ function updateObject(){
                 )
             );
 
-
         selectedObject.position.lerp(
             position,
             .25
         );
-
     }
 
 
-    /*
-       ROTATE BY GRAB
-    */
+    /* SKALOWANIE */
 
     if(
         grabbed &&
         grabbedController &&
         !locked &&
-        mode === "ROTATE"
-    ){
-
-        selectedObject.rotation.y +=
-            grabbedController.rotation.y *
-            .02;
-
-    }
-
-
-    /*
-       SCALE BY ONE CONTROLLER
-    */
-
-    if(
-        grabbed &&
-        grabbedController &&
-        !locked &&
-        mode === "SCALE"
+        mode==="SCALE"
     ){
 
         const distance =
@@ -2853,35 +2252,27 @@ function updateObject(){
                 selectedObject.position
             );
 
-
         const scale =
             THREE.MathUtils.clamp(
-
                 grabScale *
                 distance /
                 Math.max(
                     .01,
                     grabDistance
                 ),
-
                 .01,
                 50
-
             );
 
-
-        selectedObject.scale
-            .setScalar(
-                scale
-            );
-
+        selectedObject.scale.setScalar(
+            scale
+        );
     }
-
 }
 
 
 /* =====================================================
-   TWO HAND SCALE
+   DWIE RĘCE
 ===================================================== */
 
 function updateTwoHands(){
@@ -2889,14 +2280,13 @@ function updateTwoHands(){
     if(
         !selectedObject ||
         locked ||
-        mode !== "SCALE"
+        mode!=="SCALE"
     ){
 
         twoHandStart =
             null;
 
         return;
-
     }
 
 
@@ -2907,31 +2297,24 @@ function updateTwoHands(){
         );
 
 
-    if(
-        distance < .1
-    ){
+    if(distance<.1){
 
         twoHandStart =
             null;
 
         return;
-
     }
 
 
     if(!twoHandStart){
 
         twoHandStart = {
-
             distance,
-
             scale:
                 selectedObject.scale.x
-
         };
 
         return;
-
     }
 
 
@@ -2943,17 +2326,13 @@ function updateTwoHands(){
     selectedObject.scale.setScalar(
 
         THREE.MathUtils.clamp(
-
             twoHandStart.scale *
             factor,
-
             .01,
             50
-
         )
 
     );
-
 }
 
 
@@ -2970,24 +2349,18 @@ function updateLaser(
         !renderer.xr.isPresenting
     ){
 
-        laser.visible =
-            false;
+        laser.visible=false;
 
         return;
-
     }
 
 
-    laser.visible =
-        true;
+    laser.visible=true;
+
+    setRay(controller);
 
 
-    setRay(
-        controller
-    );
-
-
-    const menuObjects = [];
+    const menuObjects=[];
 
 
     if(
@@ -2998,7 +2371,6 @@ function updateLaser(
         menuObjects.push(
             ...buttons
         );
-
     }
 
 
@@ -3010,7 +2382,6 @@ function updateLaser(
         menuObjects.push(
             ...miniMenu.children
         );
-
     }
 
 
@@ -3032,11 +2403,9 @@ function updateLaser(
     }
     else{
 
-        laser.scale.z =
-            8;
+        laser.scale.z=8;
 
     }
-
 }
 
 
@@ -3044,9 +2413,7 @@ function updateLaser(
    STATUS
 ===================================================== */
 
-function updateStatus(
-text
-){
+function updateStatus(text){
 
     xrStatus.textContent =
         text || "";
@@ -3055,11 +2422,9 @@ text
         "show"
     );
 
-
     clearTimeout(
         updateStatus.timer
     );
-
 
     updateStatus.timer =
         setTimeout(
@@ -3072,7 +2437,6 @@ text
             },
             1800
         );
-
 }
 
 
@@ -3080,17 +2444,13 @@ text
    ERROR
 ===================================================== */
 
-function showError(
-text
-){
+function showError(text){
 
     errorText.textContent =
         text;
 
-
     errorBox.style.display =
         "block";
-
 
     setTimeout(
         () => {
@@ -3101,7 +2461,6 @@ text
         },
         8000
     );
-
 }
 
 
@@ -3111,59 +2470,58 @@ text
 
 async function enterAR(){
 
+    /*
+       NAJWAŻNIEJSZE:
+
+       Przycisk zawsze działa.
+       Dopiero tutaj sprawdzamy plik.
+    */
+
     if(!selectedFile){
 
-        showError(
-            "Najpierw wybierz zdjęcie albo model 3D."
-        );
+        message.textContent =
+            "⚠ Najpierw wybierz zdjęcie lub model 3D.";
 
         return;
-
     }
 
 
     if(!navigator.xr){
 
         showError(
-            "WebXR nie jest dostępny w tej przeglądarce."
+            "WebXR nie jest dostępny."
         );
 
         return;
-
     }
 
 
     try{
 
+        message.textContent =
+            "Sprawdzanie WebXR...";
+
+
         const supported =
             await navigator.xr
-                .isSessionSupported(
-                    "immersive-ar"
-                );
+            .isSessionSupported(
+                "immersive-ar"
+            );
 
 
         if(!supported){
 
             showError(
-                "Meta Quest Browser nie zgłasza obsługi immersive-ar."
+                "immersive-ar nie jest obsługiwane."
             );
 
             return;
-
         }
 
 
-        enterXR.disabled =
-            true;
-
-
         message.textContent =
-            "Uruchamianie XR...";
+            "Uruchamianie Passthrough...";
 
-
-        /*
-           BEZPOŚREDNIE immersive-ar
-        */
 
         session =
             await navigator.xr.requestSession(
@@ -3175,19 +2533,12 @@ async function enterAR(){
                     ],
 
                     optionalFeatures:[
-
                         "local-floor",
-
                         "bounded-floor",
-
                         "hand-tracking",
-
                         "anchors",
-
                         "hit-test",
-
                         "dom-overlay"
-
                     ],
 
                     domOverlay:{
@@ -3215,42 +2566,34 @@ async function enterAR(){
         createMiniMenu();
 
 
-        /*
-           WŁAŚCIWE WCZYTANIE PLIKU
-        */
+        /* ŁADOWANIE PLIKU DOPIERO TERAZ */
+
+        updateStatus(
+            "Wczytywanie " +
+            selectedFile.name
+        );
+
 
         try{
-
-            updateStatus(
-                "Wczytywanie " +
-                selectedFile.name
-            );
-
 
             const object =
                 await loadFile(
                     selectedFile
                 );
 
-
             addObject(
                 object,
                 selectedFile.name
             );
 
-
             updateStatus(
                 "GOTOWE"
             );
 
-
         }
         catch(error){
 
-            console.error(
-                error
-            );
-
+            console.error(error);
 
             showError(
                 "Nie udało się wczytać pliku:\n\n" +
@@ -3260,23 +2603,13 @@ async function enterAR(){
         }
 
 
-        /*
-           USTAW MENU PRZED UŻYTKOWNIKIEM
-        */
-
         setTimeout(
             () => {
-
                 placeMenu();
-
             },
             100
         );
 
-
-        /*
-           KONIEC SESJI
-        */
 
         session.addEventListener(
             "end",
@@ -3285,23 +2618,14 @@ async function enterAR(){
                 desktopUI.style.display =
                     "flex";
 
-
-                enterXR.disabled =
-                    false;
-
-
                 session =
                     null;
 
-
                 if(menu)
-                    menu.visible =
-                        false;
-
+                    menu.visible=false;
 
                 if(miniMenu)
-                    miniMenu.visible =
-                        false;
+                    miniMenu.visible=false;
 
             }
         );
@@ -3309,34 +2633,21 @@ async function enterAR(){
     }
     catch(error){
 
-        console.error(
-            error
-        );
-
-
-        enterXR.disabled =
-            false;
-
+        console.error(error);
 
         showError(
-
-            "Nie udało się uruchomić Mixed Reality:\n\n" +
-
+            "Nie udało się uruchomić Passthrough:\n\n" +
             error.name +
-
-            "\n\n" +
-
+            "\n" +
             error.message
-
         );
 
     }
-
 }
 
 
 /* =====================================================
-   XR BUTTON
+   PRZYCISK
 ===================================================== */
 
 enterXR.addEventListener(
@@ -3346,7 +2657,7 @@ enterXR.addEventListener(
 
 
 /* =====================================================
-   RENDER LOOP
+   RENDER
 ===================================================== */
 
 renderer.setAnimationLoop(
@@ -3361,15 +2672,12 @@ renderer.setAnimationLoop(
                 laser1
             );
 
-
             updateLaser(
                 controller2,
                 laser2
             );
 
-
             updateObject();
-
 
             updateTwoHands();
 
@@ -3397,9 +2705,7 @@ window.addEventListener(
             innerWidth /
             innerHeight;
 
-
         camera.updateProjectionMatrix();
-
 
         renderer.setSize(
             innerWidth,
@@ -3411,25 +2717,13 @@ window.addEventListener(
 
 
 /* =====================================================
-   INITIAL CHECK
+   START
 ===================================================== */
 
-if(
-    !window.isSecureContext
-){
+if(!window.isSecureContext){
 
     message.textContent =
-        "⚠ Ta strona wymaga HTTPS.";
-
-}
-
-
-if(
-    !navigator.xr
-){
-
-    message.textContent =
-        "⚠ WebXR nie jest dostępny.";
+        "⚠ Strona musi działać przez HTTPS.";
 
 }
 
