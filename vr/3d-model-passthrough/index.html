@@ -1,75 +1,128 @@
-```html
 <!doctype html>
 <html lang="pl">
 <head>
+
 <meta charset="utf-8">
 
-<meta name="viewport"
-      content="width=device-width,
-      initial-scale=1,
-      maximum-scale=1,
-      user-scalable=no">
+<meta
+    name="viewport"
+    content="width=device-width,
+             initial-scale=1,
+             maximum-scale=1,
+             user-scalable=no"
+>
 
 <title>MODEL//SPACE — Quest 3</title>
 
+<!--
+    BARDZO WAŻNE:
+
+    GLTFLoader / OBJLoader / FBXLoader importują "three"
+    jako bare module specifier.
+
+    Bez importmap przeglądarka może pokazać:
+
+    Failed to resolve module specifier "three"
+
+    dlatego mapujemy "three" tutaj.
+-->
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/"
+    }
+}
+</script>
+
+
 <style>
 
-html,body{
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+
     margin:0;
+
     width:100%;
     height:100%;
+
     overflow:hidden;
+
     background:#000;
-    font-family:Arial,system-ui,sans-serif;
+
+    font-family:
+        Arial,
+        system-ui,
+        sans-serif;
+
 }
 
 canvas{
+
     display:block;
+
 }
 
+
 #start{
+
     position:fixed;
+
     inset:0;
-    z-index:100;
+
+    z-index:1000;
 
     display:flex;
+
     align-items:center;
     justify-content:center;
 
+    padding:20px;
+
     background:
         radial-gradient(
-            circle at 50% 40%,
+            circle at 50% 35%,
             #12343d,
-            #061016 40%,
-            #010304 85%
+            #061016 42%,
+            #010304 88%
         );
 
     color:white;
+
 }
 
+
 .startBox{
-    width:min(90vw,560px);
-    padding:35px;
 
-    box-sizing:border-box;
+    width:min(92vw,580px);
 
-    border:1px solid
-        rgba(0,255,255,.4);
+    padding:34px;
+
+    border:
+        1px solid
+        rgba(0,255,255,.45);
 
     border-radius:28px;
 
     background:
-        rgba(5,15,20,.94);
+        rgba(5,15,20,.95);
 
     box-shadow:
-        0 0 60px
-        rgba(0,255,255,.15);
+        0 0 70px
+        rgba(0,255,255,.14);
 
     text-align:center;
+
 }
 
+
 .startBox h1{
-    margin:0;
+
+    margin:0 0 12px;
 
     font-size:34px;
 
@@ -78,23 +131,38 @@ canvas{
     text-shadow:
         0 0 15px
         rgba(0,255,255,.8);
+
 }
+
 
 .startBox p{
+
     color:#9ab5bc;
+
     line-height:1.5;
+
 }
+
 
 #file{
+
     width:100%;
-    margin:25px 0;
+
+    margin:24px 0;
+
     color:white;
+
 }
 
-#startVR{
-    padding:16px 30px;
 
-    border:1px solid
+#startXR{
+
+    width:100%;
+
+    padding:17px 30px;
+
+    border:
+        1px solid
         #00ffff;
 
     border-radius:15px;
@@ -119,19 +187,45 @@ canvas{
         rgba(0,255,255,.35);
 
     cursor:pointer;
+
 }
 
+
+#startXR:disabled{
+
+    opacity:.45;
+
+    cursor:not-allowed;
+
+}
+
+
+#status{
+
+    min-height:20px;
+
+    margin-top:15px;
+
+    color:#75ffff;
+
+    font-size:13px;
+
+}
+
+
 #info{
+
     position:fixed;
 
     left:50%;
+
     bottom:20px;
 
     transform:translateX(-50%);
 
     display:none;
 
-    z-index:20;
+    z-index:100;
 
     padding:10px 18px;
 
@@ -147,12 +241,47 @@ canvas{
         rgba(0,255,255,.4);
 
     font-size:13px;
+
+    text-align:center;
+
+    white-space:nowrap;
+
 }
 
+
+#error{
+
+    display:none;
+
+    margin-top:15px;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    background:
+        rgba(255,30,30,.12);
+
+    border:
+        1px solid
+        rgba(255,80,80,.35);
+
+    color:#ffaaaa;
+
+    font-size:12px;
+
+    line-height:1.4;
+
+}
+
+
 </style>
+
 </head>
 
+
 <body>
+
 
 <div id="start">
 
@@ -161,24 +290,38 @@ canvas{
         <h1>MODEL//SPACE</h1>
 
         <p>
-            FUTURISTIC MIXED REALITY
+            FUTURISTIC MIXED REALITY<br>
             3D MODEL WORKSPACE
         </p>
+
 
         <input
             id="file"
             type="file"
-            accept=".glb,.gltf,.obj,.fbx,model/gltf-binary,model/gltf+json,model/obj">
+            accept=".glb,.gltf,.obj,.fbx"
+        >
 
-        <br>
 
-        <button id="startVR">
+        <button
+            id="startXR"
+            type="button"
+        >
             ENTER XR
         </button>
+
+
+        <div id="status">
+            Sprawdzanie WebXR...
+        </div>
+
+
+        <div id="error"></div>
+
 
         <p style="font-size:12px">
             Optimized for Meta Quest 3
         </p>
+
 
         <p style="font-size:11px">
             GLB / GLTF / OBJ / FBX
@@ -188,6 +331,7 @@ canvas{
 
 </div>
 
+
 <div id="info">
     Laserem wskaż element i naciśnij Trigger.
 </div>
@@ -195,20 +339,19 @@ canvas{
 
 <script type="module">
 
-import * as THREE from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
+import * as THREE from "three";
 
-import { ARButton } from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/webxr/ARButton.js";
+import {
+    GLTFLoader
+} from "three/addons/loaders/GLTFLoader.js";
 
-import { GLTFLoader } from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/GLTFLoader.js";
+import {
+    OBJLoader
+} from "three/addons/loaders/OBJLoader.js";
 
-import { OBJLoader } from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/OBJLoader.js";
-
-import { FBXLoader } from
-"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/loaders/FBXLoader.js";
+import {
+    FBXLoader
+} from "three/addons/loaders/FBXLoader.js";
 
 
 /* =====================================================
@@ -222,74 +365,76 @@ let camera;
 let controller1;
 let controller2;
 
-let session=null;
+let session = null;
 
-let model=null;
+let xrMode = null;
 
-let models=[];
+let model = null;
 
-let currentModelIndex=-1;
+const models = [];
+
+let currentModelIndex = -1;
 
 
-/* LOADERS */
+/* =====================================================
+   LOADERS
+===================================================== */
 
-const gltfLoader=
+const gltfLoader =
     new GLTFLoader();
 
-const objLoader=
+const objLoader =
     new OBJLoader();
 
-const fbxLoader=
+const fbxLoader =
     new FBXLoader();
 
 
-/* MENU */
+/* =====================================================
+   MENU
+===================================================== */
 
-let menu=null;
+let menu = null;
+let miniMenu = null;
 
-let miniMenu=null;
+const menuButtons = [];
 
-let menuButtons=[];
+let selectedButton = null;
 
-let selectedButton=null;
+let menuVisible = true;
 
-let menuVisible=true;
+let menuMoving = false;
 
-let menuMoving=false;
+let menuMoveController = null;
 
-let menuMoveController=null;
-
-let menuMoveDistance=1.2;
-
-
-/* MODEL */
-
-let mode="MOVE";
-
-let locked=false;
-
-let dragging=false;
-
-let activeController=null;
-
-let dragDistance=2;
-
-let startScale=1;
-
-let twoHandStart=null;
-
-let frameEnabled=false;
-
-let frameMesh=null;
-
-let gridMesh=null;
-
-let modelOpacity=1;
+let menuMoveDistance = 1.2;
 
 
-/* MODEL CENTER / SIZE */
+/* =====================================================
+   MODEL STATE
+===================================================== */
 
-let modelSize=1;
+let mode = "MOVE";
+
+let locked = false;
+
+let dragging = false;
+
+let activeController = null;
+
+let dragDistance = 2;
+
+let startScale = 1;
+
+let twoHandStart = null;
+
+let frameEnabled = false;
+
+let frameMesh = null;
+
+let gridMesh = null;
+
+let modelOpacity = 1;
 
 
 /* =====================================================
@@ -297,67 +442,107 @@ let modelSize=1;
 ===================================================== */
 
 const startScreen =
-document.getElementById("start");
+    document.getElementById("start");
 
 const fileInput =
-document.getElementById("file");
+    document.getElementById("file");
 
-const startVR =
-document.getElementById("startVR");
+const startXR =
+    document.getElementById("startXR");
+
+const status =
+    document.getElementById("status");
+
+const errorBox =
+    document.getElementById("error");
 
 const info =
-document.getElementById("info");
+    document.getElementById("info");
 
 
 /* =====================================================
-   THREE
+   ERROR UI
 ===================================================== */
 
-scene=new THREE.Scene();
+function showError(message){
 
-camera=
-new THREE.PerspectiveCamera(
-    70,
-    innerWidth/innerHeight,
-    .01,
-    100
-);
+    errorBox.textContent =
+        message;
+
+    errorBox.style.display =
+        "block";
+
+}
 
 
-renderer=
-new THREE.WebGLRenderer({
+function clearError(){
 
-    antialias:true,
+    errorBox.textContent =
+        "";
 
-    alpha:true,
+    errorBox.style.display =
+        "none";
 
-    powerPreference:
-        "high-performance"
+}
 
-});
+
+/* =====================================================
+   THREE SCENE
+===================================================== */
+
+scene =
+    new THREE.Scene();
+
+
+camera =
+    new THREE.PerspectiveCamera(
+        70,
+        window.innerWidth /
+        window.innerHeight,
+        0.01,
+        100
+    );
+
+
+renderer =
+    new THREE.WebGLRenderer({
+
+        antialias:true,
+
+        alpha:true,
+
+        powerPreference:
+            "high-performance"
+
+    });
 
 
 renderer.setPixelRatio(
     Math.min(
-        devicePixelRatio,
-        2
+        window.devicePixelRatio,
+        1.5
     )
 );
 
+
 renderer.setSize(
-    innerWidth,
-    innerHeight
+    window.innerWidth,
+    window.innerHeight
 );
 
-renderer.xr.enabled=true;
 
-renderer.outputColorSpace=
+renderer.xr.enabled = true;
+
+
+renderer.outputColorSpace =
     THREE.SRGBColorSpace;
+
 
 renderer.setClearColor(
     0x000000,
     0
 );
+
 
 document.body.appendChild(
     renderer.domElement
@@ -365,65 +550,35 @@ document.body.appendChild(
 
 
 /* =====================================================
-   LIGHTING
+   LIGHTS
 ===================================================== */
 
-const ambientLight=
+const hemisphere =
     new THREE.HemisphereLight(
         0xffffff,
         0x223344,
-        2
+        2.2
     );
 
 scene.add(
-    ambientLight
+    hemisphere
 );
 
 
-const directionalLight=
+const directional =
     new THREE.DirectionalLight(
         0xffffff,
-        3
+        2.5
     );
 
-directionalLight.position.set(
+directional.position.set(
     3,
     5,
     3
 );
 
 scene.add(
-    directionalLight
-);
-
-
-/* =====================================================
-   WEBXR
-===================================================== */
-
-const arButton=
-ARButton.createButton(
-    renderer,
-    {
-
-        requiredFeatures:[
-            "local-floor"
-        ],
-
-        optionalFeatures:[
-            "hand-tracking",
-            "anchors",
-            "hit-test",
-            "bounded-floor"
-        ]
-
-    }
-);
-
-arButton.style.display="none";
-
-document.body.appendChild(
-    arButton
+    directional
 );
 
 
@@ -431,11 +586,12 @@ document.body.appendChild(
    CONTROLLERS
 ===================================================== */
 
-controller1=
-renderer.xr.getController(0);
+controller1 =
+    renderer.xr.getController(0);
 
-controller2=
-renderer.xr.getController(1);
+controller2 =
+    renderer.xr.getController(1);
+
 
 scene.add(
     controller1,
@@ -449,18 +605,24 @@ scene.add(
 
 function createLaser(){
 
-    const geometry=
+    const geometry =
         new THREE.BufferGeometry();
+
 
     geometry.setFromPoints([
 
-        new THREE.Vector3(0,0,0),
+        new THREE.Vector3(
+            0,0,0
+        ),
 
-        new THREE.Vector3(0,0,-1)
+        new THREE.Vector3(
+            0,0,-1
+        )
 
     ]);
 
-    const material=
+
+    const material =
         new THREE.LineBasicMaterial({
 
             color:0x00ffff,
@@ -471,28 +633,39 @@ function createLaser(){
 
         });
 
-    const line=
+
+    const line =
         new THREE.Line(
             geometry,
             material
         );
 
-    line.scale.z=8;
+
+    line.scale.z = 8;
+
 
     return line;
 
 }
 
 
-const laser1=createLaser();
-const laser2=createLaser();
+const laser1 =
+    createLaser();
 
-controller1.add(laser1);
-controller2.add(laser2);
+const laser2 =
+    createLaser();
+
+
+controller1.add(
+    laser1
+);
+
+controller2.add(
+    laser2);
 
 
 /* =====================================================
-   LASER DOTS
+   LASER DOT
 ===================================================== */
 
 function createDot(){
@@ -513,8 +686,13 @@ function createDot(){
 
 }
 
-const dot1=createDot();
-const dot2=createDot();
+
+const dot1 =
+    createDot();
+
+const dot2 =
+    createDot();
+
 
 scene.add(
     dot1,
@@ -526,10 +704,11 @@ scene.add(
    RAYCASTER
 ===================================================== */
 
-const raycaster=
+const raycaster =
     new THREE.Raycaster();
 
-const tempMatrix=
+
+const tempMatrix =
     new THREE.Matrix4();
 
 
@@ -537,19 +716,30 @@ function controllerRay(
     controller
 ){
 
+    controller.updateMatrixWorld(
+        true
+    );
+
+
     tempMatrix
         .identity()
         .extractRotation(
             controller.matrixWorld
         );
 
+
     raycaster.ray.origin
         .setFromMatrixPosition(
             controller.matrixWorld
         );
 
+
     raycaster.ray.direction
-        .set(0,0,-1)
+        .set(
+            0,
+            0,
+            -1
+        )
         .applyMatrix4(
             tempMatrix
         );
@@ -558,18 +748,137 @@ function controllerRay(
 
 
 /* =====================================================
-   MODEL FILE LOADING
+   WORLD POSITION HELPERS
+===================================================== */
+
+function getWorldPosition(
+    object
+){
+
+    const position =
+        new THREE.Vector3();
+
+    object.getWorldPosition(
+        position
+    );
+
+    return position;
+
+}
+
+
+/* =====================================================
+   GET XR CAMERA
+===================================================== */
+
+function getXRCamera(){
+
+    return renderer.xr.getCamera();
+
+}
+
+
+/* =====================================================
+   USER FORWARD
+===================================================== */
+
+function getViewerForward(){
+
+    const xrCamera =
+        getXRCamera();
+
+
+    const quaternion =
+        new THREE.Quaternion();
+
+
+    xrCamera.getWorldQuaternion(
+        quaternion
+    );
+
+
+    return new THREE.Vector3(
+        0,
+        0,
+        -1
+    )
+        .applyQuaternion(
+            quaternion
+        )
+        .normalize();
+
+}
+
+
+/* =====================================================
+   PLACE OBJECT IN FRONT OF USER
+===================================================== */
+
+function placeObjectInFront(
+    object,
+    distance = 2
+){
+
+    const xrCamera =
+        getXRCamera();
+
+
+    const position =
+        new THREE.Vector3();
+
+
+    xrCamera.getWorldPosition(
+        position
+    );
+
+
+    const forward =
+        getViewerForward();
+
+
+    position.add(
+        forward.multiplyScalar(
+            distance
+        )
+    );
+
+
+    object.position.copy(
+        position
+    );
+
+
+    object.position.y +=
+        0;
+
+
+    object.rotation.set(
+        0,
+        0,
+        0
+    );
+
+}
+
+
+/* =====================================================
+   FILE INPUT
 ===================================================== */
 
 fileInput.addEventListener(
     "change",
-    async ()=>{
+    async () => {
 
-        const file=
+        const file =
             fileInput.files?.[0];
+
 
         if(!file)
             return;
+
+
+        clearError();
+
 
         try{
 
@@ -577,14 +886,20 @@ fileInput.addEventListener(
                 file
             );
 
+            status.textContent =
+                "Model załadowany. Gotowy do XR.";
+
         }
         catch(error){
 
-            console.error(error);
+            console.error(
+                error
+            );
 
-            alert(
-                "Nie udało się wczytać modelu 3D.\n\n"+
-                "Najlepiej użyj pliku .GLB."
+
+            showError(
+                "Nie udało się wczytać modelu: " +
+                error.message
             );
 
         }
@@ -597,51 +912,56 @@ fileInput.addEventListener(
    LOAD MODEL
 ===================================================== */
 
-async function loadModel(file){
+async function loadModel(
+    file
+){
 
-    const extension=
+    const extension =
         file.name
-        .split(".")
-        .pop()
-        .toLowerCase();
+            .split(".")
+            .pop()
+            .toLowerCase();
 
 
-    const url=
+    const url =
         URL.createObjectURL(
             file
         );
 
 
-    let object=null;
-
-
     try{
 
-        /* =============================================
-           GLB / GLTF
-        ============================================= */
+        let object = null;
+
 
         if(
-            extension==="glb" ||
-            extension==="gltf"
+            extension === "glb" ||
+            extension === "gltf"
         ){
 
-            object=
+            object =
                 await new Promise(
-                    (resolve,reject)=>{
+                    (
+                        resolve,
+                        reject
+                    ) => {
 
                         gltfLoader.load(
+
                             url,
 
-                            gltf=>{
+                            gltf => {
+
                                 resolve(
                                     gltf.scene
                                 );
+
                             },
 
                             undefined,
 
                             reject
+
                         );
 
                     }
@@ -650,19 +970,19 @@ async function loadModel(file){
         }
 
 
-        /* =============================================
-           OBJ
-        ============================================= */
-
         else if(
-            extension==="obj"
+            extension === "obj"
         ){
 
-            object=
+            object =
                 await new Promise(
-                    (resolve,reject)=>{
+                    (
+                        resolve,
+                        reject
+                    ) => {
 
                         objLoader.load(
+
                             url,
 
                             resolve,
@@ -670,6 +990,7 @@ async function loadModel(file){
                             undefined,
 
                             reject
+
                         );
 
                     }
@@ -678,19 +999,19 @@ async function loadModel(file){
         }
 
 
-        /* =============================================
-           FBX
-        ============================================= */
-
         else if(
-            extension==="fbx"
+            extension === "fbx"
         ){
 
-            object=
+            object =
                 await new Promise(
-                    (resolve,reject)=>{
+                    (
+                        resolve,
+                        reject
+                    ) => {
 
                         fbxLoader.load(
+
                             url,
 
                             resolve,
@@ -698,6 +1019,7 @@ async function loadModel(file){
                             undefined,
 
                             reject
+
                         );
 
                     }
@@ -709,15 +1031,20 @@ async function loadModel(file){
         else{
 
             throw new Error(
-                "Unsupported 3D format"
+                "Nieobsługiwany format."
             );
 
         }
 
 
-        /* =============================================
-           PREPARE MODEL
-        ============================================= */
+        if(!object){
+
+            throw new Error(
+                "Loader nie zwrócił modelu."
+            );
+
+        }
+
 
         prepareModel(
             object,
@@ -725,6 +1052,7 @@ async function loadModel(file){
         );
 
     }
+
     finally{
 
         URL.revokeObjectURL(
@@ -745,55 +1073,59 @@ function prepareModel(
     name
 ){
 
-    object.userData.name=
+    object.userData.name =
         name || "3D MODEL";
 
 
     object.traverse(
-        child=>{
+        child => {
 
             if(
-                child.isMesh
+                !child.isMesh
+            )
+                return;
+
+
+            child.castShadow =
+                false;
+
+            child.receiveShadow =
+                false;
+
+
+            if(
+                child.material
             ){
 
-                child.castShadow=true;
-
-                child.receiveShadow=true;
-
-
                 if(
-                    child.material
+                    Array.isArray(
+                        child.material
+                    )
                 ){
 
-                    if(
-                        Array.isArray(
-                            child.material
-                        )
-                    ){
+                    child.material =
+                        child.material.map(
+                            material => {
 
-                        child.material=
-                            child.material.map(
-                                material=>{
+                                const clone =
+                                    material.clone();
 
-                                    material=
-                                        material.clone();
+                                clone.transparent =
+                                    true;
 
-                                    material.transparent=true;
+                                return clone;
 
-                                    return material;
+                            }
+                        );
 
-                                }
-                            );
+                }
+                else{
 
-                    }
-                    else{
+                    child.material =
+                        child.material.clone();
 
-                        child.material=
-                            child.material.clone();
-
-                        child.material.transparent=true;
-
-                    }
+                    child.material.transparent =
+                        true;
 
                 }
 
@@ -804,25 +1136,26 @@ function prepareModel(
 
 
     /*
-       Obliczamy bounding box.
+        Najpierw obliczamy rozmiar.
     */
 
-    const box=
+    const box =
         new THREE.Box3()
-        .setFromObject(
-            object
-        );
+            .setFromObject(
+                object
+            );
 
 
-    const size=
+    const size =
         new THREE.Vector3();
+
 
     box.getSize(
         size
     );
 
 
-    const maxDimension=
+    const maxDimension =
         Math.max(
             size.x,
             size.y,
@@ -831,20 +1164,17 @@ function prepareModel(
 
 
     if(
-        maxDimension>0
+        maxDimension > 0
     ){
 
-        /*
-           Normalizujemy model,
-           żeby każdy model miał
-           sensowny rozmiar w VR.
-        */
+        const targetSize =
+            1;
 
-        const targetSize=1;
 
-        const scale=
-            targetSize/
+        const scale =
+            targetSize /
             maxDimension;
+
 
         object.scale.setScalar(
             scale
@@ -854,28 +1184,51 @@ function prepareModel(
 
 
     /*
-       Ponownie obliczamy box
-       po skalowaniu.
+        Przeliczamy bounding box.
     */
 
-    const normalizedBox=
+    object.updateMatrixWorld(
+        true
+    );
+
+
+    const normalizedBox =
         new THREE.Box3()
-        .setFromObject(
-            object
+            .setFromObject(
+                object
+            );
+
+
+    const center =
+        normalizedBox.getCenter(
+            new THREE.Vector3()
         );
 
 
-    const center=
-        new THREE.Vector3();
+    /*
+        Tworzymy pivot.
 
-    normalizedBox.getCenter(
-        center
+        Dzięki temu model może być
+        przesuwany/skalowany wokół
+        własnego środka.
+    */
+
+    const pivot =
+        new THREE.Group();
+
+
+    pivot.userData.isModelPivot =
+        true;
+
+
+    scene.add(
+        pivot
     );
 
 
     /*
-       Przenosimy środek modelu
-       do jego lokalnego centrum.
+        Model zachowuje swoją pozycję
+        względem pivota.
     */
 
     object.position.sub(
@@ -883,73 +1236,60 @@ function prepareModel(
     );
 
 
-    /*
-       Model pojawia się
-       2 metry przed użytkownikiem.
-    */
-
-    const direction=
-        new THREE.Vector3(
-            0,0,-1
-        );
-
-    direction.applyQuaternion(
-        camera.quaternion
+    pivot.add(
+        object
     );
 
 
-    object.position=
-        camera.position.clone()
-        .add(
-            direction.multiplyScalar(
-                2
-            )
-        );
+    pivot.userData.name =
+        name || "3D MODEL";
 
 
-    object.position.y=
-        camera.position.y;
+    pivot.userData.content =
+        object;
 
 
-    scene.add(
-        object
+    pivot.scale.setScalar(
+        1
+    );
+
+
+    placeObjectInFront(
+        pivot,
+        2
     );
 
 
     models.push(
-        object
+        pivot
     );
 
 
-    currentModelIndex=
-        models.length-1;
+    currentModelIndex =
+        models.length - 1;
 
 
-    modelOpacity=1;
+    modelOpacity =
+        1;
 
-    locked=false;
+
+    locked =
+        false;
 
 
     selectModel(
-        object
+        pivot
     );
 
 
-    if(
-        renderer.xr.isPresenting
-    ){
-
-        return;
-
-    }
-
-
     /*
-       Jeżeli jesteśmy poza XR,
-       automatycznie uruchamiamy AR.
-    */
+        Jeżeli XR już działa,
+        model od razu jest widoczny.
 
-    arButton.click();
+        Jeżeli jeszcze nie działa,
+        zostanie ustawiony przed użytkownikiem
+        po wejściu do XR.
+    */
 
 }
 
@@ -962,10 +1302,13 @@ function selectModel(
     object
 ){
 
-    model=
+    model =
         object;
 
-    modelOpacity=1;
+
+    modelOpacity =
+        1;
+
 
     updateFrame();
 
@@ -978,21 +1321,29 @@ function selectModel(
 
 function textTexture(
     text,
-    width=1024,
-    height=256,
-    fontSize=60
+    width = 1024,
+    height = 256,
+    fontSize = 60
 ){
 
-    const canvas=
+    const canvas =
         document.createElement(
             "canvas"
         );
 
-    canvas.width=width;
-    canvas.height=height;
 
-    const ctx=
-        canvas.getContext("2d");
+    canvas.width =
+        width;
+
+    canvas.height =
+        height;
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
 
     ctx.clearRect(
         0,
@@ -1001,35 +1352,49 @@ function textTexture(
         height
     );
 
-    ctx.fillStyle="#ffffff";
 
-    ctx.font=
-        "bold "+
-        fontSize+
+    ctx.fillStyle =
+        "#ffffff";
+
+
+    ctx.font =
+        "bold " +
+        fontSize +
         "px Arial";
 
-    ctx.textAlign="center";
 
-    ctx.textBaseline="middle";
+    ctx.textAlign =
+        "center";
 
-    ctx.shadowColor=
+
+    ctx.textBaseline =
+        "middle";
+
+
+    ctx.shadowColor =
         "rgba(0,255,255,.9)";
 
-    ctx.shadowBlur=15;
+
+    ctx.shadowBlur =
+        15;
+
 
     ctx.fillText(
         text,
-        width/2,
-        height/2
+        width / 2,
+        height / 2
     );
 
-    const texture=
+
+    const texture =
         new THREE.CanvasTexture(
             canvas
         );
 
-    texture.colorSpace=
+
+    texture.colorSpace =
         THREE.SRGBColorSpace;
+
 
     return texture;
 
@@ -1037,7 +1402,7 @@ function textTexture(
 
 
 /* =====================================================
-   MENU BUTTON
+   BUTTON
 ===================================================== */
 
 function createButton(
@@ -1047,8 +1412,9 @@ function createButton(
     y
 ){
 
-    const group=
+    const group =
         new THREE.Group();
+
 
     group.position.set(
         x,
@@ -1057,7 +1423,7 @@ function createButton(
     );
 
 
-    const body=
+    const body =
         new THREE.Mesh(
 
             new THREE.PlaneGeometry(
@@ -1073,36 +1439,42 @@ function createButton(
 
                 opacity:.95,
 
-                side:THREE.DoubleSide
+                side:
+                    THREE.DoubleSide
 
             })
 
         );
 
 
-    body.userData.button=true;
+    body.userData.button =
+        true;
 
-    body.userData.action=
+    body.userData.action =
         action;
 
-    body.userData.normal=
+    body.userData.normal =
         0x06151b;
 
-    body.userData.hover=
+    body.userData.hover =
         0x00dfff;
 
 
-    group.add(body);
+    group.add(
+        body
+    );
 
 
-    const border=
+    const border =
         new THREE.LineSegments(
 
             new THREE.EdgesGeometry(
+
                 new THREE.PlaneGeometry(
                     .49,
                     .23
                 )
+
             ),
 
             new THREE.LineBasicMaterial({
@@ -1118,12 +1490,16 @@ function createButton(
         );
 
 
-    border.position.z=.006;
+    border.position.z =
+        .006;
 
-    group.add(border);
+
+    group.add(
+        border
+    );
 
 
-    const text=
+    const text =
         new THREE.Mesh(
 
             new THREE.PlaneGeometry(
@@ -1143,28 +1519,38 @@ function createButton(
 
                 transparent:true,
 
-                side:THREE.DoubleSide
+                side:
+                    THREE.DoubleSide
 
             })
 
         );
 
 
-    text.position.z=.012;
-
-    text.position.y=-.055;
-
-    group.add(text);
+    text.position.z =
+        .012;
 
 
-    body.userData.border=
+    text.position.y =
+        -.055;
+
+
+    group.add(
+        text
+    );
+
+
+    body.userData.border =
         border;
 
-    body.userData.group=
+    body.userData.group =
         group;
 
 
-    menu.add(group);
+    menu.add(
+        group
+    );
+
 
     menuButtons.push(
         body
@@ -1177,21 +1563,25 @@ function createButton(
 
 
 /* =====================================================
-   CREATE MAIN MENU
+   CREATE MENU
 ===================================================== */
 
 function createMenu(){
 
-    menu=
+    menu =
         new THREE.Group();
 
 
-    const bg=
+    /*
+        Tło
+    */
+
+    const bg =
         new THREE.Mesh(
 
             new THREE.PlaneGeometry(
-                3.15,
-                1.65
+                2.4,
+                1.25
             ),
 
             new THREE.MeshBasicMaterial({
@@ -1202,29 +1592,41 @@ function createMenu(){
 
                 opacity:.96,
 
-                side:THREE.DoubleSide
+                side:
+                    THREE.DoubleSide
 
             })
 
         );
 
 
-    bg.position.z=-.03;
+    bg.position.z =
+        -.03;
 
-    bg.userData.menuBackground=
+
+    bg.userData.menuBackground =
         true;
 
-    menu.add(bg);
+
+    menu.add(
+        bg
+    );
 
 
-    const border=
+    /*
+        Border
+    */
+
+    const border =
         new THREE.LineSegments(
 
             new THREE.EdgesGeometry(
+
                 new THREE.PlaneGeometry(
-                    3.15,
-                    1.65
+                    2.4,
+                    1.25
                 )
+
             ),
 
             new THREE.LineBasicMaterial({
@@ -1240,17 +1642,25 @@ function createMenu(){
         );
 
 
-    border.position.z=.01;
+    border.position.z =
+        .01;
 
-    menu.add(border);
+
+    menu.add(
+        border
+    );
 
 
-    const title=
+    /*
+        Title
+    */
+
+    const title =
         new THREE.Mesh(
 
             new THREE.PlaneGeometry(
-                2.9,
-                .16
+                2.1,
+                .13
             ),
 
             new THREE.MeshBasicMaterial({
@@ -1272,29 +1682,36 @@ function createMenu(){
 
     title.position.set(
         0,
-        .68,
+        .50,
         .02
     );
 
-    menu.add(title);
+
+    menu.add(
+        title
+    );
 
 
-    const subtitle=
+    /*
+        Subtitle
+    */
+
+    const subtitle =
         new THREE.Mesh(
 
             new THREE.PlaneGeometry(
-                2.8,
-                .08
+                2.0,
+                .06
             ),
 
             new THREE.MeshBasicMaterial({
 
                 map:
                     textTexture(
-                        "QUEST 3 // 3D MODEL CONTROL",
+                        "QUEST 3 // XR MODEL CONTROL",
                         1024,
                         128,
-                        32
+                        28
                     ),
 
                 transparent:true
@@ -1306,146 +1723,196 @@ function createMenu(){
 
     subtitle.position.set(
         0,
-        .54,
+        .40,
         .02
     );
 
-    menu.add(subtitle);
+
+    menu.add(
+        subtitle
+    );
 
 
-    /* ROW 1 */
+    /*
+        ROW 1
+    */
 
-    const row1=[
+    const row1 = [
 
-        ["MOVE",()=>{
-            mode="MOVE";
-        }],
+        [
+            "MOVE",
+            () => {
+                mode = "MOVE";
+            }
+        ],
 
-        ["SCALE",()=>{
-            mode="SCALE";
-        }],
+        [
+            "SCALE",
+            () => {
+                mode = "SCALE";
+            }
+        ],
 
-        ["ROTATE",()=>{
-            mode="ROTATE";
-        }],
+        [
+            "ROTATE",
+            () => {
+                mode = "ROTATE";
+            }
+        ],
 
-        ["ANCHOR",()=>{
-            locked=true;
-        }],
+        [
+            "LOCK",
+            () => {
+                locked = !locked;
+            }
+        ],
 
-        ["LOCK",()=>{
-            locked=!locked;
-        }],
-
-        ["MOVE UI",()=>{
-            mode="MENU";
-        }]
+        [
+            "MOVE UI",
+            () => {
+                mode = "MENU";
+            }
+        ]
 
     ];
 
 
     for(
-        let i=0;
-        i<row1.length;
+        let i = 0;
+        i < row1.length;
         i++
     ){
 
         createButton(
             row1[i][0],
             row1[i][1],
-            -1.35+i*.54,
-            .30
+            -1.00 + i * .50,
+            .20
         );
 
     }
 
 
-    /* ROW 2 */
+    /*
+        ROW 2
+    */
 
-    const row2=[
+    const row2 = [
 
-        ["MODELS",nextModel],
+        [
+            "MODELS",
+            nextModel
+        ],
 
-        ["ADD MODEL",addModelVR],
+        [
+            "ADD",
+            addModelVR
+        ],
 
-        ["FRAME",toggleFrame],
+        [
+            "FRAME",
+            toggleFrame
+        ],
 
-        ["OPACITY",cycleOpacity],
+        [
+            "OPACITY",
+            cycleOpacity
+        ],
 
-        ["GRID",toggleGrid],
-
-        ["CENTER",centerModel]
+        [
+            "GRID",
+            toggleGrid
+        ]
 
     ];
 
 
     for(
-        let i=0;
-        i<row2.length;
+        let i = 0;
+        i < row2.length;
         i++
     ){
 
         createButton(
             row2[i][0],
             row2[i][1],
-            -1.35+i*.54,
-            -.01
+            -1.00 + i * .50,
+            -.08
         );
 
     }
 
 
-    /* ROW 3 */
+    /*
+        ROW 3
+    */
 
-    const row3=[
+    const row3 = [
 
-        ["RESET",resetModel],
+        [
+            "RESET",
+            resetModel
+        ],
 
-        ["HIDE",hideModel],
+        [
+            "CENTER",
+            centerModel
+        ],
 
-        ["DELETE",deleteModel],
+        [
+            "HIDE",
+            hideModel
+        ],
 
-        ["MENU",toggleMenu],
+        [
+            "DELETE",
+            deleteModel
+        ],
 
-        ["MINI",toggleMini],
-
-        ["ZOOM 1:1",resetZoom]
+        [
+            "MINI",
+            toggleMini
+        ]
 
     ];
 
 
     for(
-        let i=0;
-        i<row3.length;
+        let i = 0;
+        i < row3.length;
         i++
     ){
 
         createButton(
             row3[i][0],
             row3[i][1],
-            -1.35+i*.54,
-            -.32
+            -1.00 + i * .50,
+            -.36
         );
 
     }
 
 
-    const status=
+    /*
+        Status
+    */
+
+    const statusMesh =
         new THREE.Mesh(
 
             new THREE.PlaneGeometry(
-                2.8,
-                .10
+                2.0,
+                .07
             ),
 
             new THREE.MeshBasicMaterial({
 
                 map:
                     textTexture(
-                        "● SYSTEM ONLINE   //   JOYSTICK = ZOOM",
+                        "● SYSTEM ONLINE // THUMBSTICK = ZOOM",
                         1024,
                         128,
-                        30
+                        26
                     ),
 
                 transparent:true
@@ -1455,16 +1922,21 @@ function createMenu(){
         );
 
 
-    status.position.set(
+    statusMesh.position.set(
         0,
-        -.62,
+        -.51,
         .02
     );
 
-    menu.add(status);
+
+    menu.add(
+        statusMesh
+    );
 
 
-    scene.add(menu);
+    scene.add(
+        menu
+    );
 
 }
 
@@ -1475,14 +1947,15 @@ function createMenu(){
 
 function createMiniMenu(){
 
-    miniMenu=
+    miniMenu =
         new THREE.Group();
 
 
-    miniMenu.visible=false;
+    miniMenu.visible =
+        false;
 
 
-    const bg=
+    const bg =
         new THREE.Mesh(
 
             new THREE.CircleGeometry(
@@ -1498,23 +1971,27 @@ function createMiniMenu(){
 
                 opacity:.96,
 
-                side:THREE.DoubleSide
+                side:
+                    THREE.DoubleSide
 
             })
 
         );
 
 
-    bg.userData.miniButton=true;
+    bg.userData.miniButton =
+        true;
 
-    bg.userData.action=
+    bg.userData.action =
         toggleMenu;
 
 
-    miniMenu.add(bg);
+    miniMenu.add(
+        bg
+    );
 
 
-    const ring=
+    const ring =
         new THREE.Mesh(
 
             new THREE.RingGeometry(
@@ -1527,19 +2004,24 @@ function createMiniMenu(){
 
                 color:0x00ffff,
 
-                side:THREE.DoubleSide
+                side:
+                    THREE.DoubleSide
 
             })
 
         );
 
 
-    ring.position.z=.005;
+    ring.position.z =
+        .005;
 
-    miniMenu.add(ring);
+
+    miniMenu.add(
+        ring
+    );
 
 
-    const icon=
+    const icon =
         new THREE.Mesh(
 
             new THREE.PlaneGeometry(
@@ -1564,9 +2046,13 @@ function createMiniMenu(){
         );
 
 
-    icon.position.z=.01;
+    icon.position.z =
+        .01;
 
-    miniMenu.add(icon);
+
+    miniMenu.add(
+        icon
+    );
 
 
     scene.add(
@@ -1586,42 +2072,49 @@ function placeMenu(){
         return;
 
 
-    const direction=
-        new THREE.Vector3(
-            0,0,-1
-        );
+    const xrCamera =
+        getXRCamera();
 
 
-    direction.applyQuaternion(
-        camera.quaternion
+    const position =
+        new THREE.Vector3();
+
+
+    xrCamera.getWorldPosition(
+        position
     );
 
 
-    const pos=
-        camera.position.clone();
+    const forward =
+        getViewerForward();
 
 
-    pos.add(
-        direction.multiplyScalar(
+    position.add(
+        forward.multiplyScalar(
             1.25
         )
     );
 
 
-    pos.y=
-        camera.position.y;
-
-
     menu.position.copy(
-        pos
+        position
     );
 
 
-    const look=
-        camera.position.clone();
+    menu.position.y =
+        position.y;
 
 
-    look.y=
+    const look =
+        new THREE.Vector3();
+
+
+    xrCamera.getWorldPosition(
+        look
+    );
+
+
+    look.y =
         menu.position.y;
 
 
@@ -1642,42 +2135,45 @@ function placeMini(){
         return;
 
 
-    const direction=
-        new THREE.Vector3(
-            0,0,-1
-        );
+    const xrCamera =
+        getXRCamera();
 
 
-    direction.applyQuaternion(
-        camera.quaternion
+    const position =
+        new THREE.Vector3();
+
+
+    xrCamera.getWorldPosition(
+        position
     );
 
 
-    const pos=
-        camera.position.clone();
+    const forward =
+        getViewerForward();
 
 
-    pos.add(
-        direction.multiplyScalar(
+    position.add(
+        forward.multiplyScalar(
             1
         )
     );
 
 
-    pos.y=
-        camera.position.y;
-
-
     miniMenu.position.copy(
-        pos
+        position
     );
 
 
-    const look=
-        camera.position.clone();
+    const look =
+        new THREE.Vector3();
 
 
-    look.y=
+    xrCamera.getWorldPosition(
+        look
+    );
+
+
+    look.y =
         miniMenu.position.y;
 
 
@@ -1698,21 +2194,23 @@ function toggleMenu(){
         return;
 
 
-    menuVisible=
+    menuVisible =
         !menuVisible;
 
 
-    menu.visible=
+    menu.visible =
         menuVisible;
 
 
     if(miniMenu){
 
-        miniMenu.visible=
+        miniMenu.visible =
             !menuVisible;
 
 
-        if(!menuVisible){
+        if(
+            !menuVisible
+        ){
 
             placeMini();
 
@@ -1735,26 +2233,48 @@ function toggleMini(){
 
 
 /* =====================================================
-   MENU MOVEMENT
+   MENU MOVE
 ===================================================== */
 
 function startMenuMove(
     controller
 ){
 
-    menuMoving=true;
+    if(!menu)
+        return;
 
-    menuMoveController=
+
+    menuMoving =
+        true;
+
+
+    menuMoveController =
         controller;
 
-    menuMoveDistance=
-        controller.position
-        .distanceTo(
-            menu.position
+
+    const controllerPos =
+        getWorldPosition(
+            controller
+        );
+
+
+    const menuPos =
+        getWorldPosition(
+            menu
+        );
+
+
+    menuMoveDistance =
+        controllerPos.distanceTo(
+            menuPos
         );
 
 }
 
+
+/* =====================================================
+   UPDATE MENU MOVE
+===================================================== */
 
 function updateMenuMove(){
 
@@ -1771,15 +2291,16 @@ function updateMenuMove(){
     );
 
 
-    const target=
-        raycaster.ray.origin.clone()
-        .add(
-            raycaster.ray.direction
+    const target =
+        raycaster.ray.origin
             .clone()
-            .multiplyScalar(
-                menuMoveDistance
-            )
-        );
+            .add(
+                raycaster.ray.direction
+                    .clone()
+                    .multiplyScalar(
+                        menuMoveDistance
+                    )
+            );
 
 
     menu.position.lerp(
@@ -1788,11 +2309,13 @@ function updateMenuMove(){
     );
 
 
-    const look=
-        camera.position.clone();
+    const look =
+        getWorldPosition(
+            getXRCamera()
+        );
 
 
-    look.y=
+    look.y =
         menu.position.y;
 
 
@@ -1804,7 +2327,7 @@ function updateMenuMove(){
 
 
 /* =====================================================
-   MODEL RESET
+   RESET MODEL
 ===================================================== */
 
 function resetModel(){
@@ -1825,38 +2348,24 @@ function resetModel(){
     );
 
 
-    const direction=
-        new THREE.Vector3(
-            0,0,-1
-        );
-
-
-    direction.applyQuaternion(
-        camera.quaternion
+    placeObjectInFront(
+        model,
+        2
     );
 
 
-    model.position=
-        camera.position.clone()
-        .add(
-            direction.multiplyScalar(
-                2
-            )
-        );
+    modelOpacity =
+        1;
 
-
-    model.position.y=
-        camera.position.y;
-
-
-    modelOpacity=1;
 
     setModelOpacity(
         1
     );
 
 
-    locked=false;
+    locked =
+        false;
+
 
     updateFrame();
 
@@ -1864,26 +2373,7 @@ function resetModel(){
 
 
 /* =====================================================
-   RESET ZOOM
-===================================================== */
-
-function resetZoom(){
-
-    if(model){
-
-        model.scale.setScalar(
-            1
-        );
-
-        updateFrame();
-
-    }
-
-}
-
-
-/* =====================================================
-   CENTER MODEL
+   CENTER
 ===================================================== */
 
 function centerModel(){
@@ -1892,28 +2382,10 @@ function centerModel(){
         return;
 
 
-    const dir=
-        new THREE.Vector3(
-            0,0,-1
-        );
-
-
-    dir.applyQuaternion(
-        camera.quaternion
+    placeObjectInFront(
+        model,
+        2
     );
-
-
-    model.position=
-        camera.position.clone()
-        .add(
-            dir.multiplyScalar(
-                2
-            )
-        );
-
-
-    model.position.y=
-        camera.position.y;
 
 
     updateFrame();
@@ -1922,17 +2394,17 @@ function centerModel(){
 
 
 /* =====================================================
-   HIDE MODEL
+   HIDE
 ===================================================== */
 
 function hideModel(){
 
-    if(model){
+    if(!model)
+        return;
 
-        model.visible=
-            !model.visible;
 
-    }
+    model.visible =
+        !model.visible;
 
 }
 
@@ -1944,7 +2416,7 @@ function hideModel(){
 function nextModel(){
 
     if(
-        models.length===0
+        models.length === 0
     )
         return;
 
@@ -1953,11 +2425,12 @@ function nextModel(){
 
 
     if(
-        currentModelIndex>=
+        currentModelIndex >=
         models.length
     ){
 
-        currentModelIndex=0;
+        currentModelIndex =
+            0;
 
     }
 
@@ -1981,10 +2454,14 @@ function deleteModel(){
         return;
 
 
-    const index=
+    const index =
         models.indexOf(
             model
         );
+
+
+    if(index === -1)
+        return;
 
 
     scene.remove(
@@ -1993,37 +2470,44 @@ function deleteModel(){
 
 
     model.traverse(
-        child=>{
+        child => {
 
             if(
                 child.isMesh
             ){
 
-                child.geometry?.dispose();
+                if(
+                    child.geometry
+                ){
+
+                    child.geometry.dispose();
+
+                }
 
 
                 if(
                     child.material
                 ){
 
-                    if(
+                    const materials =
                         Array.isArray(
                             child.material
                         )
-                    ){
+                        ?
+                        child.material
+                        :
+                        [
+                            child.material
+                        ];
 
-                        child.material.forEach(
-                            material=>{
-                                material.dispose();
-                            }
-                        );
 
-                    }
-                    else{
+                    materials.forEach(
+                        material => {
 
-                        child.material.dispose();
+                            material.dispose();
 
-                    }
+                        }
+                    );
 
                 }
 
@@ -2040,13 +2524,13 @@ function deleteModel(){
 
 
     if(
-        models.length
+        models.length > 0
     ){
 
-        currentModelIndex=
-            Math.max(
-                0,
-                index-1
+        currentModelIndex =
+            Math.min(
+                index,
+                models.length - 1
             );
 
 
@@ -2059,7 +2543,11 @@ function deleteModel(){
     }
     else{
 
-        model=null;
+        model =
+            null;
+
+        currentModelIndex =
+            -1;
 
     }
 
@@ -2070,7 +2558,7 @@ function deleteModel(){
 
 
 /* =====================================================
-   MODEL OPACITY
+   OPACITY
 ===================================================== */
 
 function setModelOpacity(
@@ -2082,7 +2570,7 @@ function setModelOpacity(
 
 
     model.traverse(
-        child=>{
+        child => {
 
             if(
                 !child.isMesh ||
@@ -2091,25 +2579,28 @@ function setModelOpacity(
                 return;
 
 
-            const materials=
+            const materials =
                 Array.isArray(
                     child.material
                 )
                 ?
                 child.material
                 :
-                [child.material];
+                [
+                    child.material
+                ];
 
 
             materials.forEach(
-                material=>{
+                material => {
 
-                    material.transparent=true;
+                    material.transparent =
+                        true;
 
-                    material.opacity=
+                    material.opacity =
                         opacity;
 
-                    material.needsUpdate=
+                    material.needsUpdate =
                         true;
 
                 }
@@ -2127,13 +2618,17 @@ function cycleOpacity(){
         return;
 
 
-    modelOpacity-=.2;
+    modelOpacity -= .2;
 
 
     if(
-        modelOpacity<.2
-    )
-        modelOpacity=1;
+        modelOpacity < .2
+    ){
+
+        modelOpacity =
+            1;
+
+    }
 
 
     setModelOpacity(
@@ -2144,13 +2639,14 @@ function cycleOpacity(){
 
 
 /* =====================================================
-   MODEL FRAME
+   FRAME
 ===================================================== */
 
 function toggleFrame(){
 
-    frameEnabled=
+    frameEnabled =
         !frameEnabled;
+
 
     updateFrame();
 
@@ -2170,7 +2666,8 @@ function updateFrame(){
 
         frameMesh.material.dispose();
 
-        frameMesh=null;
+        frameMesh =
+            null;
 
     }
 
@@ -2182,14 +2679,19 @@ function updateFrame(){
         return;
 
 
-    const box=
+    model.updateMatrixWorld(
+        true
+    );
+
+
+    const box =
         new THREE.Box3()
-        .setFromObject(
-            model
-        );
+            .setFromObject(
+                model
+            );
 
 
-    const size=
+    const size =
         new THREE.Vector3();
 
 
@@ -2198,7 +2700,7 @@ function updateFrame(){
     );
 
 
-    const center=
+    const center =
         new THREE.Vector3();
 
 
@@ -2207,15 +2709,15 @@ function updateFrame(){
     );
 
 
-    const geometry=
+    const geometry =
         new THREE.BoxGeometry(
-            size.x+.06,
-            size.y+.06,
-            size.z+.06
+            size.x + .06,
+            size.y + .06,
+            size.z + .06
         );
 
 
-    const edges=
+    const edges =
         new THREE.EdgesGeometry(
             geometry
         );
@@ -2224,7 +2726,7 @@ function updateFrame(){
     geometry.dispose();
 
 
-    const material=
+    const material =
         new THREE.LineBasicMaterial({
 
             color:0x00ffff,
@@ -2236,7 +2738,7 @@ function updateFrame(){
         });
 
 
-    frameMesh=
+    frameMesh =
         new THREE.LineSegments(
             edges,
             material
@@ -2272,14 +2774,15 @@ function toggleGrid(){
 
         gridMesh.material.dispose();
 
-        gridMesh=null;
+        gridMesh =
+            null;
 
         return;
 
     }
 
 
-    gridMesh=
+    gridMesh =
         new THREE.GridHelper(
             10,
             20,
@@ -2288,7 +2791,9 @@ function toggleGrid(){
         );
 
 
-    gridMesh.position.y=.01;
+    gridMesh.position.y =
+        0;
+
 
     scene.add(
         gridMesh
@@ -2298,25 +2803,44 @@ function toggleGrid(){
 
 
 /* =====================================================
-   ADD MODEL FROM VR
+   ADD MODEL
 ===================================================== */
 
 async function addModelVR(){
 
+    /*
+        Jeżeli jesteśmy w XR,
+        kończymy sesję.
+
+        Po zakończeniu użytkownik może
+        wybrać kolejny plik.
+    */
+
     if(session){
 
-        await session.end();
+        try{
+
+            await session.end();
+
+        }
+        catch(error){
+
+            console.warn(
+                error
+            );
+
+        }
 
     }
 
 
     setTimeout(
-        ()=>{
+        () => {
 
             fileInput.click();
 
         },
-        400
+        500
     );
 
 }
@@ -2332,19 +2856,14 @@ function clearHover(){
         return;
 
 
-    if(
-        selectedButton.userData.button
-    ){
-
-        selectedButton.material.color
-            .setHex(
-                selectedButton.userData.normal
-            );
-
-    }
+    selectedButton.material.color
+        .setHex(
+            selectedButton.userData.normal
+        );
 
 
-    selectedButton=null;
+    selectedButton =
+        null;
 
 }
 
@@ -2354,7 +2873,8 @@ function setHover(
 ){
 
     if(
-        selectedButton===button
+        selectedButton ===
+        button
     )
         return;
 
@@ -2362,26 +2882,20 @@ function setHover(
     clearHover();
 
 
-    selectedButton=
+    selectedButton =
         button;
 
 
-    if(
-        button.userData.button
-    ){
-
-        button.material.color
-            .setHex(
-                button.userData.hover
-            );
-
-    }
+    button.material.color
+        .setHex(
+            button.userData.hover
+        );
 
 }
 
 
 /* =====================================================
-   LASER
+   LASER UPDATE
 ===================================================== */
 
 function updateLaser(
@@ -2395,15 +2909,15 @@ function updateLaser(
     );
 
 
-    laser.visible=
+    laser.visible =
         renderer.xr.isPresenting;
 
 
-    dot.visible=
+    dot.visible =
         renderer.xr.isPresenting;
 
 
-    const targets=[];
+    const targets = [];
 
 
     if(
@@ -2423,14 +2937,22 @@ function updateLaser(
         miniMenu.visible
     ){
 
-        targets.push(
-            ...miniMenu.children
-                .filter(
-                    x =>
-                        x.userData
-                        .miniButton
-                )
-        );
+        for(
+            const child
+            of miniMenu.children
+        ){
+
+            if(
+                child.userData.miniButton
+            ){
+
+                targets.push(
+                    child
+                );
+
+            }
+
+        }
 
     }
 
@@ -2438,7 +2960,7 @@ function updateLaser(
     if(model){
 
         model.traverse(
-            child=>{
+            child => {
 
                 if(
                     child.isMesh &&
@@ -2457,16 +2979,18 @@ function updateLaser(
     }
 
 
-    const hits=
+    const hits =
         raycaster.intersectObjects(
             targets,
             false
         );
 
 
-    if(hits.length){
+    if(
+        hits.length > 0
+    ){
 
-        const point=
+        const point =
             hits[0].point;
 
 
@@ -2475,31 +2999,35 @@ function updateLaser(
         );
 
 
-        const local=
+        const local =
             controller.worldToLocal(
                 point.clone()
             );
 
 
-        laser.scale.z=
+        laser.scale.z =
             Math.max(
                 .15,
-                Math.abs(local.z)
+                Math.abs(
+                    local.z
+                )
             );
+
+
+        const hitObject =
+            hits[0].object;
 
 
         if(
-            hits[0].object.userData.button
+            hitObject.userData.button
         ){
 
             setHover(
-                hits[0].object
+                hitObject
             );
 
         }
-        else if(
-            hits[0].object.userData.miniButton
-        ){
+        else{
 
             clearHover();
 
@@ -2508,15 +3036,16 @@ function updateLaser(
     }
     else{
 
-        const far=
-            raycaster.ray.origin.clone()
-            .add(
-                raycaster.ray.direction
+        const far =
+            raycaster.ray.origin
                 .clone()
-                .multiplyScalar(
-                    8
-                )
-            );
+                .add(
+                    raycaster.ray.direction
+                        .clone()
+                        .multiplyScalar(
+                            8
+                        )
+                );
 
 
         dot.position.copy(
@@ -2524,7 +3053,9 @@ function updateLaser(
         );
 
 
-        laser.scale.z=8;
+        laser.scale.z =
+            8;
+
 
         clearHover();
 
@@ -2534,7 +3065,7 @@ function updateLaser(
 
 
 /* =====================================================
-   CONTROLLER CLICK
+   CONTROLLER SELECT
 ===================================================== */
 
 function controllerSelect(
@@ -2546,31 +3077,35 @@ function controllerSelect(
     );
 
 
-    /* MINI MENU */
+    /*
+        MINI MENU
+    */
 
     if(
         miniMenu &&
         miniMenu.visible
     ){
 
-        const hits=
+        const hits =
             raycaster.intersectObjects(
                 miniMenu.children,
                 false
             );
 
 
-        if(hits.length){
+        if(
+            hits.length
+        ){
 
-            const obj=
+            const object =
                 hits[0].object;
 
 
             if(
-                obj.userData.miniButton
+                object.userData.miniButton
             ){
 
-                obj.userData.action();
+                object.userData.action();
 
                 return;
 
@@ -2581,23 +3116,27 @@ function controllerSelect(
     }
 
 
-    /* MAIN MENU */
+    /*
+        MAIN MENU
+    */
 
     if(
         menu &&
         menu.visible
     ){
 
-        const hits=
+        const hits =
             raycaster.intersectObjects(
                 menuButtons,
                 false
             );
 
 
-        if(hits.length){
+        if(
+            hits.length
+        ){
 
-            const button=
+            const button =
                 hits[0].object;
 
 
@@ -2608,18 +3147,26 @@ function controllerSelect(
         }
 
 
+        /*
+            MOVE UI mode:
+            Trigger na panelu
+            pozwala przesuwać menu.
+        */
+
         if(
-            mode==="MENU"
+            mode === "MENU"
         ){
 
-            const all=
+            const all =
                 raycaster.intersectObject(
                     menu,
                     true
                 );
 
 
-            if(all.length){
+            if(
+                all.length
+            ){
 
                 startMenuMove(
                     controller
@@ -2634,7 +3181,9 @@ function controllerSelect(
     }
 
 
-    /* MODEL */
+    /*
+        MODEL
+    */
 
     if(
         !model ||
@@ -2643,14 +3192,15 @@ function controllerSelect(
         return;
 
 
-    const modelMeshes=[];
+    const modelMeshes = [];
 
 
     model.traverse(
-        child=>{
+        child => {
 
             if(
-                child.isMesh
+                child.isMesh &&
+                child.visible
             ){
 
                 modelMeshes.push(
@@ -2663,31 +3213,46 @@ function controllerSelect(
     );
 
 
-    const hits=
+    const hits =
         raycaster.intersectObjects(
             modelMeshes,
             false
         );
 
 
-    if(!hits.length)
+    if(
+        !hits.length
+    )
         return;
 
 
-    dragging=true;
+    dragging =
+        true;
 
-    activeController=
+
+    activeController =
         controller;
 
 
-    dragDistance=
-        controller.position
-        .distanceTo(
-            model.position
+    const controllerPos =
+        getWorldPosition(
+            controller
         );
 
 
-    startScale=
+    const modelPos =
+        getWorldPosition(
+            model
+        );
+
+
+    dragDistance =
+        controllerPos.distanceTo(
+            modelPos
+        );
+
+
+    startScale =
         model.scale.x;
 
 }
@@ -2699,7 +3264,7 @@ function controllerSelect(
 
 controller1.addEventListener(
     "selectstart",
-    ()=>{
+    () => {
 
         controllerSelect(
             controller1
@@ -2711,7 +3276,7 @@ controller1.addEventListener(
 
 controller2.addEventListener(
     "selectstart",
-    ()=>{
+    () => {
 
         controllerSelect(
             controller2
@@ -2723,28 +3288,32 @@ controller2.addEventListener(
 
 controller1.addEventListener(
     "selectend",
-    ()=>{
+    () => {
 
         if(
-            activeController===
+            activeController ===
             controller1
         ){
 
-            dragging=false;
+            dragging =
+                false;
 
-            activeController=null;
+            activeController =
+                null;
 
         }
 
 
         if(
-            menuMoveController===
+            menuMoveController ===
             controller1
         ){
 
-            menuMoving=false;
+            menuMoving =
+                false;
 
-            menuMoveController=null;
+            menuMoveController =
+                null;
 
         }
 
@@ -2754,28 +3323,32 @@ controller1.addEventListener(
 
 controller2.addEventListener(
     "selectend",
-    ()=>{
+    () => {
 
         if(
-            activeController===
+            activeController ===
             controller2
         ){
 
-            dragging=false;
+            dragging =
+                false;
 
-            activeController=null;
+            activeController =
+                null;
 
         }
 
 
         if(
-            menuMoveController===
+            menuMoveController ===
             controller2
         ){
 
-            menuMoving=false;
+            menuMoving =
+                false;
 
-            menuMoveController=null;
+            menuMoveController =
+                null;
 
         }
 
@@ -2784,34 +3357,32 @@ controller2.addEventListener(
 
 
 /* =====================================================
-   QUEST JOYSTICK
+   THUMBSTICK
 ===================================================== */
 
 function getThumbstickY(){
 
-    const inputSources=
-        renderer.xr
-            .getSession()
-            ?.inputSources;
+    const xrSession =
+        renderer.xr.getSession();
 
 
-    if(!inputSources)
+    if(!xrSession)
         return 0;
 
 
     for(
         const source
-        of inputSources
+        of xrSession.inputSources
     ){
 
         if(
-            source.targetRayMode!==
+            source.targetRayMode !==
             "tracked-pointer"
         )
             continue;
 
 
-        const gamepad=
+        const gamepad =
             source.gamepad;
 
 
@@ -2820,15 +3391,15 @@ function getThumbstickY(){
 
 
         if(
-            gamepad.axes.length>=4
+            gamepad.axes.length >= 4
         ){
 
-            const y=
+            const y =
                 gamepad.axes[3];
 
 
             if(
-                Math.abs(y)>.15
+                Math.abs(y) > .15
             )
                 return y;
 
@@ -2836,15 +3407,15 @@ function getThumbstickY(){
 
 
         if(
-            gamepad.axes.length>=2
+            gamepad.axes.length >= 2
         ){
 
-            const y=
+            const y =
                 gamepad.axes[1];
 
 
             if(
-                Math.abs(y)>.15
+                Math.abs(y) > .15
             )
                 return y;
 
@@ -2871,28 +3442,29 @@ function updateJoystickZoom(){
         return;
 
 
-    const y=
+    const y =
         getThumbstickY();
 
 
     if(
-        Math.abs(y)<.12
+        Math.abs(y) < .12
     )
         return;
 
 
-    const speed=.018;
+    const speed =
+        .018;
 
 
-    const factor=
-        1-
-        y*speed;
+    const factor =
+        1 -
+        y * speed;
 
 
-    const next=
+    const next =
         THREE.MathUtils.clamp(
 
-            model.scale.x*
+            model.scale.x *
             factor,
 
             .02,
@@ -2927,63 +3499,90 @@ function updateModelMovement(){
     updateJoystickZoom();
 
 
-    /* TWO CONTROLLER SCALE */
-
-    const distance=
-        controller1.position
-        .distanceTo(
-            controller2.position
-        );
-
+    /*
+        TWO HAND SCALE
+    */
 
     if(
-        distance>.08 &&
-        mode==="SCALE"
+        mode === "SCALE"
     ){
 
-        if(!twoHandStart){
+        const pos1 =
+            getWorldPosition(
+                controller1
+            );
 
-            twoHandStart={
 
-                distance,
+        const pos2 =
+            getWorldPosition(
+                controller2
+            );
 
-                scale:model.scale.x
 
-            };
+        const distance =
+            pos1.distanceTo(
+                pos2
+            );
+
+
+        if(
+            distance > .08
+        ){
+
+            if(!twoHandStart){
+
+                twoHandStart = {
+
+                    distance:
+                        distance,
+
+                    scale:
+                        model.scale.x
+
+                };
+
+            }
+            else{
+
+                const factor =
+                    distance /
+                    twoHandStart.distance;
+
+
+                const scale =
+                    THREE.MathUtils.clamp(
+
+                        twoHandStart.scale *
+                        factor,
+
+                        .02,
+                        50
+
+                    );
+
+
+                model.scale.setScalar(
+                    scale
+                );
+
+
+                updateFrame();
+
+            }
 
         }
         else{
 
-            const factor=
-                distance/
-                twoHandStart.distance;
-
-
-            const scale=
-                THREE.MathUtils.clamp(
-
-                    twoHandStart.scale*
-                    factor,
-
-                    .02,
-                    50
-
-                );
-
-
-            model.scale.setScalar(
-                scale
-            );
-
-
-            updateFrame();
+            twoHandStart =
+                null;
 
         }
 
     }
     else{
 
-        twoHandStart=null;
+        twoHandStart =
+            null;
 
     }
 
@@ -2991,7 +3590,9 @@ function updateModelMovement(){
     updateMenuMove();
 
 
-    /* DRAG */
+    /*
+        DRAG
+    */
 
     if(
         !dragging ||
@@ -3000,8 +3601,12 @@ function updateModelMovement(){
         return;
 
 
+    /*
+        MOVE
+    */
+
     if(
-        mode==="MOVE"
+        mode === "MOVE"
     ){
 
         controllerRay(
@@ -3009,15 +3614,16 @@ function updateModelMovement(){
         );
 
 
-        const target=
-            raycaster.ray.origin.clone()
-            .add(
-                raycaster.ray.direction
+        const target =
+            raycaster.ray.origin
                 .clone()
-                .multiplyScalar(
-                    dragDistance
-                )
-            );
+                .add(
+                    raycaster.ray.direction
+                        .clone()
+                        .multiplyScalar(
+                            dragDistance
+                        )
+                );
 
 
         model.position.lerp(
@@ -3028,23 +3634,38 @@ function updateModelMovement(){
     }
 
 
+    /*
+        SCALE
+    */
+
     if(
-        mode==="SCALE"
+        mode === "SCALE"
     ){
 
-        const d=
-            activeController.position
-            .distanceTo(
-                model.position
+        const controllerPos =
+            getWorldPosition(
+                activeController
             );
 
 
-        const scale=
+        const modelPos =
+            getWorldPosition(
+                model
+            );
+
+
+        const d =
+            controllerPos.distanceTo(
+                modelPos
+            );
+
+
+        const scale =
             THREE.MathUtils.clamp(
 
-                startScale*
+                startScale *
                 (
-                    d/
+                    d /
                     Math.max(
                         .01,
                         dragDistance
@@ -3064,21 +3685,37 @@ function updateModelMovement(){
     }
 
 
+    /*
+        ROTATE
+    */
+
     if(
-        mode==="ROTATE"
+        mode === "ROTATE"
     ){
 
-        const dx=
-            activeController.position.x-
-            model.position.x;
+        const controllerPos =
+            getWorldPosition(
+                activeController
+            );
 
 
-        const dz=
-            activeController.position.z-
-            model.position.z;
+        const modelPos =
+            getWorldPosition(
+                model
+            );
 
 
-        model.rotation.y=
+        const dx =
+            controllerPos.x -
+            modelPos.x;
+
+
+        const dz =
+            controllerPos.z -
+            modelPos.z;
+
+
+        model.rotation.y =
             Math.atan2(
                 dx,
                 dz
@@ -3093,96 +3730,420 @@ function updateModelMovement(){
 
 
 /* =====================================================
-   START XR
+   CHECK XR SUPPORT
 ===================================================== */
 
-startVR.onclick=()=>{
+async function checkXRSupport(){
 
-    /*
-       Celowo nie blokujemy przycisku.
+    clearError();
 
-       Dopiero tutaj sprawdzamy,
-       czy użytkownik wybrał plik.
-    */
+
+    startXR.disabled =
+        true;
+
 
     if(
-        !fileInput.files ||
-        !fileInput.files.length
+        !("xr" in navigator)
     ){
 
-        alert(
-            "Najpierw wybierz model 3D."
+        status.textContent =
+            "WebXR niedostępny.";
+
+
+        showError(
+            "navigator.xr nie jest dostępne. " +
+            "Uruchom stronę w przeglądarce z obsługą WebXR " +
+            "na Quest 3 i użyj HTTPS."
         );
+
 
         return;
 
     }
 
 
-    arButton.click();
+    let arSupported =
+        false;
 
-};
-
-
-/* =====================================================
-   XR START
-===================================================== */
-
-renderer.xr.addEventListener(
-    "sessionstart",
-    ()=>{
-
-        session=
-            renderer.xr.getSession();
+    let vrSupported =
+        false;
 
 
-        startScreen.style.display=
-            "none";
+    try{
 
+        arSupported =
+            await navigator.xr
+                .isSessionSupported(
+                    "immersive-ar"
+                );
 
-        info.style.display=
-            "block";
+    }
+    catch(error){
 
-
-        if(!menu)
-            createMenu();
-
-
-        if(!miniMenu)
-            createMiniMenu();
-
-
-        menu.visible=true;
-
-        menuVisible=true;
-
-        miniMenu.visible=false;
-
-
-        setTimeout(
-            ()=>{
-
-                placeMenu();
-
-                placeMini();
-
-            },
-            200
-        );
-
-
-        setTimeout(
-            ()=>{
-
-                info.style.display=
-                    "none";
-
-            },
-            5000
+        console.warn(
+            "AR support check failed:",
+            error
         );
 
     }
+
+
+    try{
+
+        vrSupported =
+            await navigator.xr
+                .isSessionSupported(
+                    "immersive-vr"
+                );
+
+    }
+    catch(error){
+
+        console.warn(
+            "VR support check failed:",
+            error
+        );
+
+    }
+
+
+    if(arSupported){
+
+        status.textContent =
+            "WebXR OK — passthrough AR dostępne.";
+
+        startXR.disabled =
+            false;
+
+        return;
+
+    }
+
+
+    if(vrSupported){
+
+        status.textContent =
+            "WebXR OK — VR dostępne.";
+
+        startXR.disabled =
+            false;
+
+        return;
+
+    }
+
+
+    status.textContent =
+        "Brak obsługiwanej sesji XR.";
+
+
+    showError(
+        "Urządzenie/przeglądarka nie zgłasza " +
+        "immersive-ar ani immersive-vr."
+    );
+
+}
+
+
+/* =====================================================
+   START XR
+===================================================== */
+
+startXR.addEventListener(
+    "click",
+    async () => {
+
+        clearError();
+
+
+        if(
+            !navigator.xr
+        ){
+
+            showError(
+                "WebXR nie jest dostępny."
+            );
+
+            return;
+
+        }
+
+
+        startXR.disabled =
+            true;
+
+
+        status.textContent =
+            "Uruchamianie XR...";
+
+
+        try{
+
+            /*
+                Najpierw próbujemy passthrough AR.
+
+                Quest 3 może wtedy działać jako
+                mixed reality.
+            */
+
+            let modeToUse =
+                "immersive-ar";
+
+
+            let supported =
+                false;
+
+
+            try{
+
+                supported =
+                    await navigator.xr
+                        .isSessionSupported(
+                            "immersive-ar"
+                        );
+
+            }
+            catch(error){
+
+                console.warn(
+                    error
+                );
+
+            }
+
+
+            /*
+                Jeżeli AR nie jest dostępne,
+                próbujemy zwykłego VR.
+            */
+
+            if(!supported){
+
+                modeToUse =
+                    "immersive-vr";
+
+
+                supported =
+                    await navigator.xr
+                        .isSessionSupported(
+                            "immersive-vr"
+                        );
+
+            }
+
+
+            if(!supported){
+
+                throw new Error(
+                    "Brak obsługiwanej sesji immersive-ar/immersive-vr."
+                );
+
+            }
+
+
+            const optionalFeatures = [
+
+                "local-floor",
+
+                "bounded-floor",
+
+                "hand-tracking"
+
+            ];
+
+
+            /*
+                Dom overlay nie jest wymagany.
+                Dzięki temu jego brak nie zablokuje XR.
+            */
+
+            const sessionOptions = {
+
+                optionalFeatures
+
+            };
+
+
+            /*
+                Przy AR próbujemy DOM overlay.
+
+                Jeżeli implementacja go nie obsługuje,
+                sama sesja nadal może działać,
+                ponieważ feature jest opcjonalny.
+            */
+
+            if(
+                modeToUse ===
+                "immersive-ar"
+            ){
+
+                sessionOptions.optionalFeatures =
+                    [
+                        ...optionalFeatures,
+                        "dom-overlay"
+                    ];
+
+
+                sessionOptions.domOverlay = {
+
+                    root:
+                        document.body
+
+                };
+
+            }
+
+
+            const newSession =
+                await navigator.xr.requestSession(
+                    modeToUse,
+                    sessionOptions
+                );
+
+
+            await renderer.xr.setSession(
+                newSession
+            );
+
+
+            /*
+                To jest prawdziwy moment
+                wejścia do XR.
+            */
+
+            session =
+                newSession;
+
+
+            xrMode =
+                modeToUse;
+
+
+            onXRStarted();
+
+        }
+        catch(error){
+
+            console.error(
+                "XR START ERROR:",
+                error
+            );
+
+
+            startXR.disabled =
+                false;
+
+
+            status.textContent =
+                "Nie udało się uruchomić XR.";
+
+
+            showError(
+                "XR ERROR: " +
+                (
+                    error.message ||
+                    error.name ||
+                    String(error)
+                )
+            );
+
+        }
+
+    }
 );
+
+
+/* =====================================================
+   XR STARTED
+===================================================== */
+
+function onXRStarted(){
+
+    startScreen.style.display =
+        "none";
+
+
+    info.style.display =
+        "block";
+
+
+    if(!menu){
+
+        createMenu();
+
+    }
+
+
+    if(!miniMenu){
+
+        createMiniMenu();
+
+    }
+
+
+    menu.visible =
+        true;
+
+
+    menuVisible =
+        true;
+
+
+    miniMenu.visible =
+        false;
+
+
+    /*
+        XR kamera musi już istnieć.
+    */
+
+    setTimeout(
+        () => {
+
+            placeMenu();
+
+            placeMini();
+
+
+            /*
+                Jeżeli model był wybrany
+                jeszcze przed XR,
+                przenosimy go przed użytkownika.
+            */
+
+            if(model){
+
+                placeObjectInFront(
+                    model,
+                    2
+                );
+
+            }
+
+        },
+        100
+    );
+
+
+    status.textContent =
+        xrMode === "immersive-ar"
+        ?
+        "PASSTHROUGH AR ONLINE"
+        :
+        "VR ONLINE";
+
+
+    setTimeout(
+        () => {
+
+            info.style.display =
+                "none";
+
+        },
+        5000
+    );
+
+}
 
 
 /* =====================================================
@@ -3191,9 +4152,14 @@ renderer.xr.addEventListener(
 
 renderer.xr.addEventListener(
     "sessionend",
-    ()=>{
+    () => {
 
-        session=null;
+        session =
+            null;
+
+
+        xrMode =
+            null;
 
 
         if(menu){
@@ -3202,9 +4168,11 @@ renderer.xr.addEventListener(
                 menu
             );
 
-            menu=null;
+            menu =
+                null;
 
-            menuButtons=[];
+            menuButtons.length =
+                0;
 
         }
 
@@ -3215,24 +4183,46 @@ renderer.xr.addEventListener(
                 miniMenu
             );
 
-            miniMenu=null;
+            miniMenu =
+                null;
 
         }
 
 
-        selectedButton=null;
-
-        dragging=false;
-
-        menuMoving=false;
-
-        activeController=null;
-
-        menuMoveController=null;
+        selectedButton =
+            null;
 
 
-        startScreen.style.display=
+        dragging =
+            false;
+
+
+        menuMoving =
+            false;
+
+
+        activeController =
+            null;
+
+
+        menuMoveController =
+            null;
+
+
+        twoHandStart =
+            null;
+
+
+        startScreen.style.display =
             "flex";
+
+
+        startXR.disabled =
+            false;
+
+
+        status.textContent =
+            "XR zakończony.";
 
     }
 );
@@ -3286,26 +4276,33 @@ renderer.setAnimationLoop(
 
 window.addEventListener(
     "resize",
-    ()=>{
+    () => {
 
-        camera.aspect=
-            innerWidth/
-            innerHeight;
+        camera.aspect =
+            window.innerWidth /
+            window.innerHeight;
 
 
         camera.updateProjectionMatrix();
 
 
         renderer.setSize(
-            innerWidth,
-            innerHeight
+            window.innerWidth,
+            window.innerHeight
         );
 
     }
 );
 
+
+/* =====================================================
+   INITIAL CHECK
+===================================================== */
+
+checkXRSupport();
+
+
 </script>
 
 </body>
 </html>
-```
