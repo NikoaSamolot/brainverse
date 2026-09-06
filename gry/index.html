@@ -90,6 +90,9 @@ header {
     overflow: hidden;
     cursor: pointer;
     transition: 0.2s;
+    display: block;
+    color: white;
+    text-decoration: none;
 }
 
 .card:hover {
@@ -111,11 +114,19 @@ header {
 <body>
 
 <header>
-    <img src="bvg.png" style="height:160px; vertical-align:middle; margin-right:10px;">
+    <img src="bvg.png"
+         alt="BrainVerse Games"
+         style="height:160px; vertical-align:middle; margin-right:10px;">
     BrainVerse Games
 </header>
 
-<input id="searchBar" placeholder="🔍 Szukaj gry..." oninput="render()">
+<input
+    id="searchBar"
+    type="search"
+    placeholder="🔍 Szukaj gry..."
+    aria-label="Szukaj gry"
+    oninput="render()"
+>
 
 <div id="layout">
 
@@ -143,99 +154,184 @@ header {
 
 <!-- MAIN -->
 <div id="main">
-    <div id="list"></div>
+
+    <div id="list">
+
+        <!-- CARROT APOCALYPSE -->
+        <a class="card"
+           href="https://brainverse.pl/gry/carrot-apocalypse/"
+           data-tags="akcja survival lore 2d"
+           data-title="Carrot Apocalypse">
+
+            <img src="carrotap.jpg"
+                 alt="Carrot Apocalypse"
+                 width="400"
+                 height="225">
+
+            <h3>Carrot Apocalypse</h3>
+        </a>
+
+        <!-- QUIZY 1 -->
+        <a class="card"
+           href="https://brainverse.pl/gry/quizy1/"
+           data-tags="quiz 2d logic"
+           data-title="Quizy 1">
+
+            <img src="quizy1.jpg"
+                 alt="Quizy 1"
+                 width="400"
+                 height="225">
+
+            <h3>Quizy 1</h3>
+        </a>
+
+        <!-- QUIZY 2 -->
+        <a class="card"
+           href="https://brainverse.pl/gry/quizy2/"
+           data-tags="quiz 2d logic"
+           data-title="Quizy 2">
+
+            <img src="quizy2.jpg"
+                 alt="Quizy 2"
+                 width="400"
+                 height="225">
+
+            <h3>Quizy 2</h3>
+        </a>
+
+        <!-- ŁĄCZENIE -->
+        <a class="card"
+           href="https://brainverse.pl/gry/laczenie/"
+           data-tags="logic 2d"
+           data-title="Łączenie">
+
+            <img src="laczenie.jpg"
+                 alt="Łączenie"
+                 width="400"
+                 height="225">
+
+            <h3>Łączenie</h3>
+        </a>
+
+        <!-- ZGADNIJ LICZBĘ -->
+        <a class="card"
+           href="https://brainverse.pl/gry/Zgadnij-liczbe/"
+           data-tags="logic 2d"
+           data-title="Zgadnij Liczbę">
+
+            <img src="zgadnijliczbe.jpg"
+                 alt="Zgadnij Liczbę"
+                 width="400"
+                 height="225">
+
+            <h3>Zgadnij Liczbę</h3>
+        </a>
+
+        <!-- PI MEMORY CHALLENGE -->
+        <a class="card"
+           href="https://brainverse.pl/gry/Pi-Challenge/"
+           data-tags="logic quiz 2d"
+           data-title="π Memory Challenge 1000">
+
+            <img src="pi1000.jpg"
+                 alt="π Memory Challenge 1000"
+                 width="400"
+                 height="225">
+
+            <h3>π Memory Challenge 1000</h3>
+        </a>
+
+        <!-- THE QUIZ PROTOCOL -->
+        <a class="card"
+           href="https://brainverse.pl/gry/the-quiz-protocol/"
+           data-tags="horror lore 2d"
+           data-title="The Quiz Protocol">
+
+            <img src="quizprot.png"
+                 alt="The Quiz Protocol"
+                 width="400"
+                 height="225">
+
+            <h3>The Quiz Protocol</h3>
+        </a>
+
+        <!-- IRONSHOT -->
+        <a class="card"
+           href="https://brainverse.pl/gry/ironshot/"
+           data-tags="akcja fps 3d arcade rogue"
+           data-title="IronShot">
+
+            <img src="ironshot.jpg"
+                 alt="IronShot"
+                 width="400"
+                 height="225">
+
+            <h3>IronShot</h3>
+        </a>
+
+        <!-- VOXEL LAB -->
+        <a class="card"
+           href="https://brainverse.pl/gry/voxel-lab/"
+           data-tags="sandbox 3d"
+           data-title="Voxel Lab">
+
+            <img src="vl.png"
+                 alt="Voxel Lab"
+                 width="400"
+                 height="225">
+
+            <h3>Voxel Lab</h3>
+        </a>
+
+        <!-- REACTION CIRCLES -->
+        <a class="card"
+           href="https://brainverse.pl/gry/reaction-circles/"
+           data-tags="reflex 2d arcade"
+           data-title="Reaction Circles">
+
+            <img src="rc.png"
+                 alt="Reaction Circles"
+                 width="400"
+                 height="225">
+
+            <h3>Reaction Circles</h3>
+        </a>
+
+        <!-- CARROT APOCALYPSE: THE START OF INFECTION -->
+        <a class="card"
+           href="https://brainverse.pl/gry/carrot-apocalypse-the-start-of-infection/"
+           data-tags="3d fps lore horror akcja survival"
+           data-title="Carrot Apocalypse: The Start Of Infection">
+
+            <img src="cas.png"
+                 alt="Carrot Apocalypse: The Start Of Infection"
+                 width="400"
+                 height="225">
+
+            <h3>Carrot Apocalypse: The Start Of Infection</h3>
+        </a>
+
+        <!-- DON'T GET ORANGE -->
+        <a class="card"
+           href="https://brainverse.pl/gry/dont-get-orange/"
+           data-tags="reflex akcja 2d arcade platformer"
+           data-title="Don't Get Orange! Demo">
+
+            <img src="dgo.png"
+                 alt="Don't Get Orange! Demo"
+                 width="400"
+                 height="225">
+
+            <h3>Don't Get Orange! Demo</h3>
+        </a>
+
+    </div>
+
 </div>
 
 </div>
 
 <script>
-
-const games = [
-{
-    id:"carrot-apocalypse",
-    title:"Carrot Apocalypse",
-    tags:["akcja","survival","lore","2d"],
-    image:"carrotap.jpg",
-    url:"https://brainverse.pl/gry/carrot-apocalypse/"
-},
-{
-    id:"quizy-1",
-    title:"Quizy 1",
-    tags:["quiz","2d","logic"],
-    image:"quizy1.jpg",
-    url:"https://brainverse.pl/gry/quizy1/"
-},
-{
-    id:"quizy-2",
-    title:"Quizy 2",
-    tags:["quiz","2d","logic"],
-    image:"quizy2.jpg",
-    url:"https://brainverse.pl/gry/quizy2/"
-},
-{
-    id:"laczenie",
-    title:"Łączenie",
-    tags:["logic", "2d"],
-    image:"laczenie.jpg",
-    url:"https://brainverse.pl/gry/laczenie/"
-},
-{
-    id:"zgadnij-liczbe",
-    title:"Zgadnij Liczbę",
-    tags:["logic","2d"],
-    image:"zgadnijliczbe.jpg",
-    url:"https://brainverse.pl/gry/Zgadnij-liczbe/"
-},
-{
-    id:"pi-challenge",
-    title:"π Memory Challenge 1000",
-    tags:["logic","quiz","2d"],
-    image:"pi1000.jpg",
-    url:"https://brainverse.pl/gry/Pi-Challenge/"
-},
-{
-    id:"quiz-protocol",
-    title:"The Quiz Protocol",
-    tags:["horror","lore","2d"],
-    image:"quizprot.png",
-    url:"https://brainverse.pl/gry/the-quiz-protocol/"
-},
-{
-    id:"iron-shot",
-    title:"IronShot",
-    tags:["akcja","fps","3d","arcade","rogue"],
-    image:"ironshot.jpg",
-    url:"https://brainverse.pl/gry/ironshot/"
-},
-{
-    id:"voxel-lab",
-    title:"Voxel Lab",
-    tags:["sandbox","3d"],
-    image:"vl.png",
-    url:"https://brainverse.pl/gry/voxel-lab/"
-},
-{
-    id:"reaction-circles",
-    title:"Reaction Circles",
-    tags:["reflex","2d","arcade"],
-    image:"rc.png",
-    url:"https://brainverse.pl/gry/reaction-circles/"
-},
-{
-    id:"carrot-apocalypse-start",
-    title:"Carrot Apocalypse: The Start Of Infection",
-    tags:["3d","fps","lore","horror","akcja","survival"],
-    image:"cas.png",
-    url:"https://brainverse.pl/gry/carrot-apocalypse-the-start-of-infection/"
-},
-{
-    id:"dont-get-orange",
-    title:"Don't Get Orange! Demo",
-    tags:["reflex","akcja","2d","arcade","platformer"],
-    image:"dgo.png",
-    url:"https://brainverse.pl/gry/dont-get-orange/"
-}
-];
 
 let activeTags = new Set();
 
@@ -243,13 +339,18 @@ function toggleTag(tag, el) {
 
     if (tag === "all") {
         activeTags.clear();
-        document.querySelectorAll(".cat").forEach(c => c.classList.remove("active"));
+
+        document.querySelectorAll(".cat").forEach(c =>
+            c.classList.remove("active")
+        );
+
         el.classList.add("active");
+
         render();
         return;
     }
 
-    document.querySelector(".cat").classList.remove("active"); // remove "all"
+    document.querySelector(".cat").classList.remove("active");
 
     if (activeTags.has(tag)) {
         activeTags.delete(tag);
@@ -264,35 +365,40 @@ function toggleTag(tag, el) {
 
 /* AND FILTER SYSTEM */
 function render() {
-    const list = document.getElementById("list");
-    list.innerHTML = "";
 
-    const search = document.getElementById("searchBar").value.toLowerCase();
+    const cards = document.querySelectorAll(".card");
 
-    games.forEach(g => {
+    const search = document
+        .getElementById("searchBar")
+        .value
+        .toLowerCase()
+        .trim();
 
-        // SEARCH
-        if (!g.title.toLowerCase().includes(search)) return;
+    cards.forEach(card => {
 
-        // AND TAG FILTER
-        if (activeTags.size > 0) {
-            const hasAll = [...activeTags].every(tag =>
-                g.tags.includes(tag)
-            );
-            if (!hasAll) return;
+        const title = card.dataset.title.toLowerCase();
+        const tags = card.dataset.tags.split(" ");
+
+        /* SEARCH */
+        if (!title.includes(search)) {
+            card.style.display = "none";
+            return;
         }
 
-        const div = document.createElement("div");
-        div.className = "card";
+        /* AND TAG FILTER */
+        if (activeTags.size > 0) {
 
-        div.innerHTML = `
-            <img src="${g.image}">
-            <h3>${g.title}</h3>
-        `;
+            const hasAll = [...activeTags].every(tag =>
+                tags.includes(tag)
+            );
 
-        div.onclick = () => window.location.href = g.url;
+            if (!hasAll) {
+                card.style.display = "none";
+                return;
+            }
+        }
 
-        list.appendChild(div);
+        card.style.display = "block";
     });
 }
 
@@ -302,3 +408,4 @@ render();
 
 </body>
 </html>
+
