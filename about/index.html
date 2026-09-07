@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>O BrainVerse</title>
+
+<meta name="description"
+content="BrainVerse — strona pełna gier, projektów, eksperymentów i narzędzi tworzona niezależnie.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="icon" type="image/png" href="/brainverse_icon.png">
+
+<style>
+
+:root {
+    --bg: #070605;
+    --bg-soft: #0e0a07;
+    --bg-card: rgba(24, 16, 10, 0.72);
+
+    --orange: #ff7a18;
+    --orange-light: #ff9d45;
+    --orange-dark: #e85d04;
+    --amber: #ffb15c;
+
+    --text: #fff8f2;
+    --muted: #b7aaa0;
+
+    --border: rgba(255, 122, 24, 0.14);
+
+    --radius: 24px;
+    --max-width: 1180px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    background:
+        radial-gradient(
+            circle at 15% 5%,
+            rgba(255, 122, 24, 0.16),
+            transparent 32rem
+        ),
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(255, 177, 92, 0.08),
+            transparent 30rem
+        ),
+        linear-gradient(
+            180deg,
+            #070605 0%,
+            #0d0906 45%,
+            #070605 100%
+        );
+
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* =====================================================
+   BACKGROUND
+===================================================== */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(
+            rgba(255,255,255,0.015) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,0.015) 1px,
+            transparent 1px
+        );
+
+    background-size: 50px 50px;
+
+    mask-image: linear-gradient(
+        to bottom,
+        black,
+        transparent 85%
+    );
+
+    z-index: -2;
+}
+
+.orb {
+    position: fixed;
+    width: 450px;
+    height: 450px;
+
+    border-radius: 50%;
+
+    background: radial-gradient(
+        circle,
+        rgba(255, 122, 24, 0.12),
+        transparent 70%
+    );
+
+    filter: blur(30px);
+
+    pointer-events: none;
+    z-index: -1;
+
+    animation: floatOrb 12s ease-in-out infinite;
+}
+
+.orb.one {
+    top: -180px;
+    left: -180px;
+}
+
+.orb.two {
+    right: -220px;
+    top: 35%;
+    animation-delay: -5s;
+}
+
+@keyframes floatOrb {
+    0%,100% {
+        transform: translate(0,0);
+    }
+
+    50% {
+        transform: translate(30px,-25px);
+    }
+}
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    z-index: 1000;
+
+    transition: 0.35s ease;
+}
+
+header.scrolled {
+    background: rgba(7,6,5,0.78);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+}
+
+.nav {
+    max-width: var(--max-width);
+    margin: auto;
+
+    padding: 22px 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: white;
+    text-decoration: none;
+
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.logo-mark {
+    width: 34px;
+    height: 34px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--orange),
+            var(--orange-dark)
+        );
+
+    box-shadow:
+        0 0 25px rgba(255,122,24,.25);
+
+    font-size: 15px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    transition: 0.25s ease;
+}
+
+.nav-links a:hover {
+    color: white;
+}
+
+.nav-button {
+    padding: 10px 17px;
+
+    border-radius: 12px;
+
+    background: rgba(255,122,24,.08);
+
+    border: 1px solid rgba(255,122,24,.18);
+
+    color: var(--orange-light) !important;
+
+    transition: .3s ease;
+}
+
+.nav-button:hover {
+    background: rgba(255,122,24,.16);
+    border-color: rgba(255,122,24,.4);
+    transform: translateY(-2px);
+}
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+.container {
+    width: min(
+        calc(100% - 48px),
+        var(--max-width)
+    );
+
+    margin: auto;
+}
+
+section {
+    padding: 120px 0;
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(35px);
+
+    transition:
+        opacity .8s ease,
+        transform .8s cubic-bezier(.2,.8,.2,1);
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.kicker {
+    color: var(--orange-light);
+
+    text-transform: uppercase;
+    letter-spacing: 2px;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    margin-bottom: 16px;
+}
+
+h2 {
+    font-size: clamp(36px, 5vw, 62px);
+
+    line-height: 1.05;
+
+    letter-spacing: -2.5px;
+
+    margin-bottom: 20px;
+}
+
+.section-description {
+    max-width: 650px;
+
+    color: var(--muted);
+
+    font-size: 17px;
+}
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.hero {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+
+    padding-top: 130px;
+}
+
+.hero-content {
+    max-width: 900px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 9px 14px;
+
+    border-radius: 999px;
+
+    background: rgba(255,122,24,.07);
+
+    border: 1px solid rgba(255,122,24,.18);
+
+    color: #ffd3ad;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    margin-bottom: 30px;
+
+    animation: badgeFloat 4s ease-in-out infinite;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--orange);
+
+    box-shadow:
+        0 0 12px var(--orange);
+
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%,100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: .5;
+        transform: scale(.75);
+    }
+}
+
+@keyframes badgeFloat {
+    0%,100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+.hero h1 {
+    font-size: clamp(60px, 10vw, 120px);
+
+    line-height: .9;
+
+    letter-spacing: -7px;
+
+    margin-bottom: 30px;
+
+    background:
+        linear-gradient(
+            110deg,
+            #ffffff 15%,
+            #ffb067 55%,
+            #ffd0a0 100%
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+.hero-text {
+    max-width: 690px;
+
+    color: var(--muted);
+
+    font-size: 19px;
+
+    line-height: 1.75;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 14px;
+
+    margin-top: 35px;
+
+    flex-wrap: wrap;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 14px 21px;
+
+    border-radius: 14px;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    transition: .3s ease;
+}
+
+.button.primary {
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--orange),
+            var(--orange-dark)
+        );
+
+    box-shadow:
+        0 10px 35px rgba(255,122,24,.18);
+}
+
+.button.primary:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 15px 45px rgba(255,122,24,.3);
+}
+
+.button.secondary {
+    color: #fff;
+
+    background: rgba(255,255,255,.03);
+
+    border: 1px solid rgba(255,255,255,.09);
+}
+
+.button.secondary:hover {
+    background: rgba(255,255,255,.06);
+    transform: translateY(-3px);
+}
+
+.scroll {
+    margin-top: 70px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #756c66;
+
+    font-size: 12px;
+}
+
+.scroll-line {
+    width: 45px;
+    height: 1px;
+
+    background: var(--orange);
+}
+
+/* =====================================================
+   CARDS
+===================================================== */
+
+.cards {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+
+    margin-top: 55px;
+}
+
+.card {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 30px;
+
+    border-radius: var(--radius);
+
+    background: var(--bg-card);
+
+    border: 1px solid var(--border);
+
+    backdrop-filter: blur(18px);
+
+    transition:
+        transform .35s ease,
+        border-color .35s ease,
+        background .35s ease;
+}
+
+.card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    top: -100px;
+    right: -100px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,122,24,.20),
+            transparent 70%
+        );
+
+    transition: .4s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+
+    border-color:
+        rgba(255,122,24,.38);
+
+    background:
+        rgba(35,24,15,.88);
+}
+
+.card:hover::before {
+    transform: scale(1.5);
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 14px;
+
+    background:
+        rgba(255,122,24,.10);
+
+    border:
+        1px solid rgba(255,122,24,.18);
+
+    color: var(--orange-light);
+
+    font-size: 21px;
+
+    margin-bottom: 24px;
+}
+
+.card h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.card p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* =====================================================
+   STATS
+===================================================== */
+
+.stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 16px;
+
+    margin-top: 55px;
+}
+
+.stat {
+    padding: 30px;
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,.025);
+
+    border: 1px solid rgba(255,255,255,.06);
+
+    transition: .3s ease;
+}
+
+.stat:hover {
+    transform: translateY(-5px);
+
+    border-color:
+        rgba(255,122,24,.25);
+}
+
+.stat-number {
+    font-size: 45px;
+    font-weight: 800;
+
+    letter-spacing: -2px;
+
+    background:
+        linear-gradient(
+            120deg,
+            white,
+            var(--orange-light)
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* =====================================================
+   HISTORIA
+===================================================== */
+
+.story-layout {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 25px;
+
+    margin-top: 55px;
+}
+
+.story-box {
+    padding: 35px;
+
+    border-radius: var(--radius);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,122,24,.07),
+            rgba(255,255,255,.02)
+        );
+
+    border:
+        1px solid rgba(255,122,24,.12);
+}
+
+.story-box h3 {
+    font-size: 25px;
+    margin-bottom: 18px;
+}
+
+.story-box p {
+    color: var(--muted);
+    font-size: 15px;
+}
+
+/* =====================================================
+   TIMELINE
+===================================================== */
+
+.timeline {
+    margin-top: 60px;
+
+    position: relative;
+
+    padding-left: 35px;
+}
+
+.timeline::before {
+    content: "";
+
+    position: absolute;
+
+    left: 7px;
+    top: 0;
+    bottom: 0;
+
+    width: 1px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            var(--orange),
+            transparent
+        );
+}
+
+.timeline-item {
+    position: relative;
+
+    padding-bottom: 45px;
+}
+
+.timeline-item::before {
+    content: "";
+
+    position: absolute;
+
+    left: -32px;
+    top: 4px;
+
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: var(--orange);
+
+    box-shadow:
+        0 0 18px rgba(255,122,24,.7);
+}
+
+.timeline-date {
+    color: var(--orange-light);
+
+    font-size: 12px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.5px;
+
+    margin-bottom: 7px;
+}
+
+.timeline-text {
+    color: var(--muted);
+
+    font-size: 15px;
+}
+
+/* =====================================================
+   SCREENSHOT COMPARISON
+===================================================== */
+
+.comparison {
+    margin-top: 65px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap: 24px;
+}
+
+.screenshot-card {
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        rgba(255,255,255,.025);
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    transition: .4s ease;
+}
+
+.screenshot-card:hover {
+    transform: translateY(-8px);
+
+    border-color:
+        rgba(255,122,24,.35);
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.35);
+}
+
+.screenshot-image {
+    position: relative;
+
+    aspect-ratio: 16 / 10;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #15100c,
+            #0a0806
+        );
+}
+
+.screenshot-image::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            transparent 60%,
+            rgba(0,0,0,.5)
+        );
+
+    pointer-events: none;
+}
+
+.screenshot-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+        transform .7s cubic-bezier(.2,.8,.2,1);
+}
+
+.screenshot-card:hover img {
+    transform: scale(1.035);
+}
+
+.screenshot-info {
+    padding: 25px 27px 28px;
+}
+
+.screenshot-info h3 {
+    font-size: 21px;
+    margin-bottom: 8px;
+}
+
+.screenshot-info p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* =====================================================
+   CREATOR
+===================================================== */
+
+.creator {
+    margin-top: 55px;
+
+    padding: 45px;
+
+    border-radius: 28px;
+
+    background:
+        radial-gradient(
+            circle at 90% 20%,
+            rgba(255,122,24,.12),
+            transparent 25rem
+        ),
+        rgba(255,255,255,.025);
+
+    border:
+        1px solid rgba(255,122,24,.12);
+
+    display: grid;
+
+    grid-template-columns:
+        1fr auto;
+
+    gap: 40px;
+
+    align-items: center;
+}
+
+.creator h3 {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.creator p {
+    color: var(--muted);
+    max-width: 680px;
+}
+
+.creator-badge {
+    width: 100px;
+    height: 100px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 28px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--orange),
+            var(--orange-dark)
+        );
+
+    font-size: 30px;
+    font-weight: 800;
+
+    box-shadow:
+        0 20px 60px rgba(255,122,24,.22);
+}
+
+/* =====================================================
+   QUOTE
+===================================================== */
+
+.quote {
+    margin-top: 25px;
+
+    padding: 25px 30px;
+
+    border-left:
+        3px solid var(--orange);
+
+    background:
+        rgba(255,122,24,.055);
+
+    border-radius: 0 15px 15px 0;
+
+    color: #ddd2ca;
+
+    font-size: 15px;
+}
+
+/* =====================================================
+   PROJECTS
+===================================================== */
+
+.project-grid {
+    display: grid;
+
+    grid-template-columns:
+        1.2fr .8fr;
+
+    gap: 18px;
+
+    margin-top: 55px;
+}
+
+.project {
+    min-height: 260px;
+
+    padding: 32px;
+
+    border-radius: 24px;
+
+    background:
+        rgba(255,255,255,.025);
+
+    border:
+        1px solid rgba(255,255,255,.07);
+
+    position: relative;
+
+    overflow: hidden;
+
+    transition: .4s ease;
+}
+
+.project:hover {
+    transform: translateY(-7px);
+
+    border-color:
+        rgba(255,122,24,.3);
+}
+
+.project.featured {
+    min-height: 390px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,122,24,.10),
+            rgba(255,255,255,.025)
+        );
+}
+
+.project::before {
+    content: "";
+
+    position: absolute;
+
+    width: 280px;
+    height: 280px;
+
+    right: -100px;
+    top: -100px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,122,24,.16),
+            transparent 70%
+        );
+
+    transition: .5s ease;
+}
+
+.project:hover::before {
+    transform: scale(1.35);
+}
+
+.project-content {
+    position: relative;
+    z-index: 2;
+}
+
+.project-label {
+    color: var(--orange-light);
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.5px;
+
+    font-weight: 800;
+
+    margin-bottom: 10px;
+}
+
+.project h3 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.project p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* =====================================================
+   PLANS CTA
+===================================================== */
+
+.cta {
+    text-align: center;
+
+    padding: 100px 30px;
+
+    border-radius: 30px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,122,24,.18),
+            transparent 65%
+        );
+
+    border:
+        1px solid rgba(255,122,24,.10);
+}
+
+.cta h2 {
+    max-width: 800px;
+    margin: 0 auto 20px;
+}
+
+.cta p {
+    max-width: 620px;
+
+    margin: 0 auto;
+
+    color: var(--muted);
+}
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+footer {
+    padding: 50px 0 35px;
+
+    border-top:
+        1px solid rgba(255,255,255,.05);
+
+    color: #756d67;
+
+    font-size: 13px;
+}
+
+.footer-inner {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.footer-logo {
+    color: white;
+    font-weight: 800;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 850px) {
+
+    .nav-links {
+        display: none;
+    }
+
+    .cards,
+    .stats,
+    .story-layout,
+    .comparison,
+    .project-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .creator {
+        grid-template-columns: 1fr;
+    }
+
+    .creator-badge {
+        width: 80px;
+        height: 80px;
+    }
+
+    .hero h1 {
+        letter-spacing: -4px;
+    }
+
+    section {
+        padding: 90px 0;
+    }
+
+}
+
+@media (max-width: 500px) {
+
+    .container {
+        width: min(
+            calc(100% - 30px),
+            var(--max-width)
+        );
+    }
+
+    .nav {
+        padding: 18px 15px;
+    }
+
+    .hero {
+        padding-top: 110px;
+    }
+
+    .hero h1 {
+        font-size: 58px;
+    }
+
+    .hero-text {
+        font-size: 16px;
+    }
+
+    h2 {
+        font-size: 40px;
+    }
+
+    .card,
+    .story-box,
+    .creator {
+        padding: 25px;
+    }
+
+}
+
+/* =====================================================
+   REDUCED MOTION
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="orb one"></div>
+<div class="orb two"></div>
+
+
+<!-- =====================================================
+     NAV
+===================================================== -->
+
+<header id="header">
+
+<nav class="nav">
+
+<a href="https://brainverse.pl" class="logo">
+    <span class="logo-mark">B</span>
+    BrainVerse
+</a>
+
+<div class="nav-links">
+
+<a href="https://brainverse.pl">Strona główna</a>
+<a href="#about">Czym jest</a>
+<a href="#history">Historia</a>
+<a href="#evolution">Rozwój</a>
+<a href="#projects">Projekty</a>
+
+<a href="#plans" class="nav-button">
+    Plany
+</a>
+
+</div>
+
+</nav>
+
+</header>
+
+
+<main>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="hero">
+
+<div class="container">
+
+<div class="hero-content reveal">
+
+<div class="badge">
+    <span class="status-dot"></span>
+    Projekt aktywnie rozwijany
+</div>
+
+<h1>
+    O<br>
+    BrainVerse.
+</h1>
+
+<p class="hero-text">
+    BrainVerse to niezależna strona pełna gier,
+    projektów, eksperymentów i narzędzi.
+    Powstała z prostego pomysłu, a z czasem
+    zaczęła stawać się czymś znacznie większym.
+</p>
+
+<div class="hero-actions">
+
+<a href="#about" class="button primary">
+    Poznaj BrainVerse
+</a>
+
+<a href="#evolution" class="button secondary">
+    Zobacz, jak się zmienił
+</a>
+
+</div>
+
+<div class="scroll">
+    <span class="scroll-line"></span>
+    Przewiń dalej
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     ABOUT
+===================================================== -->
+
+<section id="about">
+
+<div class="container">
+
+<div class="reveal">
+
+<div class="kicker">
+    Czym jest BrainVerse?
+</div>
+
+<h2>
+    Wszystko w jednym miejscu.
+</h2>
+
+<p class="section-description">
+    BrainVerse nie jest tylko stroną z grami.
+    To miejsce, w którym spotykają się różne
+    projekty i pomysły.
+</p>
+
+</div>
+
+
+<div class="cards">
+
+
+<div class="card reveal">
+
+<div class="card-icon">
+    🎮
+</div>
+
+<h3>
+    Gry
+</h3>
+
+<p>
+    Jedna z najważniejszych części BrainVerse.
+    Strona zawiera własne gry i projekty,
+    które są stale rozwijane.
+</p>
+
+</div>
+
+
+<div class="card reveal">
+
+<div class="card-icon">
+    🧪
+</div>
+
+<h3>
+    Projekty i eksperymenty
+</h3>
+
+<p>
+    Nie wszystko musi być grą.
+    BrainVerse jest również miejscem
+    dla różnych pomysłów i eksperymentów.
+</p>
+
+</div>
+
+
+<div class="card reveal">
+
+<div class="card-icon">
+    ☁
+</div>
+
+<h3>
+    Narzędzie twórcy
+</h3>
+
+<p>
+    Początkowo BrainVerse miał być cyfrową
+    chmurą na pliki. Pozostałości tego
+    pomysłu nadal istnieją na stronie.
+</p>
+
+</div>
+
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat reveal">
+    <div class="stat-number">13</div>
+    <div class="stat-label">gier na stronie</div>
+</div>
+
+<div class="stat reveal">
+    <div class="stat-number">2026</div>
+    <div class="stat-label">rok rozpoczęcia projektu</div>
+</div>
+
+<div class="stat reveal">
+    <div class="stat-number">1</div>
+    <div class="stat-label">twórca</div>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     HISTORY
+===================================================== -->
+
+<section id="history">
+
+<div class="container">
+
+<div class="reveal">
+
+<div class="kicker">
+    Historia
+</div>
+
+<h2>
+    Od prostego pomysłu
+    do BrainVerse.
+</h2>
+
+<p class="section-description">
+    BrainVerse nie powstał jako wielki,
+    dokładnie zaplanowany projekt.
+    Wszystko zaczęło się znacznie prościej.
+</p>
+
+</div>
+
+
+<div class="story-layout">
+
+<div class="story-box reveal">
+
+<h3>
+    Początek
+</h3>
+
+<p>
+    26 lutego 2026 roku rozpoczęło się tworzenie
+    BrainVerse. Początkowo pomysł był związany
+    z cyfrową chmurą na pliki.
+</p>
+
+<br>
+
+<p>
+    Niedługo później pojawiła się domena
+    <strong>brainverse.pl</strong>.
+    Została kupiona 1 marca 2026 roku
+    za zaledwie 13 zł.
+</p>
+
+</div>
+
+
+<div class="story-box reveal">
+
+<h3>
+    Pierwsza wersja
+</h3>
+
+<p>
+    Pierwsza wersja strony zawierała przede wszystkim
+    system logowania oraz kilka plików.
+    Z czasem projekt zaczął ewoluować w stronę
+    gier, eksperymentów i różnych narzędzi.
+</p>
+
+<div class="quote">
+    BrainVerse powstał trochę spontanicznie.
+    Najpierw pojawiła się domena, a dopiero później
+    pomysł na to, co właściwie z nią zrobić.
+</div>
+
+</div>
+
+</div>
+
+
+<div class="timeline">
+
+
+<div class="timeline-item reveal">
+
+<div class="timeline-date">
+    26.02.2026
+</div>
+
+<div class="timeline-text">
+    Rozpoczęcie tworzenia BrainVerse.
+</div>
+
+</div>
+
+
+<div class="timeline-item reveal">
+
+<div class="timeline-date">
+    01.03.2026
+</div>
+
+<div class="timeline-text">
+    Zakup domeny brainverse.pl
+    i podłączenie jej do projektu.
+</div>
+
+</div>
+
+
+<div class="timeline-item reveal">
+
+<div class="timeline-date">
+    2026
+</div>
+
+<div class="timeline-text">
+    Rozwój strony, powstawanie kolejnych projektów
+    oraz stopniowe odejście od pierwotnej koncepcji
+    samej chmury na pliki.
+</div>
+
+</div>
+
+
+<div class="timeline-item reveal">
+
+<div class="timeline-date">
+    07.09.2026
+</div>
+
+<div class="timeline-text">
+    BrainVerse posiada już 13 gier
+    i jest stale rozwijanym projektem.
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     EVOLUTION
+===================================================== -->
+
+<section id="evolution">
+
+<div class="container">
+
+<div class="reveal">
+
+<div class="kicker">
+    Rozwój
+</div>
+
+<h2>
+    Jak wyglądało
+    BrainVerse?
+</h2>
+
+<p class="section-description">
+    Strona przeszła przez kilka etapów.
+    Poniżej można zobaczyć różnicę pomiędzy
+    początkową wersją a jej obecnym wyglądem.
+</p>
+
+</div>
+
+
+<div class="comparison">
+
+
+<!-- STARE -->
+
+<div class="screenshot-card reveal">
+
+<div class="screenshot-image">
+
+<img
+    src="images/brainverse-old.png"
+    alt="BrainVerse w początkowej wersji"
+    loading="lazy"
+>
+
+</div>
+
+<div class="screenshot-info">
+
+<h3>
+    BrainVerse na początku
+</h3>
+
+<p>
+    Pierwsza wersja strony — prostsza,
+    skupiona głównie na pierwotnym pomyśle
+    cyfrowej chmury i plików.
+</p>
+
+</div>
+
+</div>
+
+
+<!-- NOWE -->
+
+<div class="screenshot-card reveal">
+
+<div class="screenshot-image">
+
+<img
+    src="images/brainverse-now.png"
+    alt="BrainVerse w obecnej wersji"
+    loading="lazy"
+>
+
+</div>
+
+<div class="screenshot-info">
+
+<h3>
+    BrainVerse obecnie
+</h3>
+
+<p>
+    Obecna wersja projektu skupia się
+    na grach, projektach, eksperymentach
+    i różnych narzędziach.
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     CREATOR
+===================================================== -->
+
+<section>
+
+<div class="container">
+
+<div class="reveal">
+
+<div class="kicker">
+    Twórca
+</div>
+
+<h2>
+    Jedna osoba,
+    wiele pomysłów.
+</h2>
+
+</div>
+
+
+<div class="creator reveal">
+
+<div>
+
+<h3>
+    Nikoa
+</h3>
+
+<p>
+    BrainVerse jest niezależnym projektem tworzonym
+    od początku przez jednego twórcę.
+    Wszystkie projekty należą do BrainVerse,
+    a przy części funkcji wykorzystywana jest
+    również pomoc sztucznej inteligencji.
+</p>
+
+<div class="quote">
+    Jednym z najbardziej praktycznych elementów
+    BrainVerse jest możliwość wykorzystania strony
+    jako przenośnej cyfrowej chmury — plik można
+    przesłać, zalogować się na innym komputerze
+    i ponownie go otworzyć.
+</div>
+
+</div>
+
+<div class="creator-badge">
+    N
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     DROGA
+===================================================== -->
+
+<section>
+
+<div class="container">
+
+<div class="reveal">
+
+<div class="kicker">
+    Po drodze
+</div>
+
+<h2>
+    Nie wszystko
+    poszło zgodnie z planem.
+</h2>
+
+<p class="section-description">
+    Przy tworzeniu strony pojawiło się kilka
+    problemów, których raczej nie dało się
+    przewidzieć na początku.
+</p>
+
+</div>
+
+
+<div class="cards">
+
+
+<div class="card reveal">
+
+<div class="card-icon">
+    🌐
+</div>
+
+<h3>
+    DNS
+</h3>
+
+<p>
+    Jednym z najtrudniejszych etapów była
+    konfiguracja DNS. Było to pierwsze
+    większe doświadczenie z tym tematem.
+</p>
+
+</div>
+
+
+<div class="card reveal">
+
+<div class="card-icon">
+    ⚠
+</div>
+
+<h3>
+    „Replace all”
+</h3>
+
+<p>
+    Podczas pracy nad kodem wyszukane zostało
+    słowo „brain”, a następnie przez przypadek
+    użyto opcji „replace all” z pustą wartością.
+    Efekt? Część strony przestała działać.
+</p>
+
+</div>
+
+
+<div class="card reveal">
+
+<div class="card-icon">
+    🔎
+</div>
+
+<h3>
+    Google
+</h3>
+
+<p>
+    Jednym z pierwszych większych sukcesów było
+    pojawienie się głównej strony BrainVerse
+    w wynikach wyszukiwania Google.
+</p>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     PROJECTS
+===================================================== -->
+
+<section id="projects">
+
+<div class="container">
+
+<div class="reveal">
+
+<div class="kicker">
+    Projekty
+</div>
+
+<h2>
+    BrainVerse to coś
+    więcej niż gry.
+</h2>
+
+<p class="section-description">
+    Gry są ważną częścią strony, ale obok nich
+    powstają również większe projekty.
+</p>
+
+</div>
+
+
+<div class="project-grid">
+
+
+<div class="project featured reveal">
+
+<div class="project-content">
+
+<div class="project-label">
+    Aktualny projekt
+</div>
+
+<h3>
+    Voxel Lab
+</h3>
+
+<p>
+    Jeden z najbardziej rozwijanych projektów
+    BrainVerse i obecny faworyt twórcy.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="project reveal">
+
+<div class="project-content">
+
+<div class="project-label">
+    Projekt
+</div>
+
+<h3>
+    NEXAR
+</h3>
+
+<p>
+    Bardziej ambitny projekt multiplayer,
+    rozwijany jako część ekosystemu BrainVerse.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="project reveal">
+
+<div class="project-content">
+
+<div class="project-label">
+    Przyszłość
+</div>
+
+<h3>
+    Kolejne projekty
+</h3>
+
+<p>
+    Następne gry, eksperymenty i pomysły
+    są już częścią dalszego rozwoju strony.
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     PLANS
+===================================================== -->
+
+<section id="plans">
+
+<div class="container">
+
+<div class="cta reveal">
+
+<div class="kicker">
+    Co dalej?
+</div>
+
+<h2>
+    BrainVerse jeszcze
+    się rozwija.
+</h2>
+
+<p>
+    W najbliższym czasie planowane są kolejne gry,
+    aktualizacje istniejących projektów oraz
+    następne pomysły. Długoterminowy plan jest prosty:
+    dalej rozwijać stronę.
+</p>
+
+<br>
+
+<a href="#" class="button primary">
+    Wróć na górę
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+<div class="container">
+
+<div class="footer-inner">
+
+<div>
+    <span class="footer-logo">
+        BrainVerse
+    </span>
+    <br>
+    Gry. Projekty. Eksperymenty.
+</div>
+
+<div>
+    © 2026 BrainVerse
+</div>
+
+</div>
+
+</div>
+
+</footer>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+/* HEADER */
+
+const header = document.getElementById("header");
+
+window.addEventListener("scroll", () => {
+
+    if (window.scrollY > 40) {
+        header.classList.add("scrolled");
+    } else {
+        header.classList.remove("scrolled");
+    }
+
+});
+
+
+/* REVEAL ANIMATIONS */
+
+const reveals =
+    document.querySelectorAll(".reveal");
+
+const observer =
+    new IntersectionObserver(
+        (entries) => {
+
+            entries.forEach((entry) => {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.classList.add("visible");
+
+                    observer.unobserve(entry.target);
+
+                }
+
+            });
+
+        },
+        {
+            threshold: 0.12
+        }
+    );
+
+
+reveals.forEach((element) => {
+
+    observer.observe(element);
+
+});
+
+
+/* HERO PARALLAX */
+
+const hero =
+    document.querySelector(".hero-content");
+
+window.addEventListener("scroll", () => {
+
+    if (!hero) return;
+
+    const scroll =
+        window.scrollY;
+
+    if (scroll < window.innerHeight) {
+
+        hero.style.transform =
+            `translateY(${scroll * 0.12}px)`;
+
+        hero.style.opacity =
+            Math.max(
+                0,
+                1 - scroll / 700
+            );
+
+    }
+
+});
+
+
+/* SMOOTH ANCHORS */
+
+document.querySelectorAll(
+    'a[href^="#"]'
+).forEach(link => {
+
+    link.addEventListener(
+        "click",
+        function(e) {
+
+            const target =
+                document.querySelector(
+                    this.getAttribute("href")
+                );
+
+            if (!target) return;
+
+            e.preventDefault();
+
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }
+    );
+
+});
+
+
+/* MOUSE GLOW */
+
+document.querySelectorAll(
+    ".card, .project, .screenshot-card"
+).forEach(element => {
+
+    element.addEventListener(
+        "mousemove",
+        (event) => {
+
+            const rect =
+                element.getBoundingClientRect();
+
+            const x =
+                event.clientX - rect.left;
+
+            const y =
+                event.clientY - rect.top;
+
+            element.style.background =
+                `
+                radial-gradient(
+                    450px circle at ${x}px ${y}px,
+                    rgba(255,122,24,.07),
+                    rgba(255,255,255,.025) 45%
+                )
+                `;
+
+        }
+    );
+
+    element.addEventListener(
+        "mouseleave",
+        () => {
+
+            element.style.background = "";
+
+        }
+    );
+
+});
+
+</script>
+
+</body>
+</html>
