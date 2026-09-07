@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -48,6 +49,7 @@ html {
 
 body {
     font-family: "Inter", sans-serif;
+
     background:
         radial-gradient(
             circle at 15% 5%,
@@ -67,9 +69,12 @@ body {
         );
 
     color: var(--text);
+
     overflow-x: hidden;
+
     line-height: 1.6;
 }
+
 
 /* =====================================================
    BACKGROUND
@@ -77,6 +82,7 @@ body {
 
 body::before {
     content: "";
+
     position: fixed;
     inset: 0;
 
@@ -95,34 +101,39 @@ body::before {
 
     background-size: 50px 50px;
 
-    mask-image: linear-gradient(
-        to bottom,
-        black,
-        transparent 85%
-    );
+    mask-image:
+        linear-gradient(
+            to bottom,
+            black,
+            transparent 85%
+        );
 
     z-index: -2;
 }
 
 .orb {
     position: fixed;
+
     width: 450px;
     height: 450px;
 
     border-radius: 50%;
 
-    background: radial-gradient(
-        circle,
-        rgba(255, 122, 24, 0.12),
-        transparent 70%
-    );
+    background:
+        radial-gradient(
+            circle,
+            rgba(255, 122, 24, 0.12),
+            transparent 70%
+        );
 
     filter: blur(30px);
 
     pointer-events: none;
+
     z-index: -1;
 
-    animation: floatOrb 12s ease-in-out infinite;
+    animation:
+        floatOrb 12s ease-in-out infinite;
 }
 
 .orb.one {
@@ -133,10 +144,12 @@ body::before {
 .orb.two {
     right: -220px;
     top: 35%;
+
     animation-delay: -5s;
 }
 
 @keyframes floatOrb {
+
     0%,100% {
         transform: translate(0,0);
     }
@@ -144,7 +157,9 @@ body::before {
     50% {
         transform: translate(30px,-25px);
     }
+
 }
+
 
 /* =====================================================
    NAVIGATION
@@ -152,50 +167,68 @@ body::before {
 
 header {
     position: fixed;
+
     top: 0;
     left: 0;
     right: 0;
 
     z-index: 1000;
 
-    transition: 0.35s ease;
+    transition: .35s ease;
 }
 
 header.scrolled {
-    background: rgba(7,6,5,0.78);
+
+    background:
+        rgba(7,6,5,.78);
+
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
+
+    border-bottom:
+        1px solid var(--border);
 }
 
 .nav {
+
     max-width: var(--max-width);
+
     margin: auto;
 
     padding: 22px 24px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 }
 
 .logo {
+
     display: flex;
+
     align-items: center;
+
     gap: 10px;
 
     color: white;
+
     text-decoration: none;
 
     font-size: 20px;
+
     font-weight: 800;
-    letter-spacing: -0.5px;
+
+    letter-spacing: -.5px;
 }
 
 .logo-mark {
+
     width: 34px;
     height: 34px;
 
     display: grid;
+
     place-items: center;
 
     border-radius: 10px;
@@ -208,71 +241,96 @@ header.scrolled {
         );
 
     box-shadow:
-        0 0 25px rgba(255,122,24,.25);
+        0 0 25px
+        rgba(255,122,24,.25);
 
     font-size: 15px;
 }
 
 .nav-links {
+
     display: flex;
+
     align-items: center;
-    gap: 28px;
+
+    gap: 24px;
 }
 
 .nav-links a {
+
     color: var(--muted);
+
     text-decoration: none;
 
     font-size: 14px;
+
     font-weight: 500;
 
-    transition: 0.25s ease;
+    transition: .25s ease;
 }
 
 .nav-links a:hover {
+
     color: white;
 }
 
 .nav-button {
+
     padding: 10px 17px;
 
     border-radius: 12px;
 
-    background: rgba(255,122,24,.08);
+    background:
+        rgba(255,122,24,.08);
 
-    border: 1px solid rgba(255,122,24,.18);
+    border:
+        1px solid rgba(255,122,24,.18);
 
-    color: var(--orange-light) !important;
+    color:
+        var(--orange-light) !important;
 
     transition: .3s ease;
 }
 
 .nav-button:hover {
-    background: rgba(255,122,24,.16);
-    border-color: rgba(255,122,24,.4);
-    transform: translateY(-2px);
+
+    background:
+        rgba(255,122,24,.16);
+
+    border-color:
+        rgba(255,122,24,.4);
+
+    transform:
+        translateY(-2px);
 }
+
 
 /* =====================================================
    GLOBAL
 ===================================================== */
 
 .container {
-    width: min(
-        calc(100% - 48px),
-        var(--max-width)
-    );
+
+    width:
+        min(
+            calc(100% - 48px),
+            var(--max-width)
+        );
 
     margin: auto;
 }
 
 section {
+
     padding: 120px 0;
 }
 
 .reveal {
+
     opacity: 0;
-    transform: translateY(35px);
+
+    transform:
+        translateY(35px);
 
     transition:
         opacity .8s ease,
@@ -280,95 +338,152 @@ section {
 }
 
 .reveal.visible {
+
     opacity: 1;
-    transform: translateY(0);
+
+    transform:
+        translateY(0);
 }
 
 .kicker {
-    color: var(--orange-light);
 
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    color:
+        var(--orange-light);
 
-    font-size: 12px;
-    font-weight: 800;
+    text-transform:
+        uppercase;
 
-    margin-bottom: 16px;
+    letter-spacing:
+        2px;
+
+    font-size:
+        12px;
+
+    font-weight:
+        800;
+
+    margin-bottom:
+        16px;
 }
 
 h2 {
-    font-size: clamp(36px, 5vw, 62px);
 
-    line-height: 1.05;
+    font-size:
+        clamp(36px, 5vw, 62px);
 
-    letter-spacing: -2.5px;
+    line-height:
+        1.05;
 
-    margin-bottom: 20px;
+    letter-spacing:
+        -2.5px;
+
+    margin-bottom:
+        20px;
 }
 
 .section-description {
-    max-width: 650px;
 
-    color: var(--muted);
+    max-width:
+        650px;
 
-    font-size: 17px;
+    color:
+        var(--muted);
+
+    font-size:
+        17px;
 }
+
 
 /* =====================================================
    HERO
 ===================================================== */
 
 .hero {
-    min-height: 100vh;
 
-    display: flex;
-    align-items: center;
+    min-height:
+        100vh;
 
-    padding-top: 130px;
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    padding-top:
+        130px;
 }
 
 .hero-content {
-    max-width: 900px;
+
+    max-width:
+        900px;
 }
 
 .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
 
-    padding: 9px 14px;
+    display:
+        inline-flex;
 
-    border-radius: 999px;
+    align-items:
+        center;
 
-    background: rgba(255,122,24,.07);
+    gap:
+        9px;
 
-    border: 1px solid rgba(255,122,24,.18);
+    padding:
+        9px 14px;
 
-    color: #ffd3ad;
+    border-radius:
+        999px;
 
-    font-size: 13px;
-    font-weight: 600;
+    background:
+        rgba(255,122,24,.07);
 
-    margin-bottom: 30px;
+    border:
+        1px solid
+        rgba(255,122,24,.18);
 
-    animation: badgeFloat 4s ease-in-out infinite;
+    color:
+        #ffd3ad;
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+
+    margin-bottom:
+        30px;
+
+    animation:
+        badgeFloat 4s
+        ease-in-out infinite;
 }
 
 .status-dot {
-    width: 7px;
-    height: 7px;
 
-    border-radius: 50%;
+    width:
+        7px;
 
-    background: var(--orange);
+    height:
+        7px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--orange);
 
     box-shadow:
-        0 0 12px var(--orange);
+        0 0 12px
+        var(--orange);
 
-    animation: pulse 2s infinite;
+    animation:
+        pulse 2s infinite;
 }
 
 @keyframes pulse {
+
     0%,100% {
         opacity: 1;
         transform: scale(1);
@@ -378,9 +493,11 @@ h2 {
         opacity: .5;
         transform: scale(.75);
     }
+
 }
 
 @keyframes badgeFloat {
+
     0%,100% {
         transform: translateY(0);
     }
@@ -388,16 +505,22 @@ h2 {
     50% {
         transform: translateY(-4px);
     }
+
 }
 
 .hero h1 {
-    font-size: clamp(60px, 10vw, 120px);
 
-    line-height: .9;
+    font-size:
+        clamp(60px, 10vw, 120px);
 
-    letter-spacing: -7px;
+    line-height:
+        .9;
 
-    margin-bottom: 30px;
+    letter-spacing:
+        -7px;
+
+    margin-bottom:
+        30px;
 
     background:
         linear-gradient(
@@ -407,50 +530,80 @@ h2 {
             #ffd0a0 100%
         );
 
-    -webkit-background-clip: text;
-    background-clip: text;
+    -webkit-background-clip:
+        text;
 
-    color: transparent;
+    background-clip:
+        text;
+
+    color:
+        transparent;
 }
 
 .hero-text {
-    max-width: 690px;
 
-    color: var(--muted);
+    max-width:
+        690px;
 
-    font-size: 19px;
+    color:
+        var(--muted);
 
-    line-height: 1.75;
+    font-size:
+        19px;
+
+    line-height:
+        1.75;
 }
 
 .hero-actions {
-    display: flex;
-    gap: 14px;
 
-    margin-top: 35px;
+    display:
+        flex;
 
-    flex-wrap: wrap;
+    gap:
+        14px;
+
+    margin-top:
+        35px;
+
+    flex-wrap:
+        wrap;
 }
 
 .button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
 
-    padding: 14px 21px;
+    display:
+        inline-flex;
 
-    border-radius: 14px;
+    align-items:
+        center;
 
-    text-decoration: none;
+    justify-content:
+        center;
 
-    font-size: 14px;
-    font-weight: 700;
+    padding:
+        14px 21px;
 
-    transition: .3s ease;
+    border-radius:
+        14px;
+
+    text-decoration:
+        none;
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+
+    transition:
+        .3s ease;
 }
 
 .button.primary {
-    color: white;
+
+    color:
+        white;
 
     background:
         linear-gradient(
@@ -460,77 +613,118 @@ h2 {
         );
 
     box-shadow:
-        0 10px 35px rgba(255,122,24,.18);
+        0 10px 35px
+        rgba(255,122,24,.18);
 }
 
 .button.primary:hover {
-    transform: translateY(-3px);
+
+    transform:
+        translateY(-3px);
 
     box-shadow:
-        0 15px 45px rgba(255,122,24,.3);
+        0 15px 45px
+        rgba(255,122,24,.3);
 }
 
 .button.secondary {
-    color: #fff;
 
-    background: rgba(255,255,255,.03);
+    color:
+        #fff;
 
-    border: 1px solid rgba(255,255,255,.09);
+    background:
+        rgba(255,255,255,.03);
+
+    border:
+        1px solid
+        rgba(255,255,255,.09);
 }
 
 .button.secondary:hover {
-    background: rgba(255,255,255,.06);
-    transform: translateY(-3px);
+
+    background:
+        rgba(255,255,255,.06);
+
+    transform:
+        translateY(-3px);
 }
 
 .scroll {
-    margin-top: 70px;
 
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    margin-top:
+        70px;
 
-    color: #756c66;
+    display:
+        flex;
 
-    font-size: 12px;
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    color:
+        #756c66;
+
+    font-size:
+        12px;
 }
 
 .scroll-line {
-    width: 45px;
-    height: 1px;
 
-    background: var(--orange);
+    width:
+        45px;
+
+    height:
+        1px;
+
+    background:
+        var(--orange);
 }
+
 
 /* =====================================================
    CARDS
 ===================================================== */
 
 .cards {
-    display: grid;
+
+    display:
+        grid;
 
     grid-template-columns:
-        repeat(3, 1fr);
+        repeat(3,1fr);
 
-    gap: 18px;
+    gap:
+        18px;
 
-    margin-top: 55px;
+    margin-top:
+        55px;
 }
 
 .card {
-    position: relative;
 
-    overflow: hidden;
+    position:
+        relative;
 
-    padding: 30px;
+    overflow:
+        hidden;
 
-    border-radius: var(--radius);
+    padding:
+        30px;
 
-    background: var(--bg-card);
+    border-radius:
+        var(--radius);
 
-    border: 1px solid var(--border);
+    background:
+        var(--bg-card);
 
-    backdrop-filter: blur(18px);
+    border:
+        1px solid
+        var(--border);
+
+    backdrop-filter:
+        blur(18px);
 
     transition:
         transform .35s ease,
@@ -539,17 +733,27 @@ h2 {
 }
 
 .card::before {
-    content: "";
 
-    position: absolute;
+    content:
+        "";
 
-    width: 180px;
-    height: 180px;
+    position:
+        absolute;
 
-    top: -100px;
-    right: -100px;
+    width:
+        180px;
 
-    border-radius: 50%;
+    height:
+        180px;
+
+    top:
+        -100px;
+
+    right:
+        -100px;
+
+    border-radius:
+        50%;
 
     background:
         radial-gradient(
@@ -558,11 +762,14 @@ h2 {
             transparent 70%
         );
 
-    transition: .4s ease;
+    transition:
+        .4s ease;
 }
 
 .card:hover {
-    transform: translateY(-8px);
+
+    transform:
+        translateY(-8px);
 
     border-color:
         rgba(255,122,24,.38);
@@ -572,80 +779,121 @@ h2 {
 }
 
 .card:hover::before {
-    transform: scale(1.5);
+
+    transform:
+        scale(1.5);
 }
 
 .card-icon {
-    width: 48px;
-    height: 48px;
 
-    display: grid;
-    place-items: center;
+    width:
+        48px;
 
-    border-radius: 14px;
+    height:
+        48px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    border-radius:
+        14px;
 
     background:
         rgba(255,122,24,.10);
 
     border:
-        1px solid rgba(255,122,24,.18);
+        1px solid
+        rgba(255,122,24,.18);
 
-    color: var(--orange-light);
+    color:
+        var(--orange-light);
 
-    font-size: 21px;
+    font-size:
+        21px;
 
-    margin-bottom: 24px;
+    margin-bottom:
+        24px;
 }
 
 .card h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
+
+    font-size:
+        20px;
+
+    margin-bottom:
+        10px;
 }
 
 .card p {
-    color: var(--muted);
-    font-size: 14px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        14px;
 }
+
 
 /* =====================================================
    STATS
 ===================================================== */
 
 .stats {
-    display: grid;
+
+    display:
+        grid;
 
     grid-template-columns:
         repeat(3,1fr);
 
-    gap: 16px;
+    gap:
+        16px;
 
-    margin-top: 55px;
+    margin-top:
+        55px;
 }
 
 .stat {
-    padding: 30px;
 
-    border-radius: 20px;
+    padding:
+        30px;
 
-    background: rgba(255,255,255,.025);
+    border-radius:
+        20px;
 
-    border: 1px solid rgba(255,255,255,.06);
+    background:
+        rgba(255,255,255,.025);
 
-    transition: .3s ease;
+    border:
+        1px solid
+        rgba(255,255,255,.06);
+
+    transition:
+        .3s ease;
 }
 
 .stat:hover {
-    transform: translateY(-5px);
+
+    transform:
+        translateY(-5px);
 
     border-color:
         rgba(255,122,24,.25);
 }
 
 .stat-number {
-    font-size: 45px;
-    font-weight: 800;
 
-    letter-spacing: -2px;
+    font-size:
+        45px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        -2px;
 
     background:
         linear-gradient(
@@ -654,36 +902,52 @@ h2 {
             var(--orange-light)
         );
 
-    -webkit-background-clip: text;
-    background-clip: text;
+    -webkit-background-clip:
+        text;
 
-    color: transparent;
+    background-clip:
+        text;
+
+    color:
+        transparent;
 }
 
 .stat-label {
-    color: var(--muted);
-    font-size: 13px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        13px;
 }
+
 
 /* =====================================================
    HISTORIA
 ===================================================== */
 
 .story-layout {
-    display: grid;
+
+    display:
+        grid;
 
     grid-template-columns:
         1fr 1fr;
 
-    gap: 25px;
+    gap:
+        25px;
 
-    margin-top: 55px;
+    margin-top:
+        55px;
 }
 
 .story-box {
-    padding: 35px;
 
-    border-radius: var(--radius);
+    padding:
+        35px;
+
+    border-radius:
+        var(--radius);
 
     background:
         linear-gradient(
@@ -693,41 +957,64 @@ h2 {
         );
 
     border:
-        1px solid rgba(255,122,24,.12);
+        1px solid
+        rgba(255,122,24,.12);
 }
 
 .story-box h3 {
-    font-size: 25px;
-    margin-bottom: 18px;
+
+    font-size:
+        25px;
+
+    margin-bottom:
+        18px;
 }
 
 .story-box p {
-    color: var(--muted);
-    font-size: 15px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        15px;
 }
+
 
 /* =====================================================
    TIMELINE
 ===================================================== */
 
 .timeline {
-    margin-top: 60px;
 
-    position: relative;
+    margin-top:
+        60px;
 
-    padding-left: 35px;
+    position:
+        relative;
+
+    padding-left:
+        35px;
 }
 
 .timeline::before {
-    content: "";
 
-    position: absolute;
+    content:
+        "";
 
-    left: 7px;
-    top: 0;
-    bottom: 0;
+    position:
+        absolute;
 
-    width: 1px;
+    left:
+        7px;
+
+    top:
+        0;
+
+    bottom:
+        0;
+
+    width:
+        1px;
 
     background:
         linear-gradient(
@@ -738,96 +1025,140 @@ h2 {
 }
 
 .timeline-item {
-    position: relative;
 
-    padding-bottom: 45px;
+    position:
+        relative;
+
+    padding-bottom:
+        45px;
 }
 
 .timeline-item::before {
-    content: "";
 
-    position: absolute;
+    content:
+        "";
 
-    left: -32px;
-    top: 4px;
+    position:
+        absolute;
 
-    width: 9px;
-    height: 9px;
+    left:
+        -32px;
 
-    border-radius: 50%;
+    top:
+        4px;
 
-    background: var(--orange);
+    width:
+        9px;
+
+    height:
+        9px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--orange);
 
     box-shadow:
-        0 0 18px rgba(255,122,24,.7);
+        0 0 18px
+        rgba(255,122,24,.7);
 }
 
 .timeline-date {
-    color: var(--orange-light);
 
-    font-size: 12px;
-    font-weight: 800;
+    color:
+        var(--orange-light);
 
-    text-transform: uppercase;
+    font-size:
+        12px;
 
-    letter-spacing: 1.5px;
+    font-weight:
+        800;
 
-    margin-bottom: 7px;
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        1.5px;
+
+    margin-bottom:
+        7px;
 }
 
 .timeline-text {
-    color: var(--muted);
 
-    font-size: 15px;
+    color:
+        var(--muted);
+
+    font-size:
+        15px;
 }
+
 
 /* =====================================================
    SCREENSHOT COMPARISON
 ===================================================== */
 
 .comparison {
-    margin-top: 65px;
 
-    display: grid;
+    margin-top:
+        65px;
+
+    display:
+        grid;
 
     grid-template-columns:
         repeat(2,1fr);
 
-    gap: 24px;
+    gap:
+        24px;
 }
 
 .screenshot-card {
-    position: relative;
 
-    overflow: hidden;
+    position:
+        relative;
 
-    border-radius: 24px;
+    overflow:
+        hidden;
+
+    border-radius:
+        24px;
 
     background:
         rgba(255,255,255,.025);
 
     border:
-        1px solid rgba(255,255,255,.08);
+        1px solid
+        rgba(255,255,255,.08);
 
-    transition: .4s ease;
+    transition:
+        .4s ease;
 }
 
 .screenshot-card:hover {
-    transform: translateY(-8px);
+
+    transform:
+        translateY(-8px);
 
     border-color:
         rgba(255,122,24,.35);
 
     box-shadow:
-        0 25px 80px rgba(0,0,0,.35);
+        0 25px 80px
+        rgba(0,0,0,.35);
 }
 
 .screenshot-image {
-    position: relative;
 
-    aspect-ratio: 16 / 10;
+    position:
+        relative;
 
-    overflow: hidden;
+    aspect-ratio:
+        16 / 10;
+
+    overflow:
+        hidden;
 
     background:
         linear-gradient(
@@ -838,10 +1169,15 @@ h2 {
 }
 
 .screenshot-image::after {
-    content: "";
 
-    position: absolute;
-    inset: 0;
+    content:
+        "";
+
+    position:
+        absolute;
+
+    inset:
+        0;
 
     background:
         linear-gradient(
@@ -850,49 +1186,74 @@ h2 {
             rgba(0,0,0,.5)
         );
 
-    pointer-events: none;
+    pointer-events:
+        none;
 }
 
 .screenshot-image img {
-    width: 100%;
-    height: 100%;
 
-    display: block;
+    width:
+        100%;
 
-    object-fit: cover;
+    height:
+        100%;
+
+    display:
+        block;
+
+    object-fit:
+        cover;
 
     transition:
-        transform .7s cubic-bezier(.2,.8,.2,1);
+        transform .7s
+        cubic-bezier(.2,.8,.2,1);
 }
 
 .screenshot-card:hover img {
-    transform: scale(1.035);
+
+    transform:
+        scale(1.035);
 }
 
 .screenshot-info {
-    padding: 25px 27px 28px;
+
+    padding:
+        25px 27px 28px;
 }
 
 .screenshot-info h3 {
-    font-size: 21px;
-    margin-bottom: 8px;
+
+    font-size:
+        21px;
+
+    margin-bottom:
+        8px;
 }
 
 .screenshot-info p {
-    color: var(--muted);
-    font-size: 14px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        14px;
 }
+
 
 /* =====================================================
    CREATOR
 ===================================================== */
 
 .creator {
-    margin-top: 55px;
 
-    padding: 45px;
+    margin-top:
+        55px;
 
-    border-radius: 28px;
+    padding:
+        45px;
+
+    border-radius:
+        28px;
 
     background:
         radial-gradient(
@@ -903,36 +1264,56 @@ h2 {
         rgba(255,255,255,.025);
 
     border:
-        1px solid rgba(255,122,24,.12);
+        1px solid
+        rgba(255,122,24,.12);
 
-    display: grid;
+    display:
+        grid;
 
     grid-template-columns:
         1fr auto;
 
-    gap: 40px;
+    gap:
+        40px;
 
-    align-items: center;
+    align-items:
+        center;
 }
 
 .creator h3 {
-    font-size: 32px;
-    margin-bottom: 12px;
+
+    font-size:
+        32px;
+
+    margin-bottom:
+        12px;
 }
 
 .creator p {
-    color: var(--muted);
-    max-width: 680px;
+
+    color:
+        var(--muted);
+
+    max-width:
+        680px;
 }
 
 .creator-badge {
-    width: 100px;
-    height: 100px;
 
-    display: grid;
-    place-items: center;
+    width:
+        100px;
 
-    border-radius: 28px;
+    height:
+        100px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    border-radius:
+        28px;
 
     background:
         linear-gradient(
@@ -941,83 +1322,328 @@ h2 {
             var(--orange-dark)
         );
 
-    font-size: 30px;
-    font-weight: 800;
+    font-size:
+        30px;
+
+    font-weight:
+        800;
 
     box-shadow:
-        0 20px 60px rgba(255,122,24,.22);
+        0 20px 60px
+        rgba(255,122,24,.22);
 }
+
 
 /* =====================================================
    QUOTE
 ===================================================== */
 
 .quote {
-    margin-top: 25px;
 
-    padding: 25px 30px;
+    margin-top:
+        25px;
+
+    padding:
+        25px 30px;
 
     border-left:
-        3px solid var(--orange);
+        3px solid
+        var(--orange);
 
     background:
         rgba(255,122,24,.055);
 
-    border-radius: 0 15px 15px 0;
+    border-radius:
+        0 15px 15px 0;
 
-    color: #ddd2ca;
+    color:
+        #ddd2ca;
 
-    font-size: 15px;
+    font-size:
+        15px;
 }
+
+
+/* =====================================================
+   SOCIAL MEDIA
+===================================================== */
+
+.social-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:
+        18px;
+
+    margin-top:
+        55px;
+}
+
+.social-card {
+
+    position:
+        relative;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        20px;
+
+    padding:
+        30px;
+
+    border-radius:
+        var(--radius);
+
+    background:
+        rgba(255,255,255,.025);
+
+    border:
+        1px solid
+        rgba(255,255,255,.07);
+
+    text-decoration:
+        none;
+
+    color:
+        var(--text);
+
+    overflow:
+        hidden;
+
+    transition:
+        transform .35s ease,
+        border-color .35s ease,
+        background .35s ease;
+}
+
+.social-card::before {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    width:
+        180px;
+
+    height:
+        180px;
+
+    right:
+        -100px;
+
+    top:
+        -100px;
+
+    border-radius:
+        50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,122,24,.16),
+            transparent 70%
+        );
+
+    transition:
+        .45s ease;
+}
+
+.social-card:hover {
+
+    transform:
+        translateY(-8px);
+
+    border-color:
+        rgba(255,122,24,.35);
+
+    background:
+        rgba(35,24,15,.88);
+}
+
+.social-card:hover::before {
+
+    transform:
+        scale(1.5);
+}
+
+.social-icon {
+
+    position:
+        relative;
+
+    flex-shrink:
+        0;
+
+    width:
+        55px;
+
+    height:
+        55px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    border-radius:
+        16px;
+
+    background:
+        rgba(255,122,24,.10);
+
+    border:
+        1px solid
+        rgba(255,122,24,.18);
+
+    color:
+        var(--orange-light);
+
+    font-size:
+        23px;
+
+    font-weight:
+        800;
+
+    z-index:
+        2;
+}
+
+.social-icon.youtube {
+
+    font-size:
+        20px;
+}
+
+.social-icon.x {
+
+    font-size:
+        25px;
+}
+
+.social-icon.tiktok {
+
+    font-size:
+        25px;
+}
+
+.social-content {
+
+    position:
+        relative;
+
+    z-index:
+        2;
+}
+
+.social-content h3 {
+
+    font-size:
+        20px;
+
+    margin-bottom:
+        0;
+}
+
+.social-link {
+
+    display:
+        block;
+
+    margin-top:
+        5px;
+
+    color:
+        var(--orange-light);
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+}
+
 
 /* =====================================================
    PROJECTS
 ===================================================== */
 
 .project-grid {
-    display: grid;
+
+    display:
+        grid;
 
     grid-template-columns:
         1.2fr .8fr;
 
-    gap: 18px;
+    gap:
+        18px;
 
-    margin-top: 55px;
+    margin-top:
+        55px;
 }
 
 .project {
-    min-height: 260px;
 
-    padding: 32px;
+    min-height:
+        260px;
 
-    border-radius: 24px;
+    padding:
+        32px;
+
+    border-radius:
+        24px;
 
     background:
         rgba(255,255,255,.025);
 
     border:
-        1px solid rgba(255,255,255,.07);
+        1px solid
+        rgba(255,255,255,.07);
 
-    position: relative;
+    position:
+        relative;
 
-    overflow: hidden;
+    overflow:
+        hidden;
 
-    transition: .4s ease;
+    transition:
+        .4s ease;
 }
 
 .project:hover {
-    transform: translateY(-7px);
+
+    transform:
+        translateY(-7px);
 
     border-color:
         rgba(255,122,24,.3);
 }
 
 .project.featured {
-    min-height: 390px;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    min-height:
+        390px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    justify-content:
+        flex-end;
 
     background:
         linear-gradient(
@@ -1028,17 +1654,27 @@ h2 {
 }
 
 .project::before {
-    content: "";
 
-    position: absolute;
+    content:
+        "";
 
-    width: 280px;
-    height: 280px;
+    position:
+        absolute;
 
-    right: -100px;
-    top: -100px;
+    width:
+        280px;
 
-    border-radius: 50%;
+    height:
+        280px;
+
+    right:
+        -100px;
+
+    top:
+        -100px;
+
+    border-radius:
+        50%;
 
     background:
         radial-gradient(
@@ -1047,52 +1683,79 @@ h2 {
             transparent 70%
         );
 
-    transition: .5s ease;
+    transition:
+        .5s ease;
 }
 
 .project:hover::before {
-    transform: scale(1.35);
+
+    transform:
+        scale(1.35);
 }
 
 .project-content {
-    position: relative;
-    z-index: 2;
+
+    position:
+        relative;
+
+    z-index:
+        2;
 }
 
 .project-label {
-    color: var(--orange-light);
 
-    font-size: 11px;
+    color:
+        var(--orange-light);
 
-    text-transform: uppercase;
+    font-size:
+        11px;
 
-    letter-spacing: 1.5px;
+    text-transform:
+        uppercase;
 
-    font-weight: 800;
+    letter-spacing:
+        1.5px;
 
-    margin-bottom: 10px;
+    font-weight:
+        800;
+
+    margin-bottom:
+        10px;
 }
 
 .project h3 {
-    font-size: 28px;
-    margin-bottom: 10px;
+
+    font-size:
+        28px;
+
+    margin-bottom:
+        10px;
 }
 
 .project p {
-    color: var(--muted);
-    font-size: 14px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        14px;
 }
+
 
 /* =====================================================
    PLANS CTA
 ===================================================== */
 
 .cta {
-    text-align: center;
 
-    padding: 100px 30px;
+    text-align:
+        center;
 
-    border-radius: 30px;
+    padding:
+        100px 30px;
+
+    border-radius:
+        30px;
 
     background:
         radial-gradient(
@@ -1102,55 +1765,92 @@ h2 {
         );
 
     border:
-        1px solid rgba(255,122,24,.10);
+        1px solid
+        rgba(255,122,24,.10);
 }
 
 .cta h2 {
-    max-width: 800px;
-    margin: 0 auto 20px;
+
+    max-width:
+        800px;
+
+    margin:
+        0 auto 20px;
 }
 
 .cta p {
-    max-width: 620px;
 
-    margin: 0 auto;
+    max-width:
+        620px;
 
-    color: var(--muted);
+    margin:
+        0 auto;
+
+    color:
+        var(--muted);
 }
+
 
 /* =====================================================
    FOOTER
 ===================================================== */
 
 footer {
-    padding: 50px 0 35px;
+
+    padding:
+        50px 0 35px;
 
     border-top:
-        1px solid rgba(255,255,255,.05);
+        1px solid
+        rgba(255,255,255,.05);
 
-    color: #756d67;
+    color:
+        #756d67;
 
-    font-size: 13px;
+    font-size:
+        13px;
 }
 
 .footer-inner {
-    display: flex;
 
-    align-items: center;
+    display:
+        flex;
 
-    justify-content: space-between;
+    align-items:
+        center;
 
-    gap: 20px;
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
 }
 
 .footer-logo {
-    color: white;
-    font-weight: 800;
+
+    color:
+        white;
+
+    font-weight:
+        800;
 }
+
 
 /* =====================================================
    RESPONSIVE
 ===================================================== */
+
+@media (max-width: 1000px) {
+
+    .nav-links {
+        gap: 14px;
+    }
+
+    .nav-links a {
+        font-size: 12px;
+    }
+
+}
 
 @media (max-width: 850px) {
 
@@ -1162,25 +1862,36 @@ footer {
     .stats,
     .story-layout,
     .comparison,
-    .project-grid {
-        grid-template-columns: 1fr;
+    .project-grid,
+    .social-grid {
+        grid-template-columns:
+            1fr;
     }
 
     .creator {
-        grid-template-columns: 1fr;
+        grid-template-columns:
+            1fr;
     }
 
     .creator-badge {
-        width: 80px;
-        height: 80px;
+
+        width:
+            80px;
+
+        height:
+            80px;
     }
 
     .hero h1 {
-        letter-spacing: -4px;
+
+        letter-spacing:
+            -4px;
     }
 
     section {
-        padding: 90px 0;
+
+        padding:
+            90px 0;
     }
 
 }
@@ -1188,39 +1899,60 @@ footer {
 @media (max-width: 500px) {
 
     .container {
-        width: min(
-            calc(100% - 30px),
-            var(--max-width)
-        );
+
+        width:
+            min(
+                calc(100% - 30px),
+                var(--max-width)
+            );
     }
 
     .nav {
-        padding: 18px 15px;
+
+        padding:
+            18px 15px;
     }
 
     .hero {
-        padding-top: 110px;
+
+        padding-top:
+            110px;
     }
 
     .hero h1 {
-        font-size: 58px;
+
+        font-size:
+            58px;
     }
 
     .hero-text {
-        font-size: 16px;
+
+        font-size:
+            16px;
     }
 
     h2 {
-        font-size: 40px;
+
+        font-size:
+            40px;
     }
 
     .card,
     .story-box,
     .creator {
-        padding: 25px;
+
+        padding:
+            25px;
+    }
+
+    .social-card {
+
+        padding:
+            25px;
     }
 
 }
+
 
 /* =====================================================
    REDUCED MOTION
@@ -1231,10 +1963,18 @@ footer {
     *,
     *::before,
     *::after {
-        scroll-behavior: auto !important;
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
+
+        scroll-behavior:
+            auto !important;
+
+        animation-duration:
+            .01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        transition-duration:
+            .01ms !important;
     }
 
 }
@@ -1242,32 +1982,53 @@ footer {
 </style>
 </head>
 
+
 <body>
 
 <div class="orb one"></div>
 <div class="orb two"></div>
 
 
-<!-- =====================================================
-     NAV
-===================================================== -->
-
 <header id="header">
 
 <nav class="nav">
 
 <a href="https://brainverse.pl" class="logo">
-    <span class="logo-mark">B</span>
+
+    <span class="logo-mark">
+        B
+    </span>
+
     BrainVerse
+
 </a>
+
 
 <div class="nav-links">
 
-<a href="https://brainverse.pl">Strona główna</a>
-<a href="#about">Czym jest</a>
-<a href="#history">Historia</a>
-<a href="#evolution">Rozwój</a>
-<a href="#projects">Projekty</a>
+<a href="https://brainverse.pl">
+    Strona główna
+</a>
+
+<a href="#about">
+    Czym jest
+</a>
+
+<a href="#history">
+    Historia
+</a>
+
+<a href="#evolution">
+    Rozwój
+</a>
+
+<a href="#projects">
+    Projekty
+</a>
+
+<a href="#socials">
+    Media
+</a>
 
 <a href="#plans" class="nav-button">
     Plany
@@ -1283,10 +2044,6 @@ footer {
 <main>
 
 
-<!-- =====================================================
-     HERO
-===================================================== -->
-
 <section class="hero">
 
 <div class="container">
@@ -1294,37 +2051,57 @@ footer {
 <div class="hero-content reveal">
 
 <div class="badge">
+
     <span class="status-dot"></span>
+
     Projekt aktywnie rozwijany
+
 </div>
 
+
 <h1>
+
     O<br>
+
     BrainVerse.
+
 </h1>
 
+
 <p class="hero-text">
+
     BrainVerse to niezależna strona pełna gier,
     projektów, eksperymentów i narzędzi.
     Powstała z prostego pomysłu, a z czasem
     zaczęła stawać się czymś znacznie większym.
+
 </p>
+
 
 <div class="hero-actions">
 
 <a href="#about" class="button primary">
+
     Poznaj BrainVerse
+
 </a>
 
+
 <a href="#evolution" class="button secondary">
+
     Zobacz, jak się zmienił
+
 </a>
 
 </div>
 
+
 <div class="scroll">
+
     <span class="scroll-line"></span>
+
     Przewiń dalej
+
 </div>
 
 </div>
@@ -1333,10 +2110,6 @@ footer {
 
 </section>
 
-
-<!-- =====================================================
-     ABOUT
-===================================================== -->
 
 <section id="about">
 
@@ -1353,9 +2126,11 @@ footer {
 </h2>
 
 <p class="section-description">
+
     BrainVerse nie jest tylko stroną z grami.
     To miejsce, w którym spotykają się różne
     projekty i pomysły.
+
 </p>
 
 </div>
@@ -1375,9 +2150,11 @@ footer {
 </h3>
 
 <p>
+
     Jedna z najważniejszych części BrainVerse.
     Strona zawiera własne gry i projekty,
     które są stale rozwijane.
+
 </p>
 
 </div>
@@ -1394,9 +2171,11 @@ footer {
 </h3>
 
 <p>
+
     Nie wszystko musi być grą.
     BrainVerse jest również miejscem
     dla różnych pomysłów i eksperymentów.
+
 </p>
 
 </div>
@@ -1413,33 +2192,59 @@ footer {
 </h3>
 
 <p>
+
     Początkowo BrainVerse miał być cyfrową
     chmurą na pliki. Pozostałości tego
     pomysłu nadal istnieją na stronie.
+
 </p>
 
 </div>
-
 
 </div>
 
 
 <div class="stats">
 
-<div class="stat reveal">
-    <div class="stat-number">13</div>
-    <div class="stat-label">gier na stronie</div>
-</div>
 
 <div class="stat reveal">
-    <div class="stat-number">2026</div>
-    <div class="stat-label">rok rozpoczęcia projektu</div>
+
+<div class="stat-number">
+    13
 </div>
 
-<div class="stat reveal">
-    <div class="stat-number">1</div>
-    <div class="stat-label">twórca</div>
+<div class="stat-label">
+    gier na stronie
 </div>
+
+</div>
+
+
+<div class="stat reveal">
+
+<div class="stat-number">
+    2026
+</div>
+
+<div class="stat-label">
+    rok rozpoczęcia projektu
+</div>
+
+</div>
+
+
+<div class="stat reveal">
+
+<div class="stat-number">
+    1
+</div>
+
+<div class="stat-label">
+    twórca
+</div>
+
+</div>
+
 
 </div>
 
@@ -1447,10 +2252,6 @@ footer {
 
 </section>
 
-
-<!-- =====================================================
-     HISTORY
-===================================================== -->
 
 <section id="history">
 
@@ -1468,15 +2269,18 @@ footer {
 </h2>
 
 <p class="section-description">
+
     BrainVerse nie powstał jako wielki,
     dokładnie zaplanowany projekt.
     Wszystko zaczęło się znacznie prościej.
+
 </p>
 
 </div>
 
 
 <div class="story-layout">
+
 
 <div class="story-box reveal">
 
@@ -1485,18 +2289,22 @@ footer {
 </h3>
 
 <p>
+
     26 lutego 2026 roku rozpoczęło się tworzenie
     BrainVerse. Początkowo pomysł był związany
     z cyfrową chmurą na pliki.
+
 </p>
 
 <br>
 
 <p>
+
     Niedługo później pojawiła się domena
     <strong>brainverse.pl</strong>.
     Została kupiona 1 marca 2026 roku
     za zaledwie 13 zł.
+
 </p>
 
 </div>
@@ -1509,16 +2317,21 @@ footer {
 </h3>
 
 <p>
+
     Pierwsza wersja strony zawierała przede wszystkim
     system logowania oraz kilka plików.
     Z czasem projekt zaczął ewoluować w stronę
     gier, eksperymentów i różnych narzędzi.
+
 </p>
 
+
 <div class="quote">
+
     BrainVerse powstał trochę spontanicznie.
     Najpierw pojawiła się domena, a dopiero później
     pomysł na to, co właściwie z nią zrobić.
+
 </div>
 
 </div>
@@ -1563,9 +2376,11 @@ footer {
 </div>
 
 <div class="timeline-text">
+
     Rozwój strony, powstawanie kolejnych projektów
     oraz stopniowe odejście od pierwotnej koncepcji
     samej chmury na pliki.
+
 </div>
 
 </div>
@@ -1578,8 +2393,10 @@ footer {
 </div>
 
 <div class="timeline-text">
+
     BrainVerse posiada już 13 gier
     i jest stale rozwijanym projektem.
+
 </div>
 
 </div>
@@ -1591,10 +2408,6 @@ footer {
 
 </section>
 
-
-<!-- =====================================================
-     EVOLUTION
-===================================================== -->
 
 <section id="evolution">
 
@@ -1612,9 +2425,11 @@ footer {
 </h2>
 
 <p class="section-description">
+
     Strona przeszła przez kilka etapów.
     Poniżej można zobaczyć różnicę pomiędzy
     początkową wersją a jej obecnym wyglądem.
+
 </p>
 
 </div>
@@ -1622,8 +2437,6 @@ footer {
 
 <div class="comparison">
 
-
-<!-- STARE -->
 
 <div class="screenshot-card reveal">
 
@@ -1637,6 +2450,7 @@ footer {
 
 </div>
 
+
 <div class="screenshot-info">
 
 <h3>
@@ -1644,17 +2458,17 @@ footer {
 </h3>
 
 <p>
+
     Pierwsza wersja strony — prostsza,
     skupiona głównie na pierwotnym pomyśle
     cyfrowej chmury i plików.
+
 </p>
 
 </div>
 
 </div>
 
-
-<!-- NOWE -->
 
 <div class="screenshot-card reveal">
 
@@ -1668,6 +2482,7 @@ footer {
 
 </div>
 
+
 <div class="screenshot-info">
 
 <h3>
@@ -1675,9 +2490,11 @@ footer {
 </h3>
 
 <p>
+
     Obecna wersja projektu skupia się
     na grach, projektach, eksperymentach
     i różnych narzędziach.
+
 </p>
 
 </div>
@@ -1692,11 +2509,7 @@ footer {
 </section>
 
 
-<!-- =====================================================
-     CREATOR
-===================================================== -->
-
-<section>
+<section id="creator">
 
 <div class="container">
 
@@ -1723,22 +2536,28 @@ footer {
 </h3>
 
 <p>
+
     BrainVerse jest niezależnym projektem tworzonym
     od początku przez jednego twórcę.
     Wszystkie projekty należą do BrainVerse,
     a przy części funkcji wykorzystywana jest
     również pomoc sztucznej inteligencji.
+
 </p>
 
+
 <div class="quote">
+
     Jednym z najbardziej praktycznych elementów
     BrainVerse jest możliwość wykorzystania strony
     jako przenośnej cyfrowej chmury — plik można
     przesłać, zalogować się na innym komputerze
     i ponownie go otworzyć.
+
 </div>
 
 </div>
+
 
 <div class="creator-badge">
     N
@@ -1752,8 +2571,90 @@ footer {
 
 
 <!-- =====================================================
-     DROGA
+     SOCIAL MEDIA
 ===================================================== -->
+
+<section id="socials">
+
+<div class="container">
+
+<div class="reveal">
+
+<div class="kicker">
+    Media społecznościowe
+</div>
+
+<h2>
+    Twórca jest
+    również w sieci.
+</h2>
+
+</div>
+
+
+<div class="social-grid">
+
+
+<a
+    href="https://www.youtube.com/@nikoasamolot"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="social-card reveal"
+>
+
+<div class="social-icon youtube">
+    ▶
+</div>
+
+<div class="social-content">
+
+<h3>
+    YouTube
+</h3>
+
+<span class="social-link">
+    Odwiedź kanał →
+</span>
+
+</div>
+
+</a>
+
+
+
+
+<a
+    href="https://www.tiktok.com/@nikoa.samolot"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="social-card reveal"
+>
+
+<div class="social-icon tiktok">
+    ♪
+</div>
+
+<div class="social-content">
+
+<h3>
+    TikTok
+</h3>
+
+<span class="social-link">
+    Odwiedź profil →
+</span>
+
+</div>
+
+</a>
+
+
+</div>
+
+</div>
+
+</section>
+
 
 <section>
 
@@ -1771,9 +2672,11 @@ footer {
 </h2>
 
 <p class="section-description">
+
     Przy tworzeniu strony pojawiło się kilka
     problemów, których raczej nie dało się
     przewidzieć na początku.
+
 </p>
 
 </div>
@@ -1793,9 +2696,11 @@ footer {
 </h3>
 
 <p>
+
     Jednym z najtrudniejszych etapów była
     konfiguracja DNS. Było to pierwsze
     większe doświadczenie z tym tematem.
+
 </p>
 
 </div>
@@ -1812,10 +2717,12 @@ footer {
 </h3>
 
 <p>
+
     Podczas pracy nad kodem wyszukane zostało
     słowo „brain”, a następnie przez przypadek
     użyto opcji „replace all” z pustą wartością.
     Efekt? Część strony przestała działać.
+
 </p>
 
 </div>
@@ -1832,9 +2739,11 @@ footer {
 </h3>
 
 <p>
+
     Jednym z pierwszych większych sukcesów było
     pojawienie się głównej strony BrainVerse
     w wynikach wyszukiwania Google.
+
 </p>
 
 </div>
@@ -1846,10 +2755,6 @@ footer {
 
 </section>
 
-
-<!-- =====================================================
-     PROJECTS
-===================================================== -->
 
 <section id="projects">
 
@@ -1867,8 +2772,10 @@ footer {
 </h2>
 
 <p class="section-description">
+
     Gry są ważną częścią strony, ale obok nich
     powstają również większe projekty.
+
 </p>
 
 </div>
@@ -1890,8 +2797,10 @@ footer {
 </h3>
 
 <p>
+
     Jeden z najbardziej rozwijanych projektów
     BrainVerse i obecny faworyt twórcy.
+
 </p>
 
 </div>
@@ -1912,8 +2821,10 @@ footer {
 </h3>
 
 <p>
+
     Bardziej ambitny projekt multiplayer,
     rozwijany jako część ekosystemu BrainVerse.
+
 </p>
 
 </div>
@@ -1934,8 +2845,10 @@ footer {
 </h3>
 
 <p>
+
     Następne gry, eksperymenty i pomysły
     są już częścią dalszego rozwoju strony.
+
 </p>
 
 </div>
@@ -1949,10 +2862,6 @@ footer {
 
 </section>
 
-
-<!-- =====================================================
-     PLANS
-===================================================== -->
 
 <section id="plans">
 
@@ -1970,10 +2879,12 @@ footer {
 </h2>
 
 <p>
+
     W najbliższym czasie planowane są kolejne gry,
     aktualizacje istniejących projektów oraz
     następne pomysły. Długoterminowy plan jest prosty:
     dalej rozwijać stronę.
+
 </p>
 
 <br>
@@ -1992,10 +2903,6 @@ footer {
 </main>
 
 
-<!-- =====================================================
-     FOOTER
-===================================================== -->
-
 <footer>
 
 <div class="container">
@@ -2003,12 +2910,17 @@ footer {
 <div class="footer-inner">
 
 <div>
-    <span class="footer-logo">
-        BrainVerse
-    </span>
-    <br>
-    Gry. Projekty. Eksperymenty.
+
+<span class="footer-logo">
+    BrainVerse
+</span>
+
+<br>
+
+Gry. Projekty. Eksperymenty.
+
 </div>
+
 
 <div>
     © 2026 BrainVerse
@@ -2021,22 +2933,23 @@ footer {
 </footer>
 
 
-<!-- =====================================================
-     JAVASCRIPT
-===================================================== -->
-
 <script>
 
 /* HEADER */
 
-const header = document.getElementById("header");
+const header =
+    document.getElementById("header");
 
 window.addEventListener("scroll", () => {
 
     if (window.scrollY > 40) {
+
         header.classList.add("scrolled");
+
     } else {
+
         header.classList.remove("scrolled");
+
     }
 
 });
@@ -2055,9 +2968,13 @@ const observer =
 
                 if (entry.isIntersecting) {
 
-                    entry.target.classList.add("visible");
+                    entry.target.classList.add(
+                        "visible"
+                    );
 
-                    observer.unobserve(entry.target);
+                    observer.unobserve(
+                        entry.target
+                    );
 
                 }
 
@@ -2089,7 +3006,10 @@ window.addEventListener("scroll", () => {
     const scroll =
         window.scrollY;
 
-    if (scroll < window.innerHeight) {
+    if (
+        scroll <
+        window.innerHeight
+    ) {
 
         hero.style.transform =
             `translateY(${scroll * 0.12}px)`;
@@ -2125,8 +3045,11 @@ document.querySelectorAll(
             e.preventDefault();
 
             target.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
+                behavior:
+                    "smooth",
+
+                block:
+                    "start"
             });
 
         }
@@ -2138,7 +3061,7 @@ document.querySelectorAll(
 /* MOUSE GLOW */
 
 document.querySelectorAll(
-    ".card, .project, .screenshot-card"
+    ".card, .project, .screenshot-card, .social-card"
 ).forEach(element => {
 
     element.addEventListener(
@@ -2149,15 +3072,18 @@ document.querySelectorAll(
                 element.getBoundingClientRect();
 
             const x =
-                event.clientX - rect.left;
+                event.clientX -
+                rect.left;
 
             const y =
-                event.clientY - rect.top;
+                event.clientY -
+                rect.top;
 
             element.style.background =
                 `
                 radial-gradient(
-                    450px circle at ${x}px ${y}px,
+                    450px circle at
+                    ${x}px ${y}px,
                     rgba(255,122,24,.07),
                     rgba(255,255,255,.025) 45%
                 )
@@ -2166,11 +3092,13 @@ document.querySelectorAll(
         }
     );
 
+
     element.addEventListener(
         "mouseleave",
         () => {
 
-            element.style.background = "";
+            element.style.background =
+                "";
 
         }
     );
