@@ -1,0 +1,15 @@
+BrainVerse OFFLINE Games respects your privacy.
+
+This application does not collect, store, transmit, sell, or share any personal information.
+
+The application does not use user accounts, advertising, analytics, tracking technologies, cookies, or external data collection services.
+
+All games and application features operate locally on your device. The application does not require an internet connection and does not communicate with external servers to provide its core functionality.
+
+Any game progress, preferences, or other locally stored information used by the application remains on your device and is not transmitted to us.
+
+We do not have access to information stored locally by the application.
+
+Because no personal data is collected or transmitted, there is no personal information for BrainVerse to disclose to third parties.
+
+Last updated: October 5, 2026
