@@ -1,0 +1,923 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Nikoa Samolot Independent game developer, creator and gamer. Discover my projects, games and social media.">
+<meta name="theme-color" content="#252c36">
+
+<title>Nikoa Samolot Official Website</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="images/profile.png">
+
+<style>
+:root {
+    --bg: #252c36;
+    --surface: #303a47;
+    --surface2: #384555;
+    --text: #f1f4f8;
+    --muted: #aebaca;
+    --accent: #8abaff;
+    --border: #465363;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 90px;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.7;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+img {
+    display: block;
+    width: 100%;
+    object-fit: cover;
+}
+
+.container {
+    width: min(1120px, 90%);
+    margin: auto;
+}
+
+section {
+    padding: 85px 0;
+}
+
+.section-heading {
+    margin-bottom: 35px;
+}
+
+.section-heading h2 {
+    font-size: 32px;
+    letter-spacing: -1px;
+}
+
+.section-heading p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.accent {
+    color: var(--accent);
+}
+
+/* NAVIGATION */
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(37,44,54,.96);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+}
+
+nav {
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.logo span {
+    color: var(--accent);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 22px;
+}
+
+.nav-links a {
+    color: var(--muted);
+    font-size: 12px;
+    transition: .2s;
+}
+
+.nav-links a:hover {
+    color: var(--accent);
+}
+
+.menu-toggle {
+    display: none;
+    border: 0;
+    background: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+/* HERO */
+
+.hero {
+    min-height: 590px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(25,32,42,.65),
+            rgba(25,32,42,.25)
+        ),
+        url('images/hero-background.png');
+
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.hero-content {
+    max-width: 750px;
+    padding: 90px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.eyebrow {
+    display: inline-block;
+    padding: 7px 15px;
+    background: rgba(138,186,255,.12);
+    border: 1px solid rgba(138,186,255,.4);
+    color: var(--accent);
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+}
+
+.hero h1 {
+    font-size: clamp(48px, 8vw, 82px);
+    letter-spacing: -4px;
+    line-height: 1.1;
+}
+
+.pronouns {
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 1px;
+    margin-top: 10px;
+}
+
+.hero h2 {
+    color: var(--muted);
+    font-size: clamp(19px, 3vw, 26px);
+    font-weight: 500;
+    margin: 15px 0;
+}
+
+.hero p {
+    color: #c0cbd8;
+    max-width: 580px;
+    font-size: 15px;
+    margin-bottom: 30px;
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 13px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 23px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: .25s;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #202c3b;
+}
+
+.btn-secondary {
+    background: rgba(255,255,255,.08);
+    border: 1px solid var(--border);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+}
+
+/* ABOUT */
+
+.about-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 40px;
+    align-items: center;
+}
+
+.profile-image {
+    width: 100%;
+    max-width: 250px;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    object-fit: cover;
+}
+
+.about-text {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 30px;
+}
+
+.about-text p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* NAME MEANING */
+
+.meaning-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 32px;
+}
+
+.meaning-card p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+.meaning-card p:last-child {
+    margin-bottom: 0;
+}
+
+.meaning-card strong {
+    color: var(--text);
+}
+
+.meaning-note {
+    display: inline-block;
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+}
+
+/* PROJECTS */
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: .25s;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+}
+
+.project-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--surface2);
+}
+
+.project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.project-info {
+    padding: 24px;
+}
+
+.project-info h3 {
+    font-size: 21px;
+    margin-bottom: 8px;
+}
+
+.project-info p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 17px;
+}
+
+.project-link {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.status {
+    display: inline-block;
+    background: rgba(138,186,255,.13);
+    border: 1px solid rgba(138,186,255,.4);
+    color: var(--accent);
+    padding: 5px 11px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+/* SOCIAL MEDIA */
+
+.social-section {
+    background: rgba(43,52,64,.65);
+    text-align: center;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.social-section .section-heading {
+    margin-bottom: 45px;
+}
+
+.social-section .section-heading p {
+    margin-top: 7px;
+}
+
+.social-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    max-width: 850px;
+    margin: auto;
+}
+
+.social-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 35px 22px;
+    transition: .25s;
+    min-width: 0;
+}
+
+.social-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-5px);
+    background: var(--surface2);
+}
+
+.social-profile-image {
+    width: 120px;
+    height: 120px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    margin: 0 auto 18px;
+    background: var(--surface2);
+}
+
+.social-card h3 {
+    font-size: 21px;
+}
+
+.social-card .handle {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 4px 0 20px;
+}
+
+.social-open-link {
+    display: inline-block;
+    margin-top: 5px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.social-open-link:hover {
+    text-decoration: underline;
+}
+
+/* GAMING PROFILES */
+
+.gaming-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+}
+
+.gaming-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 30px;
+    transition: .25s;
+}
+
+.gaming-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+}
+
+.gaming-card h3 {
+    font-size: 21px;
+    margin-bottom: 7px;
+}
+
+.gaming-card p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+/* FOOTER */
+
+footer {
+    border-top: 1px solid var(--border);
+    padding: 35px 0;
+    text-align: center;
+    background: rgba(37,44,54,.4);
+}
+
+footer strong {
+    font-size: 19px;
+}
+
+footer p {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* ANIMATIONS */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: .7s ease;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+    }
+
+    .reveal {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* MOBILE */
+
+@media(max-width: 750px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 76px;
+        left: 0;
+        width: 100%;
+        padding: 25px;
+        background: var(--surface);
+        flex-direction: column;
+        gap: 17px;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .about-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-image {
+        width: min(100%, 250px);
+        aspect-ratio: 1 / 1;
+        height: auto;
+        margin: auto;
+    }
+
+    .projects-grid,
+    .gaming-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .social-grid {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+    }
+
+    .hero {
+        min-height: 490px;
+    }
+
+    .hero h1 {
+        letter-spacing: -2px;
+    }
+
+    section {
+        padding: 60px 0;
+    }
+
+    .meaning-card {
+        padding: 24px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <nav>
+            <a href="#home" class="logo">NIKOA</a>
+
+            <button class="menu-toggle"
+                    aria-label="Toggle navigation"
+                    aria-expanded="false">☰</button>
+
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#meaning">Name Meaning</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#socials">Find Me Online</a></li>
+                <li><a href="#gaming">Gaming</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main>
+
+<section class="hero" id="home">
+    <div class="container">
+        <div class="hero-content reveal">
+
+
+
+            <h1>Nikoa <span class="accent">Samolot</span></h1>
+
+            <p class="pronouns">He/Him</p>
+
+            <h2>Indie Game Developer and Content Creator</h2>
+
+            <p>
+                Welcome to my personal website.
+                Explore my games, projects, creative work
+                and find all my official profiles in one place.
+            </p>
+
+            <div class="buttons">
+                <a href="#projects" class="btn btn-primary">
+                    Explore Projects →
+                </a>
+
+                <a href="#socials" class="btn btn-secondary">
+                    Find Me Online
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section id="about">
+    <div class="container reveal">
+
+        <div class="section-heading">
+            <h2>About Me</h2>
+            <p>Professional background and interests.</p>
+        </div>
+
+        <div class="about-layout">
+
+            <img
+                src="images/profile.png"
+                alt="Nikoa Samolot profile picture"
+                class="profile-image"
+                loading="lazy"
+            >
+
+            <div class="about-text">
+                <p>
+                    I'm an independent game developer and digital creator interested in programming, game design and building interactive experiences.
+                </p>
+                <br>
+                <p>
+                    I create my own games and projects under the BrainVerse name, experimenting with different technologies and bringing new ideas to life.
+                </p>
+                <br>
+                <p>
+                    This website is where you can discover my work, explore my projects and find me across the internet.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section id="meaning">
+    <div class="container reveal">
+
+        <div class="section-heading">
+            <h2>What Is the Meaning of <span class="accent">"Nikoa Samolot"?</span></h2>
+            <p>The story behind the name.</p>
+        </div>
+
+        <div class="meaning-card">
+
+            <span class="meaning-note">A NAME WITH A RANDOM ORIGIN</span>
+
+            <p>
+                The name <strong>"Nikoa Samolot"</strong> doesn't have
+                any deep or symbolic meaning. Its origins are actually
+                quite random.
+            </p>
+
+            <p>
+                I needed to create an online username.
+                My real name, Nikodem, was already taken,
+                so Google suggested "Nikoa". I liked it,
+                so I decided to use it.
+            </p>
+
+            <p>
+                "Samolot" (Polish for "airplane") came from
+                absolutely nowhere. I randomly added it when
+                I was a child, and somehow it stuck.
+            </p>
+
+            <p>
+                And that's the entire story. No hidden meaning,
+                no elaborate naming strategy. Just a username
+                that accidentally became my online identity.
+            </p>
+
+        </div>
+    </div>
+</section>
+
+<section id="projects">
+    <div class="container reveal">
+
+        <div class="section-heading">
+            <h2>My Projects</h2>
+            <p>Explore my work and creative projects.</p>
+        </div>
+
+        <div class="projects-grid">
+
+            <article class="project-card">
+                <div class="project-image">
+                    <img src="images/brainverse-website.png"
+                         alt="BrainVerse website preview"
+                         loading="lazy">
+                </div>
+
+                <div class="project-info">
+                    <h3>BrainVerse</h3>
+                    <p>
+                        My independent gaming brand and website.
+                        Discover my projects and games created
+                        under the BrainVerse name.
+                    </p>
+                    <a href="https://brainverse.pl"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="project-link">
+                        Visit Website →
+                    </a>
+                </div>
+            </article>
+
+            <article class="project-card">
+                <div class="project-image">
+                    <img src="images/brainverse-offline-games.png"
+                         alt="BrainVerse Offline Games artwork"
+                         loading="lazy">
+                </div>
+
+                <div class="project-info">
+                    <h3>BrainVerse OFFLINE Games</h3>
+                    <p>
+                        A collection of offline games designed
+                        to be enjoyed without ads, accounts
+                        or unnecessary online features.
+                    </p>
+                    <span class="status">
+                        COMING SOON TO GOOGLE PLAY
+                    </span>
+                </div>
+            </article>
+
+        </div>
+    </div>
+</section>
+
+<section class="social-section" id="socials">
+    <div class="container reveal">
+
+        <div class="section-heading">
+            <h2>Find Me <span class="accent">Online</span></h2>
+            <p>
+                Follow my activity and stay connected
+                across different platforms.
+            </p>
+        </div>
+
+        <div class="social-grid">
+
+            <article class="social-card">
+                <img src="images/youtube-profile.png"
+                     alt="Nikoa Samolot YouTube profile picture"
+                     class="social-profile-image"
+                     loading="lazy">
+
+                <h3>YouTube</h3>
+                <p class="handle">@nikoasamolot</p>
+
+                <a href="https://youtube.com/@nikoasamolot"
+                   class="social-open-link"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    Visit YouTube Channel →
+                </a>
+            </article>
+
+            <article class="social-card">
+                <img src="images/tiktok-profile.png"
+                     alt="Nikoa Samolot TikTok profile picture"
+                     class="social-profile-image"
+                     loading="lazy">
+
+                <h3>TikTok</h3>
+                <p class="handle">@nikoa.samolot</p>
+
+                <a href="https://www.tiktok.com/@nikoa.samolot"
+                   class="social-open-link"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    Visit TikTok Profile →
+                </a>
+            </article>
+
+            <article class="social-card">
+                <h3>itch.io</h3>
+                <p class="handle">Nikoa-Samolot</p>
+
+                <a href="https://nikoa-samolot.itch.io"
+                   class="social-open-link"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    Visit itch.io Profile →
+                </a>
+            </article>
+
+            <article class="social-card">
+                <h3>Game Jolt</h3>
+                <p class="handle">@NikoaSamolot</p>
+
+                <a href="https://gamejolt.com/@NikoaSamolot"
+                   class="social-open-link"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    Visit Game Jolt Profile →
+                </a>
+            </article>
+
+        </div>
+    </div>
+</section>
+
+<section id="gaming">
+    <div class="container reveal">
+
+        <div class="section-heading">
+            <h2>Gaming Profiles</h2>
+            <p>My gaming accounts and community activity.</p>
+        </div>
+
+        <div class="gaming-grid">
+
+            <article class="gaming-card">
+                <h3>Steam</h3>
+                <p>
+                    My personal Steam profile.
+                    Games, achievements and gaming activity.
+                </p>
+
+                <a href="https://steamcommunity.com/profiles/76561199549936898/"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="project-link">
+                    Visit Steam Profile →
+                </a>
+            </article>
+
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer>
+    <div class="container">
+        <strong>NIKOA</strong>
+
+        <p>Official Website of Nikoa Samolot</p>
+        <p>© 2026 Nikoa Samolot. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+
+// Mobile navigation
+
+const menuButton = document.querySelector('.menu-toggle');
+const navLinks = document.querySelector('.nav-links');
+
+menuButton.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('active');
+
+    menuButton.textContent = open ? '✕' : '☰';
+    menuButton.setAttribute('aria-expanded', open);
+});
+
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        menuButton.textContent = '☰';
+        menuButton.setAttribute('aria-expanded', 'false');
+    });
+});
+
+// Scroll animations
+
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(element => {
+    observer.observe(element);
+});
+
+</script>
+
+</body>
+</html>
